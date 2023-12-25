@@ -782,8 +782,9 @@ namespace CenterServer
 						else
 						{
 							YJT.MSystem.GC.Collect();
-                            System.Threading.Thread.Sleep(1000 * 60);
-						}
+                            Console.WriteLine("未获取到要处理的单据,等待30秒后重新获取");
+                            System.Threading.Thread.Sleep(1000 * 30);
+                        }
 					}
 					else
 					{
