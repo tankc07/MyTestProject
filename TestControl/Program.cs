@@ -14,7 +14,7 @@ namespace TestControl
 			//清理未完成单据
 			YJT.Logistics.ShenTongLogistic st= YJT.Logistics.ShenTongLogistic.Init(Settings.APITokenKey.ShenTongAppKey, Settings.APITokenKey.ShenTongSecretKey, Settings.APITokenKey.ShenTongResourceCode, Settings.APITokenKey.ShenTongFormOrderCode, Settings.APITokenKey.ShenTongSiteCode, Settings.APITokenKey.ShenTongCustomerName, Settings.APITokenKey.ShenTongSitePwd, Settings.APITokenKey.ShenTongIsTest);
 			
-			YJT.DataBase.DbHelper dbh= new YJT.DataBase.DbHelperSqlServer("172.16.1.6", "YanduECommerceAutomaticPrinting", "sa", "SqlA123b456c789.", "1433");
+			YJT.DataBase.DbHelper dbh= new YJT.DataBase.DbHelperSqlServer("172.16.7.45", "YanduECommerceAutomaticPrinting", "sa", "SqlA123b456c789.", "1433");
 			string sqlCmd = "SELECT TOP 1 ydanjbh FROM tmp01 WHERE iscancel='否'";
 			string sqlCmd2 = "update tmp01 set iscancel='是' where ydanjbh='{0}'";
 			string sqlCmd4 = "update tmp01 set iscancel='错' where ydanjbh='{0}'";

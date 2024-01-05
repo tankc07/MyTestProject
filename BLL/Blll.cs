@@ -60,7 +60,7 @@ namespace BLL
 		{
 			_dbhWms = new YJT.DataBase.DbHelperOracle("172.16.1.242", "orcl", "wms_prod", "ydwmsprod", "1521");//正式环境
 																											   //_dbhWms = new YJT.DataBase.DbHelperOracle("172.16.1.216", "ydorcl", "ydwms_test", "ydwms_test", "1521");//测试环境
-			_dbhLocal = new YJT.DataBase.DbHelperSqlServer("172.16.1.6", "YanduECommerceAutomaticPrinting", "sa", "SqlA123b456c789.", "1433");
+			_dbhLocal = new YJT.DataBase.DbHelperSqlServer("172.16.7.45", "YanduECommerceAutomaticPrinting", "sa", "SqlA123b456c789.", "1433");
 			//_dbhInterface = new YJT.DataBase.DbHelperOracle("172.16.1.216", "ydorcl", "neterp_to_wms", "neterp_to_wms", "1521");
 			_dbhInterface = new YJT.DataBase.DbHelperOracle("172.16.1.245", "orcl", "neterp_to_wms", "neterp_to_wms", "1521");
 			_dbhHdErp = new YJT.DataBase.DbHelperOracle("172.16.1.245", "orcl", "bdhdyy", "bdhdyy2014", "1521");
