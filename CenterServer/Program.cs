@@ -52,10 +52,10 @@ namespace CenterServer
 			MOD.SysMod.ClinetTag ct = Common.PubMethod.GetClientTag();
 			YJT.StaticResources.Add("userObj", ct, true);
 			YJT.StaticResources.Add("handObj", _handMac, true);
-			Console.WriteLine("等待其他软件运行,期间等待一分钟");
+			Console.WriteLine("等待其他软件运行,期间等待30秒");
 			if (!ct.Ip.Contains("172.16.7.50"))
 			{
-				for (int i = 0; i < 60; i++)
+				for (int i = 0; i < 30; i++)
 				{
 					Console.SetCursorPosition(0, 1);
 					Console.WriteLine("剩余:" + (60 - i).ToString() + "秒");
