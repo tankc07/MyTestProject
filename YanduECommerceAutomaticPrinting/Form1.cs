@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using MOD;
 using Microsoft.Win32;
 using System.Reflection;
+using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
 
 namespace YanduECommerceAutomaticPrinting
 {
@@ -280,7 +281,7 @@ namespace YanduECommerceAutomaticPrinting
 						dt2.Rows[i]["WL_NUMBER"] = "'" + YJT.DataBase.Common.ObjectTryToObj(dt2.Rows[i]["WL_NUMBER"], "");
 					}
 					YJT.DataTableHandle.DataTableTool.ReplaceFieldName(dt2, keys);
-					SaveFileDialog sfd = new SaveFileDialog();
+                    SaveFileDialog sfd = new SaveFileDialog();
 					sfd.Filter = "Excel文件|*.xls";
 					sfd.FileName = DateTime.Now.ToString("yyyyMMddHHmmss") + "电商记录.xls";
 					sfd.RestoreDirectory = true;
