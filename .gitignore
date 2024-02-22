@@ -259,3 +259,8 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+Doc/20240105_Patch.rar
+
+Doc/BLL.dll
+
+Doc/CenterServer.exe
