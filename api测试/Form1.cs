@@ -140,7 +140,7 @@ namespace api测试
         private void button4_Click(object sender, EventArgs e)
         {
             //bll = BLL.Blll.init();
-            _dbhLocal = new YJT.DataBase.DbHelperSqlServer("172.16.7.45", "YanduECommerceAutomaticPrinting", "sa", "SqlA123b456c789.", "1433");
+            _dbhLocal = new YJT.DataBase.DbHelperSqlServer("172.16.1.15", "YanduECommerceAutomaticPrinting", "dsby", "dsby.", "3341");
             bool isOk;
             int errCode;
             string errMsg;
