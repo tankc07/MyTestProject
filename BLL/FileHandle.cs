@@ -9,7 +9,7 @@ namespace BLL
 {
 	public class FileHandle
 	{
-		static YJT.DataBase.DbHelper _ecSqlServer = new YJT.DataBase.DbHelperSqlServer("172.16.7.45", "YanduECommerceAutomaticPrinting", "sa", "SqlA123b456c789.", "1433");
+		static YJT.DataBase.DbHelper _ecSqlServer = new YJT.DataBase.DbHelperSqlServer("172.16.1.15", "YanduECommerceAutomaticPrinting", "dsby", "dsby", "3341");
 		public enum EnumFtpCompany
 		{
 			汇达ErpFtp,
