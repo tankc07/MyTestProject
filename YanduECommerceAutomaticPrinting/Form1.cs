@@ -2455,6 +2455,7 @@ namespace YanduECommerceAutomaticPrinting
 						_defLogic = Settings.Setings.EnumLogicType.申通快递;
 						_isLogic = true;
 					}
+					//TODO:指定新EMS物流
 
 					else if (YJT.Text.Verification.IsLeftLike(_tempInputStr, "WEH_KG_") == true)
 					{
@@ -3158,6 +3159,7 @@ namespace YanduECommerceAutomaticPrinting
 					{
 						YJT.Sound.TTSMicrosoft.Init().Speak("编号:" + r.ErpId + "<spause>使用邮政快递", isSyn: true, pb: System.Speech.Synthesis.PromptBreak.ExtraSmall, filePath: YJT.Path.FunStrGetLocalPath() + "\\files\\yz.wav", nuberMode: 1);
 					}
+					//todo:是否需要增加NewEMS的语音播报
 					if (YJT.Text.Verification.IsLeftLike(r.ErrMsg.ToString(), "提示:"))
 					{
 						YJT.Sound.TTSMicrosoft.Init().Speak("编号:" + r.ErpId + "<spause>" + r.ErrMsg.ToString(), isSyn: true, pb: System.Speech.Synthesis.PromptBreak.ExtraSmall, filePath: YJT.Path.FunStrGetLocalPath() + "\\files\\yz.wav", nuberMode: 1);
