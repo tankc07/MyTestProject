@@ -54,7 +54,7 @@ namespace CenterServer
             YJT.StaticResources.Add("userObj", ct, true);
             YJT.StaticResources.Add("handObj", _handMac, true);
             Console.WriteLine("等待其他软件运行,期间等待60秒");
-            //Modify By 2024-02-22 增加 "172.16.7.46" 跳过启动时的60秒倒计时.
+            //Modify: 修改时间: 2024-02-22 By:Ly 修改内容: 增加 "172.16.7.46" 跳过启动时的60秒倒计时.
             if (!new string[] { "172.16.7.50", "172.16.7.46" }.Contains(ct.Ip))
             {
                 for (int i = 0; i < 60; i++)
