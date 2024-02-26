@@ -388,6 +388,41 @@ namespace Settings
 			}
 		}
 
+		//Modify: 修改时间: 2024-02-27 By:Ly 修改内容: 新增NewEms
+		/// <summary>
+		/// 正式环境请求地址
+		/// </summary>
+		public static string NewEmsUrl => "http://api.ems.com.cn:8080/ems-transport-service/emsTransportService";
+		/// <summary>
+		/// 正式协议客户号
+		/// </summary>
+		public static string NewEmsSenderNo => "1100051370536";
+		/// <summary>
+		/// 正式授权码
+		/// </summary>
+		public static string NewEmsAuthorization => "SetemYDjgS80gdSa";
+		/// <summary>
+		/// 正式签名钥匙
+		/// </summary>
+		public static string NewEmsSignKey => "T1ZPenBHTmIxNlh3dnhRQw==";
+		/// <summary>
+		/// 测试沙箱环境请求地址
+		/// </summary>
+		public static string NewEmsTestUrl => "https://api.ems.com.cn/amp-prod-api/f/amp/api/test";
+		/// <summary>
+		/// 测试授权码
+		/// </summary>
+		public static string NewEmsTestAuthorization => "UBP0lGUev6irKPi7";
+		/// <summary>
+		/// 测试签名钥匙
+		/// </summary>
+		public static string NewEmsTestSignKey => "NkhUbzFkOTdOQjFNRzNpQw==";
+		/// <summary>
+		/// 是否启用测试环境及参数
+		/// </summary>
+		public static bool NewEmsIsTest => false;
+
+
 	}
 	public class Configs
 	{
