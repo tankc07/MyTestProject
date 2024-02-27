@@ -11,7 +11,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SqlSugar;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
+using DbType = SqlSugar.DbType;
 
 namespace api测试
 {
@@ -515,6 +517,36 @@ order by
 
 
             return order;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+	        bool isOk;
+	        string errMsg;
+            int errCode;
+            var db = new SqlSugarScope(GetConnectionConfig());
+            var db2 = BLL.Blll.init();
+            var order = db2.ServerGetOrder("54788", out isOk, out errCode, out errMsg);
+            order.Status = Setings.EnumOrderStatus.已获取电商信息;
+            order.Logic = Setings.EnumLogicType.Default;
+            var res = db2.ServerCreateLogic(order, out isOk, out errCode, out errMsg);
+
+        }
+
+        private static ConnectionConfig GetConnectionConfig()
+        {
+            return new ConnectionConfig()
+            {
+                ConnectionString = @"Data Source=.;Initial Catalog=YanduECommerceAutomaticPrinting;Integrated Security=true",
+                DbType = DbType.SqlServer,
+                IsAutoCloseConnection = true,
+                InitKeyType = InitKeyType.Attribute,
+                LanguageType = LanguageType.Chinese,
+                MoreSettings = new ConnMoreSettings()
+                {
+                    DisableNvarchar = true,
+                },
+            };
         }
     }
 }
