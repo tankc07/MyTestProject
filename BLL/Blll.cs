@@ -52,18 +52,19 @@ namespace BLL
 		YJT.Logistics.JingDongChunPeiLogistics _jdWl = YJT.Logistics.JingDongChunPeiLogistics.Init(Settings.APITokenKey.JingdongWlAppKey, Settings.APITokenKey.JingdongWlAppSecret, Settings.APITokenKey.JingdongWlToken, Settings.APITokenKey.JingdongWlAccessUrl, Settings.APITokenKey.JingdongWlDeptNo);
 		YJT.Logistics.ZhongTongLogistics _ztkdWl = YJT.Logistics.ZhongTongLogistics.Init(Settings.APITokenKey.ZhongTongWlAppKey, Settings.APITokenKey.ZhongTongappSecret, Settings.APITokenKey.ZhongTongCustomid, Settings.APITokenKey.ZhongTongCustomPwd, Settings.APITokenKey.ZhongTongWlAppKeyTest, Settings.APITokenKey.ZhongTongappSecretTest, Settings.APITokenKey.ZhongTongIsTest);
 		YJT.Logistics.ShenTongLogistic _shenTongWl = YJT.Logistics.ShenTongLogistic.Init(Settings.APITokenKey.ShenTongAppKey, Settings.APITokenKey.ShenTongSecretKey, Settings.APITokenKey.ShenTongResourceCode, Settings.APITokenKey.ShenTongFormOrderCode, Settings.APITokenKey.ShenTongSiteCode, Settings.APITokenKey.ShenTongCustomerName, Settings.APITokenKey.ShenTongSitePwd, Settings.APITokenKey.ShenTongIsTest);
-
+		//
 		/// <summary>
 		/// 私有构造函数
 		/// </summary>
 		private Blll()
 		{
 			_dbhWms = new YJT.DataBase.DbHelperOracle("172.16.1.242", "orcl", "wms_prod", "ydwmsprod", "1521");//正式环境
-																											   //_dbhWms = new YJT.DataBase.DbHelperOracle("172.16.1.216", "ydorcl", "ydwms_test", "ydwms_test", "1521");//测试环境
-			//Modify By 2024-02-22 修改数据库地址和账号
-			_dbhLocal = new YJT.DataBase.DbHelperSqlServer("172.16.1.15", "YanduECommerceAutomaticPrinting", "dsby", "dsby.", "3341");
+                                                                                                               //_dbhWms = new YJT.DataBase.DbHelperOracle("172.16.1.216", "ydorcl", "ydwms_test", "ydwms_test", "1521");//测试环境
+            //Modify: 修改时间: 2024-02-22 By:Ly 修改内容:修改数据库地址和账号
+			//_dbhLocal = new YJT.DataBase.DbHelperSqlServer("172.16.1.15", "YanduECommerceAutomaticPrinting", "dsby", "dsby", "3341");
+            _dbhLocal = new YJT.DataBase.DbHelperSqlServer("172.16.7.46", "YanduECommerceAutomaticPrinting", "sa", "SqlA123b456c789.", "1433");
 			//_dbhInterface = new YJT.DataBase.DbHelperOracle("172.16.1.216", "ydorcl", "neterp_to_wms", "neterp_to_wms", "1521");
-			_dbhInterface = new YJT.DataBase.DbHelperOracle("172.16.1.245", "orcl", "neterp_to_wms", "neterp_to_wms", "1521");
+            _dbhInterface = new YJT.DataBase.DbHelperOracle("172.16.1.245", "orcl", "neterp_to_wms", "neterp_to_wms", "1521");
 			_dbhHdErp = new YJT.DataBase.DbHelperOracle("172.16.1.245", "orcl", "bdhdyy", "bdhdyy2014", "1521");
 			_sf.IsTest = Settings.APITokenKey.ShunfengIsTest;
 			_emsYz.IsTest = Settings.APITokenKey.EmsYouzhengIsTest;
