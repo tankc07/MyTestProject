@@ -11,6 +11,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using FastReport;
+using LogisticsCore.NewEMS;
+using Newtonsoft.Json;
 using SqlSugar;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
 using DbType = SqlSugar.DbType;
@@ -547,6 +550,27 @@ order by
                     DisableNvarchar = true,
                 },
             };
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+	        var report = new Report();
+            report.Load(@"E:\WorkSpace\Source\Work_Project\面单打印模板\frx\Logic_ShenTong - 副本.frx");
+            //re.Design();
+            report.Show();
+            report.Print();
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+	        var order = new CreateOrderInterface();
+	        order.Sender = new AddressModel();
+            order.Receiver = new AddressModel();
+            var cargo = new Cargo();
+            order.Cargos = new List<Cargo>();
+            order.Cargos.Add(cargo);
+            var json = JsonConvert.SerializeObject(order, new JsonSerializerSettings(){Formatting = Formatting.Indented, ContractResolver = new CamelCasePropertyNamesContractResolver()});
+            txtLog.Text = json;
         }
     }
 }
