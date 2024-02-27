@@ -10,7 +10,7 @@ namespace LogisticsCore.NewEMS
         protected static readonly Dictionary<string, NewEms> AllList = new Dictionary<string, NewEms>();
 
         /// <summary>
-        /// 用户协议号
+        /// 协议客户号
         /// </summary>
         public string SenderNo { get; }
         /// <summary>

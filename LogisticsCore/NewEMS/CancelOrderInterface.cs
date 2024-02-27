@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace LogisticsCore.NewEMS
 {
-    public class CancelOrderInterface
+    /// <summary>
+    /// 取消下单接口参数类
+    /// </summary>
+    public class CancelOrderInterface : LogisticsInterfaceBase
     {
 
     }
