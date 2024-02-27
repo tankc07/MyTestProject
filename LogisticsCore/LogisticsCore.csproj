@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NewEMS\BaseRequest.cs" />
+    <Compile Include="NewEMS\NewEmsRequestBase.cs" />
     <Compile Include="NewEMS\CancelOrderInterface.cs" />
     <Compile Include="NewEMS\CreateOrderInterface.cs" />
     <Compile Include="NewEMS\LogisticsInterfaceBase.cs" />

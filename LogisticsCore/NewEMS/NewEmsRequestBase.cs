@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LogisticsCore.NewEMS
 {
-    public class BaseRequest
+    public class NewEmsRequestBase
     {
 
     }
