@@ -1,0 +1,21 @@
+比如: 订单接入接口
+1 文档有, API控制台没有的参数举例
+1.1 bizProductId: 可售卖产品代码
+1.2 receiverAgentIdType: 收件人身份证类型
+1.3 receiverIdNo: 收件人身份证号码
+2 API控制台有, 文档中没有的参数举例
+2.1 pickupType: 揽收方式
+2.2 pickupPreBeginTime: 揽收预约起始时间
+2.3 pickupPreEndTime: 揽收预约结束时间
+3 报文中有, 文档和表单参数都不包含的举例
+"pickup": {
+      "name": "张三",
+      "postCode": "322000",
+      "phone": "18178977225",
+      "mobile": "18178977225",
+      "prov": "江西省",
+      "city": "南昌市",
+      "county": "昌北区",
+      "address": "稠义路1号金汇化纤8楼左边大门"
+    },
+遇到这种不一致的情况, 以哪边为准, 还是需要都加上.
