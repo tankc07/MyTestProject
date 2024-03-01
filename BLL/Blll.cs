@@ -9144,9 +9144,9 @@ order by
                 dt.Dispose();
                 dt = null;
             }
-            catch { }
-
-
+            catch (Exception e){
+                Console.WriteLine($@"GetNeedServerHandle: 从数据库获取要处理的单据时异常: Exception: {e}");
+            }
             return order;
         }
         public BllMod.Order GetNeedServerHandle2(out bool isOk, out int errCode, out string errMsg, string bid, Settings.Setings.EnumOrderStatus orderstatus)
