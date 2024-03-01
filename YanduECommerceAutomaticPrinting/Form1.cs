@@ -2427,7 +2427,15 @@ namespace YanduECommerceAutomaticPrinting
 						_defLogic = Settings.Setings.EnumLogicType.邮政EMS;
 						_isLogic = true;
 					}
-					else if (_tempInputStr.ToLower() == "Log_JiTuBaiShi".ToLower())
+                    //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 增加NewEms新物流
+                    else if (_tempInputStr.ToLower() == "Log_NewEms".ToLower())
+                    {
+                        //指定物流新邮政EMS, 邮政EMS新接口
+                        _inputGroup.V2 = Settings.Setings.EnumLogicType.新邮政Ems;
+                        _defLogic = Settings.Setings.EnumLogicType.新邮政Ems;
+                        _isLogic = true;
+                    }
+                    else if (_tempInputStr.ToLower() == "Log_JiTuBaiShi".ToLower())
 					{
 						//指定物流邮政
 						_inputGroup.V2 = Settings.Setings.EnumLogicType.极兔百事;
@@ -2455,8 +2463,6 @@ namespace YanduECommerceAutomaticPrinting
 						_defLogic = Settings.Setings.EnumLogicType.申通快递;
 						_isLogic = true;
 					}
-					//TODO:指定新EMS物流
-
 					else if (YJT.Text.Verification.IsLeftLike(_tempInputStr, "WEH_KG_") == true)
 					{
 						//扫码重量
@@ -3159,8 +3165,12 @@ namespace YanduECommerceAutomaticPrinting
 					{
 						YJT.Sound.TTSMicrosoft.Init().Speak("编号:" + r.ErpId + "<spause>使用邮政快递", isSyn: true, pb: System.Speech.Synthesis.PromptBreak.ExtraSmall, filePath: YJT.Path.FunStrGetLocalPath() + "\\files\\yz.wav", nuberMode: 1);
 					}
-					//todo:是否需要增加NewEMS的语音播报
-					if (YJT.Text.Verification.IsLeftLike(r.ErrMsg.ToString(), "提示:"))
+                    //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 增加新邮政Ems,语音播报??
+                    else if (r.Status.ToString() == "单据完成" && r.Logic.ToString() == "新邮政Ems" && r.ServerTaskType.ToString() == "新单据")
+                    {
+                        YJT.Sound.TTSMicrosoft.Init().Speak("编号:" + r.ErpId + "<spause>使用新接口邮政快递", isSyn: true, pb: System.Speech.Synthesis.PromptBreak.ExtraSmall, filePath: YJT.Path.FunStrGetLocalPath() + "\\files\\yz.wav", nuberMode: 1);
+                    }
+                    if (YJT.Text.Verification.IsLeftLike(r.ErrMsg.ToString(), "提示:"))
 					{
 						YJT.Sound.TTSMicrosoft.Init().Speak("编号:" + r.ErpId + "<spause>" + r.ErrMsg.ToString(), isSyn: true, pb: System.Speech.Synthesis.PromptBreak.ExtraSmall, filePath: YJT.Path.FunStrGetLocalPath() + "\\files\\yz.wav", nuberMode: 1);
 					}

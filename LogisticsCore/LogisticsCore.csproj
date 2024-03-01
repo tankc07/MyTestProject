@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LogisticsCore</RootNamespace>
     <AssemblyName>LogisticsCore</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -40,14 +40,44 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="YJT">
+      <HintPath>..\YanduECommerceAutomaticPrinting\Dlls\YJT.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NewEMS\NewEmsRequestBase.cs" />
-    <Compile Include="NewEMS\CancelOrderInterface.cs" />
-    <Compile Include="NewEMS\CreateOrderInterface.cs" />
-    <Compile Include="NewEMS\LogisticsInterfaceBase.cs" />
+    <Compile Include="NewEMS\Model\AddressModel.cs" />
+    <Compile Include="NewEMS\Response\CancelOrderResponse.cs" />
+    <Compile Include="NewEMS\Model\CargoModel.cs" />
+    <Compile Include="NewEMS\Response\CreateOrderResponse.cs" />
+    <Compile Include="NewEMS\Response\CreateOrderResponseBody.cs" />
+    <Compile Include="NewEMS\Request\NewEmsRequestBase.cs" />
+    <Compile Include="NewEMS\Model\CancelOrderModel.cs" />
+    <Compile Include="NewEMS\Model\CreateOrderModel.cs" />
+    <Compile Include="NewEMS\Model\LogisticsInterfaceBase.cs" />
     <Compile Include="NewEMS\NewEms.cs" />
+    <Compile Include="NewEMS\Response\NewEmsResponseBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BouncyCastle.Cryptography">
+      <Version>2.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>10.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="RestSharp">
+      <Version>110.2.0</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MOD\MOD.csproj">
+      <Project>{A2CE6F5C-777C-44AC-8869-A983331D0379}</Project>
+      <Name>MOD</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Settings\Settings.csproj">
+      <Project>{0bfd72a6-7c18-4ff2-ac21-6011787f21e8}</Project>
+      <Name>Settings</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

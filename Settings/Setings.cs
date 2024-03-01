@@ -37,11 +37,12 @@ namespace Settings
 			/// <summary>
 			/// Log_ShenTong
 			/// </summary>
-			申通快递=6
-
-
-
-
+			申通快递=6,
+			//Modify: 修改时间: 2024-02-27 By:Ly 修改内容: 新增枚举选项,EnumLogicType.新邮政Ems
+			/// <summary>
+			/// Log_NewEms
+			/// </summary>
+			新邮政Ems=7
 		}
 		public enum EnumMessageType
 		{
@@ -390,17 +391,21 @@ namespace Settings
 
 		//Modify: 修改时间: 2024-02-27 By:Ly 修改内容: 新增NewEms
 		/// <summary>
-		/// 正式环境请求地址
+		/// NewEms Api请求基地址
 		/// </summary>
-		public static string NewEmsUrl => "http://api.ems.com.cn:8080/ems-transport-service/emsTransportService";
+		public static string NewEmsBaseUrl = "https://api.ems.com.cn";
 		/// <summary>
 		/// 正式协议客户号
 		/// </summary>
 		public static string NewEmsSenderNo => "1100051370536";
-		/// <summary>
-		/// 正式授权码
-		/// </summary>
-		public static string NewEmsAuthorization => "SetemYDjgS80gdSa";
+        /// <summary>
+        /// 正式环境请求地址
+        /// </summary>
+        public static string NewEmsUrl => "/amp-prod-api/f/amp/api/open";
+        /// <summary>
+        /// 正式授权码
+        /// </summary>
+        public static string NewEmsAuthorization => "SetemYDjgS80gdSa";
 		/// <summary>
 		/// 正式签名钥匙
 		/// </summary>
@@ -408,7 +413,7 @@ namespace Settings
 		/// <summary>
 		/// 测试沙箱环境请求地址
 		/// </summary>
-		public static string NewEmsTestUrl => "https://api.ems.com.cn/amp-prod-api/f/amp/api/test";
+		public static string NewEmsTestUrl => "/amp-prod-api/f/amp/api/test";
 		/// <summary>
 		/// 测试授权码
 		/// </summary>

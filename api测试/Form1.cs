@@ -13,10 +13,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using FastReport;
 using LogisticsCore.NewEMS;
+using LogisticsCore.NewEMS.Model;
 using Newtonsoft.Json;
 using SqlSugar;
+using YJT;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
 using DbType = SqlSugar.DbType;
+using YJT.Encrypt.SHAEncrypt;
+using YJT.Encrypt.Base64;
 
 namespace api测试
 {
@@ -524,18 +528,40 @@ order by
 
         private void button5_Click(object sender, EventArgs e)
         {
-	        bool isOk;
-	        string errMsg;
-            int errCode;
-            var db = new SqlSugarScope(GetConnectionConfig());
-            var db2 = BLL.Blll.init();
-            var order = db2.ServerGetOrder("54788", out isOk, out errCode, out errMsg);
-            order.Status = Setings.EnumOrderStatus.已获取电商信息;
-            order.Logic = Setings.EnumLogicType.Default;
-            var res = db2.ServerCreateLogic(order, out isOk, out errCode, out errMsg);
+            //bool isOk;
+            //string errMsg;
+            //int errCode;
+            //var db = new SqlSugarScope(GetConnectionConfig());
+            //var db2 = BLL.Blll.init();
+            //var order = db2.ServerGetOrder("54788", out isOk, out errCode, out errMsg);
+            //order.Status = Setings.EnumOrderStatus.已获取电商信息;
+            //order.Logic = Setings.EnumLogicType.Default;
+            //var res = db2.ServerCreateLogic(order, out isOk, out errCode, out errMsg);
+            var json = txtJson.Text;
+            var ems = NewEms.Init(Settings.APITokenKey.NewEmsSenderNo, Settings.APITokenKey.NewEmsSignKey, APITokenKey.NewEmsAuthorization, 
+	            APITokenKey.NewEmsTestSignKey, APITokenKey.NewEmsTestAuthorization, APITokenKey.NewEmsBaseUrl, APITokenKey.NewEmsUrl, APITokenKey.NewEmsTestUrl, true);
 
+            var senderModel = ems.GetAddressModel("稠义路1号金汇化纤8楼左边大门","江西省","南昌市","昌北区","张三","18178977225","18178977225","322000");
+            var receiverModel = ems.GetAddressModel("裕华西路北国商城1楼","河北省","保定市","莲池区","李四","13912345678","13912345678","071000");
+            var cargo = ems.GetCargoModel();
+            
+
+            var emsOrder = ems.GetCreateOrderModel(senderModel, receiverModel, new[]{cargo},Setings.EnumPlatformType.无.ToString(),"9999999",4,1.0,1.0,1.0,
+	            YJT.Text.ClassCreateText.FunStrCreateNumberStr(6),"无备注");
+            bool isOk;
+            int errCode;
+            string errMsg;
+            string sendText;
+            string resText;
+            var res = ems.SendNewEmsOrder(emsOrder,out isOk, out errCode, out errMsg, out sendText, out resText);
         }
 
+        public class JsonClass
+        {
+            public string language { get; set; }
+            public string orderId { get; set; }
+            public DateTime createTime { get; set; }
+        }
         private static ConnectionConfig GetConnectionConfig()
         {
             return new ConnectionConfig()
@@ -563,12 +589,12 @@ order by
 
         private void button7_Click(object sender, EventArgs e)
         {
-	        var order = new CreateOrderInterface();
-	        order.Sender = new AddressModel();
-            order.Receiver = new AddressModel();
-            var cargo = new Cargo();
-            order.Cargos = new List<Cargo>();
-            order.Cargos.Add(cargo);
+	        var order = new CreateOrderModel();
+	        order.sender = new AddressModel();
+            order.receiver = new AddressModel();
+            var cargo = new CargoModel();
+            order.cargos = new List<CargoModel>();
+            order.cargos.Add(cargo);
             var json = JsonConvert.SerializeObject(order, new JsonSerializerSettings(){Formatting = Formatting.Indented, ContractResolver = new CamelCasePropertyNamesContractResolver()});
             txtLog.Text = json;
         }

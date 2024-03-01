@@ -39,14 +39,15 @@
             this.button6 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.txtLog = new System.Windows.Forms.TextBox();
+            this.txtJson = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(2295, 18);
+            this.button1.Location = new System.Drawing.Point(2249, 16);
             this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(112, 34);
+            this.button1.Size = new System.Drawing.Size(165, 58);
             this.button1.TabIndex = 0;
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
@@ -69,10 +70,10 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(2295, 70);
+            this.button2.Location = new System.Drawing.Point(2248, 82);
             this.button2.Margin = new System.Windows.Forms.Padding(4);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(112, 34);
+            this.button2.Size = new System.Drawing.Size(165, 58);
             this.button2.TabIndex = 2;
             this.button2.Text = "button2";
             this.button2.UseVisualStyleBackColor = true;
@@ -80,10 +81,10 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(2295, 129);
+            this.button3.Location = new System.Drawing.Point(2248, 148);
             this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(112, 34);
+            this.button3.Size = new System.Drawing.Size(165, 58);
             this.button3.TabIndex = 3;
             this.button3.Text = "button3";
             this.button3.UseVisualStyleBackColor = true;
@@ -91,10 +92,10 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(2251, 182);
+            this.button4.Location = new System.Drawing.Point(2249, 214);
             this.button4.Margin = new System.Windows.Forms.Padding(4);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(156, 34);
+            this.button4.Size = new System.Drawing.Size(165, 58);
             this.button4.TabIndex = 3;
             this.button4.Text = "清除物流单号";
             this.button4.UseVisualStyleBackColor = true;
@@ -102,9 +103,9 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(1929, 18);
+            this.button5.Location = new System.Drawing.Point(1135, 225);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(142, 34);
+            this.button5.Size = new System.Drawing.Size(249, 58);
             this.button5.TabIndex = 4;
             this.button5.Text = "EMS Test";
             this.button5.UseVisualStyleBackColor = true;
@@ -112,9 +113,9 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(1929, 59);
+            this.button6.Location = new System.Drawing.Point(1908, 18);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(142, 45);
+            this.button6.Size = new System.Drawing.Size(249, 58);
             this.button6.TabIndex = 5;
             this.button6.Text = "测试FastReport Load";
             this.button6.UseVisualStyleBackColor = true;
@@ -122,9 +123,9 @@
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(1929, 111);
+            this.button7.Location = new System.Drawing.Point(1135, 289);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(142, 52);
+            this.button7.Size = new System.Drawing.Size(249, 58);
             this.button7.TabIndex = 6;
             this.button7.Text = "测试NewEms转Json";
             this.button7.UseVisualStyleBackColor = true;
@@ -140,11 +141,21 @@
             this.txtLog.Size = new System.Drawing.Size(1125, 1062);
             this.txtLog.TabIndex = 7;
             // 
+            // txtJson
+            // 
+            this.txtJson.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.txtJson.Location = new System.Drawing.Point(1135, 112);
+            this.txtJson.Name = "txtJson";
+            this.txtJson.Size = new System.Drawing.Size(766, 31);
+            this.txtJson.TabIndex = 8;
+            this.txtJson.Text = "{\"language\":\"zh-CN\",\"orderId\":\"QIAO-20200618-004\"}";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2426, 1185);
+            this.Controls.Add(this.txtJson);
             this.Controls.Add(this.txtLog);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.button6);
@@ -175,6 +186,7 @@
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.TextBox txtLog;
+        private System.Windows.Forms.TextBox txtJson;
     }
 }
 

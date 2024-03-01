@@ -40,7 +40,7 @@ namespace CenterServer
             //a = Settings.Configs.GetShenTongPrinterName;
             //a = Settings.Configs.GetHeTongPrinterName;
             //a = Settings.Configs.GetFmPrinterName;
-            
+
             //TODO:增加自动升级检查
 
             uint l = 0;
@@ -55,7 +55,7 @@ namespace CenterServer
             YJT.StaticResources.Add("handObj", _handMac, true);
             Console.WriteLine("等待其他软件运行,期间等待60秒");
             //Modify: 修改时间: 2024-02-22 By:Ly 修改内容: 增加 "172.16.7.46" 跳过启动时的60秒倒计时.
-            if (!new string[] { "172.16.7.50", "172.16.7.46" }.Contains(ct.Ip))
+            if (!new string[] { "172.16.7.50", "172.16.7.46", "172.16.7.46|" }.Contains(ct.Ip))
             {
                 for (int i = 0; i < 60; i++)
                 {
@@ -196,8 +196,14 @@ namespace CenterServer
                             break;
                         }
 
-
-
+                        //强制false, 只获取当前运行服务端的IP生成的订单.
+                        //if (thisServer.Ip.Contains("172.16.7.46") && false)
+                        //{
+                        //    //测试用, 如果取不到IP是172.16.7.46的订单, 则拿取一个172.16.2.150生成的订单
+                        //    orderThis = bll.GetNeedServerHandle(_handIp, _handMac, out isOk, out errCode, out errMsg) 
+                        //                 ?? bll.GetNeedServerHandle("172.16.2.150", "94C691F3D450", out isOk, out errCode, out errMsg)
+                        //                ;
+                        //}
 
                         //修改
                         orderThis = bll.GetNeedServerHandle(_handIp, _handMac, out isOk, out errCode, out errMsg);
@@ -1536,7 +1542,7 @@ namespace CenterServer
                             fr.LoadPrintFrx(pfrPath);
                             string addModRes = fr.AddMod(printObj).ToString() + "个对象添加";
                             Blll_AddMsgOutEve(addModRes, Settings.Setings.EnumMessageType.提示, "申通.Print", 1, "", "", DateTime.Now);
-                            if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                            if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46")
                             {
                                 //fr.Print(false, "Microsoft XPS Document Writer", updateObj);
                                 fr.Design();
@@ -1578,6 +1584,32 @@ namespace CenterServer
                         printObj.Status = Settings.Setings.EnumOrderStatus.异常_打印方案不存在;
                         printObj.ErrMsg = "顺丰打印方案不存在";
                         Blll_AddMsgOutEve(printObj.ErrMsg, Settings.Setings.EnumMessageType.异常, "顺丰", -1, pfrPath, printObj.ErpId, DateTime.Now);
+                        bll.ServerForceFinesh(updateObj.Bid, printObj.ErrMsg, printObj.Status, Settings.Setings.EnumOrderPrintStatus.特殊_不更改此参数, out res, out errCode, out errMsg);
+                    }
+                    break;
+                //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: PrintWL方法, 新增新邮政Ems分支
+                case Settings.Setings.EnumLogicType.新邮政Ems:
+                    pfrPath = pfrPath + @"\frx\Logic_NewEms.frx";
+                    if (System.IO.File.Exists(pfrPath))
+                    {
+                        fr.LoadPrintFrx(pfrPath);
+                        string addModRes = fr.AddMod(printObj).ToString() + "个对象添加";
+                        Blll_AddMsgOutEve(addModRes, Settings.Setings.EnumMessageType.提示, "新邮政接口.Print", 1, "", "", DateTime.Now);
+                        if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                        {
+                            fr.Print(false, "Microsoft XPS Document Writer", updateObj);
+                        }
+                        else
+                        {
+                            fr.Print(false, Settings.Configs.GetEmsYouzPrinterName, updateObj);
+                        }
+
+                    }
+                    else
+                    {
+                        printObj.Status = Settings.Setings.EnumOrderStatus.异常_打印方案不存在;
+                        printObj.ErrMsg = "新邮政打印方案不存在";
+                        Blll_AddMsgOutEve(printObj.ErrMsg, Settings.Setings.EnumMessageType.异常, "新邮政接口", -1, pfrPath, printObj.ErpId, DateTime.Now);
                         bll.ServerForceFinesh(updateObj.Bid, printObj.ErrMsg, printObj.Status, Settings.Setings.EnumOrderPrintStatus.特殊_不更改此参数, out res, out errCode, out errMsg);
                     }
                     break;
