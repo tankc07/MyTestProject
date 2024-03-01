@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using MOD;
 
 namespace CenterServer
@@ -18,6 +19,7 @@ namespace CenterServer
         static string _handMac = "";
         static string _handMain = "";
         private static string _isDebugMode = null;
+        private static string _isDebugPrint = null;
         [STAThreadAttribute]
         static void Main(string[] args)
         {
@@ -26,7 +28,8 @@ namespace CenterServer
             _handIp = YJT.Text.ExtName.RemoveDbVarcharInvalid(YJT.ConfigTxt.AppConfigFIle.GetValueEX("handip", "", true), true);
             _handMac = YJT.Text.ExtName.RemoveDbVarcharInvalid(YJT.ConfigTxt.AppConfigFIle.GetValueEX("handmac", "", true), true);
             _handMain = YJT.Text.ExtName.RemoveDbVarcharInvalid(YJT.ConfigTxt.AppConfigFIle.GetValueEX("handMain", "否", true), true);
-            _isDebugMode = YJT.Text.ExtName.RemoveDbVarcharInvalid(YJT.ConfigTxt.AppConfigFIle.GetValueEX("isDebugMode", "false", true), true);
+            _isDebugMode = YJT.Text.ExtName.RemoveDbVarcharInvalid(YJT.ConfigTxt.AppConfigFIle.GetValueEX("IsDebugMode", "false", true), true);
+            _isDebugPrint = YJT.Text.ExtName.RemoveDbVarcharInvalid(YJT.ConfigTxt.AppConfigFIle.GetValueEX("IsDebugPrint", "false", true), true);
             if (YJT.Text.Verification.IsNullOrEmpty(_handIp) == true || YJT.Text.Verification.IsNullOrEmpty(_handMac) == true)
             {
                 Console.WriteLine("配置文件不正确");
@@ -70,9 +73,9 @@ namespace CenterServer
 
             //Console.ReadKey();
             Console.Clear();
-            Console.WriteLine("服务器启动");
-            Console.WriteLine("如需退出,按 alt+S 键 不要直接关闭,否则可能会有未执行完成的单据");
-            Console.WriteLine("-----------------------------------------------------------");
+            Console.WriteLine(@"服务器启动");
+            Console.WriteLine(@"如需退出,按 alt+S 键 不要直接关闭,否则可能会有未执行完成的单据");
+            Console.WriteLine(@"-----------------------------------------------------------");
             YJT.BaiduService.BaiduMap.AccessKey = Settings.APITokenKey.BaiDuMapKey;
 
             if (ct == null)
@@ -94,7 +97,7 @@ namespace CenterServer
                 return;
             }
 
-
+            //只有240服务器,即文件拉取服务器, 才能删除文件
             if (_handMain == "是" && ct.Ip.Contains("172.16.2.240"))
             {
                 YJT.StaticResources.Add("canModifyPic", _handMain, true);
@@ -121,15 +124,18 @@ namespace CenterServer
                     }
                 }
                 Console.WriteLine("-----------------------------------------------------------");
-                Console.WriteLine("如需退出,按 alt+S 键");
+                Console.WriteLine(@"如需退出,按 alt+S 键");
                 Console.WriteLine("-----------------------------------------------------------");
                 t = Console.ReadKey(true);
             }
-            Console.WriteLine("退出...............");
+            Console.WriteLine(@"退出...............");
             thExit = true;
             return;
 
         }
+        /// <summary>
+        /// 文件删除线程方法
+        /// </summary>
         private static void FileDelFun()
         {
             while (true)
@@ -186,7 +192,7 @@ namespace CenterServer
                 if (BLL.FileHandle.VerFtp(BLL.FileHandle.EnumFtpCompany.汇达ErpFtp))
                 {
 
-                    if (thisServer.Ip.Contains("172.16.7.50") || BLL.FileHandle.VerSerPicPath())
+                    if (thisServer.Ip.Contains("172.16.7.50") || thisServer.Ip.Contains("172.16.7.46") || BLL.FileHandle.VerSerPicPath() || _isDebugMode == "true" )
                     {
 
                         //修改
@@ -209,7 +215,7 @@ namespace CenterServer
 
                         //修改
                         orderThis = bll.GetNeedServerHandle(_handIp, _handMac, out isOk, out errCode, out errMsg);
-
+                        ShowDebug(orderThis != null ? @"获取orderThis成功" : @"获取orderThis为null", orderThis != null ? 1 : 2);
                         //修改
                         //orderThis = bll.GetNeedServerHandle2(out isOk, out errCode, out errMsg, "121161", Settings.Setings.EnumOrderStatus.已回写电商平台);
                         //orderThis.PrintStatus = Settings.Setings.EnumOrderPrintStatus.已获取电商信息;
@@ -229,6 +235,7 @@ namespace CenterServer
                         //orderThis.WmsDanjbh = "1788874";
                         if (orderThis != null)
                         {
+                            ShowDebug(@"获取到的orderThis不为空, 开始处理...", 1);
                             try
                             {
                                 Blll_AddMsgOutEve("获取一张待处理单据", Settings.Setings.EnumMessageType.提示, Common.PubMethod.GetNameSpace(), 0, "", YJT.Json.FunStrSerializeToStr(orderThis), DateTime.Now);
@@ -781,6 +788,7 @@ namespace CenterServer
                             }
                             catch (Exception ee)
                             {
+                                ShowDebug($@"处理orderThis过程出现异常, Exception: {ee}", 3);
                                 System.IO.File.AppendAllText(@"D:\YdecapServerLog\" + DateTime.Now.ToString("yyyyMMdd") + "Exception.txt", "-------------------------------------------------------------------------------\r\n");
                                 System.IO.File.AppendAllText(@"D:\YdecapServerLog\" + DateTime.Now.ToString("yyyyMMdd") + "Exception.txt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\r\n");
                                 System.IO.File.AppendAllText(@"D:\YdecapServerLog\" + DateTime.Now.ToString("yyyyMMdd") + "Exception.txt", ee.ToString());
@@ -791,9 +799,11 @@ namespace CenterServer
                         }
                         else
                         {
+                            Console.WriteLine(@"未获取到要处理的单据,等待30秒后重新获取");
+                            ShowDebug(@"未获取到要处理的单据,(orderThis=null),等待30秒", 1);
                             YJT.MSystem.GC.Collect();
-                            Console.WriteLine("未获取到要处理的单据,等待30秒后重新获取");
                             System.Threading.Thread.Sleep(1000 * 30);
+                            ShowDebug(@"等待30秒已完成.", 1);
                         }
                     }
                     else
@@ -898,7 +908,7 @@ namespace CenterServer
                     frFM.AddValue("printRiqi", printRiqi);
                     //修改
                     //if (1 == 1 || BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
-                    if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                    if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                     {
                         //frXsht.Print(false, "Microsoft XPS Document Writer", updateOrder);
                         frFM.Design("asdf");
@@ -929,7 +939,7 @@ namespace CenterServer
                     frXsht.AddDataTable("DetailData", dt);
                     //修改
                     //if (1==1 || BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
-                    if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                    if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50"  || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                     {
                         //frXsht.Print(false, "Microsoft XPS Document Writer", updateOrder);
                         frXsht.Design("asdf");
@@ -1004,7 +1014,7 @@ namespace CenterServer
                                 frHdHpzz.AddDataTable("lists", tab1);
                                 //修改
                                 //if (1 == 1 ||  BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
-                                if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                                if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50"  || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                                 {
                                     //frXsht.Print(false, "Microsoft XPS Document Writer", updateOrder);
                                     frHdHpzz.Design("asdf");
@@ -1023,7 +1033,7 @@ namespace CenterServer
                     {
                         frHdHpzz.AddDataTable("lists", tab1);
                         //修改
-                        //if (1 == 1 ||  BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                        //if (1 == 1 ||  BLL.Blll._clientInfoObj.Ip == "172.16.7.50"  || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                         if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
                         {
                             //frXsht.Print(false, "Microsoft XPS Document Writer", updateOrder);
@@ -1105,7 +1115,7 @@ namespace CenterServer
                                 frWmsLdyj.AddDataTable("lists", tab1);
                                 //修改
                                 //if (1==1 || BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
-                                if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                                if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                                 {
                                     //frXsht.Print(false, "Microsoft XPS Document Writer", updateOrder);
                                     frWmsLdyj.Design("asdf");
@@ -1123,7 +1133,7 @@ namespace CenterServer
                         frWmsLdyj.AddDataTable("lists", tab1);
                         //修改
                         //if (1==1 || BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
-                        if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                        if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                         {
                             //frXsht.Print(false, "Microsoft XPS Document Writer", updateOrder);
                             frWmsLdyj.Design("asdf");
@@ -1267,7 +1277,7 @@ namespace CenterServer
                     YJT.ValuePara.MulitValue.TwoValueClass<MOD.BllMod.Order, MOD.SysMod.PrintDataM> keyvp = new YJT.ValuePara.MulitValue.TwoValueClass<MOD.BllMod.Order, MOD.SysMod.PrintDataM>();
                     keyvp.V1 = printObj;
                     keyvp.V2 = danjM;
-                    if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                    if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                     {
                         //_shtxFr.Design();
                         _shtxFr.Print(false, "Microsoft XPS Document Writer", keyvp);
@@ -1489,7 +1499,7 @@ namespace CenterServer
                         fr.LoadPrintFrx(pfrPath);
                         string addModRes = fr.AddMod(printObj).ToString() + "个对象添加";
                         Blll_AddMsgOutEve(addModRes, Settings.Setings.EnumMessageType.提示, "顺丰.Print", 1, "", "", DateTime.Now);
-                        if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                        if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                         {
                             fr.Print(false, "Microsoft XPS Document Writer", updateObj);
                         }
@@ -1516,7 +1526,7 @@ namespace CenterServer
                             fr.LoadPrintFrx(pfrPath);
                             string addModRes = fr.AddMod(printObj).ToString() + "个对象添加";
                             Blll_AddMsgOutEve(addModRes, Settings.Setings.EnumMessageType.提示, "中通.Print", 1, "", "", DateTime.Now);
-                            if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                            if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                             {
                                 //fr.Print(false, "Microsoft XPS Document Writer", updateObj);
                                 fr.Design();
@@ -1544,7 +1554,7 @@ namespace CenterServer
                             fr.LoadPrintFrx(pfrPath);
                             string addModRes = fr.AddMod(printObj).ToString() + "个对象添加";
                             Blll_AddMsgOutEve(addModRes, Settings.Setings.EnumMessageType.提示, "申通.Print", 1, "", "", DateTime.Now);
-                            if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46")
+                            if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                             {
                                 //fr.Print(false, "Microsoft XPS Document Writer", updateObj);
                                 fr.Design();
@@ -1571,7 +1581,7 @@ namespace CenterServer
                         fr.LoadPrintFrx(pfrPath);
                         string addModRes = fr.AddMod(printObj).ToString() + "个对象添加";
                         Blll_AddMsgOutEve(addModRes, Settings.Setings.EnumMessageType.提示, "邮政.Print", 1, "", "", DateTime.Now);
-                        if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                        if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                         {
                             fr.Print(false, "Microsoft XPS Document Writer", updateObj);
                         }
@@ -1597,7 +1607,7 @@ namespace CenterServer
                         fr.LoadPrintFrx(pfrPath);
                         string addModRes = fr.AddMod(printObj).ToString() + "个对象添加";
                         Blll_AddMsgOutEve(addModRes, Settings.Setings.EnumMessageType.提示, "新邮政接口.Print", 1, "", "", DateTime.Now);
-                        if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                        if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                         {
                             fr.Print(false, "Microsoft XPS Document Writer", updateObj);
                         }
@@ -1652,7 +1662,7 @@ namespace CenterServer
                         }
                         string addModRes = fr.AddMod(printObj).ToString() + "个对象添加";
                         Blll_AddMsgOutEve(addModRes, Settings.Setings.EnumMessageType.提示, "京东.Print", 1, "", "", DateTime.Now);
-                        if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
+                        if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                         {
                             //fr.Print(false, "Microsoft XPS Document Writer", updateObj);
                             fr.Design();
@@ -1677,6 +1687,42 @@ namespace CenterServer
 
             return res;
         }
-    }
 
+        /// <summary>
+        /// 自定义控制台Debug输出
+        /// <para>level: 0:Debug, 1:Info, 2: Warn, 3: Error, 4: Fatal</para>
+        /// </summary>
+        /// <param name="msg">输出内容</param>
+        /// <param name="level">0:Debug, 1:Info, 2: Warn, 3: Error, 4: Fatal</param>
+        private static void ShowDebug(string msg, int level = 0)
+        {
+
+            if (_isDebugMode == "true" && !string.IsNullOrEmpty(msg))
+            {
+                var originColor = Console.ForegroundColor;
+                switch (level)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        break;
+                    case 2:
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        break;
+                    case 3:
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        break;
+                    case 4:
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        break;
+                    default:
+                        Console.ForegroundColor = originColor;
+                        break;
+                }
+                Console.WriteLine(msg);
+                Console.ForegroundColor = originColor;
+            }
+        }
+    }
 }
