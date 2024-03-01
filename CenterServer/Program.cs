@@ -192,7 +192,7 @@ namespace CenterServer
                 if (BLL.FileHandle.VerFtp(BLL.FileHandle.EnumFtpCompany.汇达ErpFtp))
                 {
 
-                    if (thisServer.Ip.Contains("172.16.7.50") || thisServer.Ip.Contains("172.16.7.46") || BLL.FileHandle.VerSerPicPath() || _isDebugMode == "true" )
+                    if (thisServer.Ip.Contains("172.16.7.50") || thisServer.Ip.Contains("172.16.7.46") || BLL.FileHandle.VerSerPicPath() || _isDebugMode == "true")
                     {
 
                         //修改
@@ -204,17 +204,20 @@ namespace CenterServer
                             break;
                         }
 
-                        //强制false, 只获取当前运行服务端的IP生成的订单.
-                        //if (thisServer.Ip.Contains("172.16.7.46") && false)
-                        //{
-                        //    //测试用, 如果取不到IP是172.16.7.46的订单, 则拿取一个172.16.2.150生成的订单
-                        //    orderThis = bll.GetNeedServerHandle(_handIp, _handMac, out isOk, out errCode, out errMsg) 
-                        //                 ?? bll.GetNeedServerHandle("172.16.2.150", "94C691F3D450", out isOk, out errCode, out errMsg)
-                        //                ;
-                        //}
-
                         //修改
                         orderThis = bll.GetNeedServerHandle(_handIp, _handMac, out isOk, out errCode, out errMsg);
+
+                        //强制false, 只获取当前运行服务端的IP生成的订单.
+                        if (thisServer.Ip.Contains("172.16.7.46") && _isDebugMode == "true")
+                        {
+                            //测试用, 如果取不到IP是172.16.7.46的订单, 则拿取一个172.16.2.150生成的订单
+                            //orderThis = bll.GetNeedServerHandle(_handIp, _handMac, out isOk, out errCode, out errMsg)
+                            //             ?? bll.GetNeedServerHandle("172.16.2.150", "94C691F3D450", out isOk, out errCode, out errMsg);
+
+                            orderThis = bll.GetNeedServerHandle(_handIp, _handMac, out isOk, out errCode, out errMsg)
+                                        ?? bll.GetNeedServerHandle2(out isOk, out errCode, out errMsg, "346553", Settings.Setings.EnumOrderStatus.已回写电商平台);
+                        }
+
                         ShowDebug(orderThis != null ? @"获取orderThis成功" : @"获取orderThis为null", orderThis != null ? 1 : 2);
                         //修改
                         //orderThis = bll.GetNeedServerHandle2(out isOk, out errCode, out errMsg, "121161", Settings.Setings.EnumOrderStatus.已回写电商平台);
@@ -939,7 +942,7 @@ namespace CenterServer
                     frXsht.AddDataTable("DetailData", dt);
                     //修改
                     //if (1==1 || BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
-                    if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50"  || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
+                    if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                     {
                         //frXsht.Print(false, "Microsoft XPS Document Writer", updateOrder);
                         frXsht.Design("asdf");
@@ -1014,7 +1017,7 @@ namespace CenterServer
                                 frHdHpzz.AddDataTable("lists", tab1);
                                 //修改
                                 //if (1 == 1 ||  BLL.Blll._clientInfoObj.Ip == "172.16.7.50")
-                                if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50"  || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
+                                if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
                                 {
                                     //frXsht.Print(false, "Microsoft XPS Document Writer", updateOrder);
                                     frHdHpzz.Design("asdf");
