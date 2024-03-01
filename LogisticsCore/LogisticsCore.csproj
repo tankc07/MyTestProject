@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NewEMS\Model\AddressModel.cs" />
+    <Compile Include="NewEMS\NewEmsLog.cs" />
     <Compile Include="NewEMS\Response\CancelOrderResponse.cs" />
     <Compile Include="NewEMS\Model\CargoModel.cs" />
     <Compile Include="NewEMS\Response\CreateOrderResponse.cs" />
