@@ -17,6 +17,7 @@ namespace CenterServer
         static string _handIp = "";
         static string _handMac = "";
         static string _handMain = "";
+        private static string _isDebugMode = null;
         [STAThreadAttribute]
         static void Main(string[] args)
         {
@@ -25,6 +26,7 @@ namespace CenterServer
             _handIp = YJT.Text.ExtName.RemoveDbVarcharInvalid(YJT.ConfigTxt.AppConfigFIle.GetValueEX("handip", "", true), true);
             _handMac = YJT.Text.ExtName.RemoveDbVarcharInvalid(YJT.ConfigTxt.AppConfigFIle.GetValueEX("handmac", "", true), true);
             _handMain = YJT.Text.ExtName.RemoveDbVarcharInvalid(YJT.ConfigTxt.AppConfigFIle.GetValueEX("handMain", "否", true), true);
+            _isDebugMode = YJT.Text.ExtName.RemoveDbVarcharInvalid(YJT.ConfigTxt.AppConfigFIle.GetValueEX("isDebugMode", "false", true), true);
             if (YJT.Text.Verification.IsNullOrEmpty(_handIp) == true || YJT.Text.Verification.IsNullOrEmpty(_handMac) == true)
             {
                 Console.WriteLine("配置文件不正确");
@@ -55,7 +57,7 @@ namespace CenterServer
             YJT.StaticResources.Add("handObj", _handMac, true);
             Console.WriteLine("等待其他软件运行,期间等待60秒");
             //Modify: 修改时间: 2024-02-22 By:Ly 修改内容: 增加 "172.16.7.46" 跳过启动时的60秒倒计时.
-            if (!new string[] { "172.16.7.50", "172.16.7.46", "172.16.7.46|" }.Contains(ct.Ip))
+            if (!new[] { "172.16.7.50", "172.16.7.46", "172.16.7.46|" }.Contains(ct.Ip) || _isDebugMode == "true")
             {
                 for (int i = 0; i < 60; i++)
                 {
