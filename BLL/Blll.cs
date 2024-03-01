@@ -1633,7 +1633,7 @@ where
                                     {
                                         isOk = false;
                                         errCode = -7;
-                                        order.ErrMsg = "邮政物流新接口下单不成功:提交过来的对象(NewEmsResponseBase resobj)为NULL";
+                                        order.ErrMsg = $"邮政物流新接口下单不成功:提交过来的对象(NewEmsResponseBase resobj)为NULL, (ServerCreateLogic2)SendErrorMessage: {errMsg}";
                                         errMsg = order.ErrMsg;
                                         order.Status = Settings.Setings.EnumOrderStatus.异常_物流下单不成功;
                                     }
@@ -3835,7 +3835,7 @@ where
             }
             else
             {
-                order.ErrMsg = "邮政物流新接口下单不成功:提交过来的对象(NewEmsResponseBase resobj)为NULL";
+                order.ErrMsg = $"邮政物流新接口下单不成功:提交过来的对象(NewEmsResponseBase resobj)为NULL, (ServerCreateLogicSubNewEms)SendErrorMessage: {errMsg}";
                 order.Status = Settings.Setings.EnumOrderStatus.异常_物流下单不成功;
                 isOk = false;
             }
@@ -4361,6 +4361,7 @@ UPDATE
                 //MOD.SysMod.ClinetTag ct = Common.PubMethod.GetClientTag();
                 //YJT.StaticResources.Add("userObj", ct, true);
                 string qz = "";
+                
                 object handObj = YJT.StaticResources.GetObject("handObj");
                 var _basePath = AppDomain.CurrentDomain.BaseDirectory + @"\DebugLogs\";
                 if (!Directory.Exists(_basePath))
@@ -8120,7 +8121,7 @@ WHERE Bid={order.Bid}
                                         else
                                         {
                                             isOk = false;
-                                            order.ErrMsg = "邮政物流新接口下单不成功:提交过来的对象(NewEmsResponseBase resobj)为NULL";
+                                            order.ErrMsg = $"邮政物流新接口下单不成功:提交过来的对象(NewEmsResponseBase resobj)为NULL, (ServerCreateLogic)SendErrorMessage: {errMsg}";
                                             order.Status = Settings.Setings.EnumOrderStatus.异常_物流下单不成功;
                                         }
                                         break;
