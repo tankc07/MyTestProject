@@ -1008,7 +1008,7 @@ namespace YanduECommerceAutomaticPrinting
 						AddMsgLog("", Settings.Setings.EnumMessageType.提示, DateTime.Now, "");
 						AddMsgLog("初始化完成", Settings.Setings.EnumMessageType.提示, DateTime.Now, "");
 					}
-					if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.isForge == true)
+					if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.isForge == true || BLL.Blll._clientInfoObj.Ip == "172.16.7.46")
 					{
 						_enableForceTop = false;
 					}
