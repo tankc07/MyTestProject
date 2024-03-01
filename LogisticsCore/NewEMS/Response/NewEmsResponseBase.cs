@@ -16,10 +16,10 @@
         /// 响应消息
         /// </summary>
         public string retMsg { get; set; }
-        /// <summary>
-        /// 响应消息体报文
-        /// </summary>
-        public string retBody { get; set; }
+        ///// <summary>
+        ///// 响应消息体报文
+        ///// </summary>
+        //public string retBody { get; set; }
         /// <summary>
         /// 各接口返回的时间
         /// </summary>

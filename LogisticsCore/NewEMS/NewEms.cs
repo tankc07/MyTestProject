@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -340,9 +342,10 @@ namespace LogisticsCore.NewEMS
             var logitcsInterface = GetSignBySm4EncryptEcb(request.logitcsInterface);
             restRequest.AddParameter("logitcsInterface", logitcsInterface, ParameterType.GetOrPost);
             //restRequest.AddParameter("userCode", request.SenderNo);
+            sendString = $"senderNo={request.senderNo}&apiCode={request.apiCode}&authorization={request.authorization}&msgType={request.msgType}&timeStamp={request.timeStamp}&logitcsInterface={logitcsInterface}";
+
             try
             {
-                sendString = $"senderNo={request.senderNo}&apiCode={request.apiCode}&authorization={request.authorization}&msgType={request.msgType}&timeStamp={request.timeStamp}&logitcsInterface={logitcsInterface}";
                 var response = _client.Execute(restRequest);
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
@@ -350,19 +353,16 @@ namespace LogisticsCore.NewEMS
                     if (response.Content != null)
                     {
                         resString = response.Content;
-                        var dynamicJsonObj = JsonConvert.DeserializeObject<dynamic>(response.Content);
-                        var jsonText = JsonConvert.SerializeObject(dynamicJsonObj);
                         switch (request.apiCode)
                         {
                             case "020003":
-                                responseObj = JsonConvert.DeserializeObject<CreateOrderResponse>(jsonText);
-                                //responseObj = JsonSerializer.Deserialize<CreateOrderResponse>(responseJson);
+                                responseObj = JsonConvert.DeserializeObject<CreateOrderResponse>(response.Content);
                                 isOk = responseObj.success;
                                 errCode = responseObj.success ? 0 : 1;
                                 errMsg = responseObj.retMsg;
                                 break;
                             case "020006":
-                                responseObj = JsonConvert.DeserializeObject<CancelOrderResponse>(jsonText);
+                                responseObj = JsonConvert.DeserializeObject<CancelOrderResponse>(response.Content);
                                 isOk = responseObj.success;
                                 errCode = responseObj.success ? 0 : 1;
                                 errMsg = responseObj.retMsg;
@@ -388,7 +388,8 @@ namespace LogisticsCore.NewEMS
                 {
                     isOk = false;
                     errCode = -1;
-                    errMsg = $"NewEms下单取号请求失败: StatusCode: {response.StatusCode.ToString()}, ErrorMessage: {response.ErrorMessage ?? "无ErrorMessage消息."}";
+                    errMsg =
+                        $"NewEms下单取号请求失败: StatusCode: {response.StatusCode.ToString()}, ErrorMessage: {response.ErrorMessage ?? "无ErrorMessage消息."}";
                     resString = errMsg;
                     return null;
                 }
@@ -398,8 +399,24 @@ namespace LogisticsCore.NewEMS
                 isOk = false;
                 errCode = -99;
                 errMsg = $"请求或响应处理过程中发生异常, Exception : {e.Message}";
-                sendString = "";
-                resString = "";
+                resString = errMsg;
+                if (ConfigurationManager.AppSettings["IsDebugMode"] == "true")
+                {
+                    var basePath = AppDomain.CurrentDomain.BaseDirectory + @"\DebugLogs\";
+                    try
+                    {
+                        if (!Directory.Exists(basePath))
+                        {
+                            Directory.CreateDirectory(basePath);
+                        }
+                        var msg = $@"{DateTime.Now:yyyy-MM-dd HH:mm:ss}-----------------------------------{Environment.NewLine}{errMsg}{Environment.NewLine}";
+                        File.AppendAllText($"{basePath}_SendNewEmsOrder_Exception.txt", msg);
+                    }
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine(exception);
+                    }
+                }
                 return null;
             }
         }
