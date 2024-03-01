@@ -1577,12 +1577,12 @@ where
                                                 order.WL_COMPANYNAME = Settings.Setings.EnumLogicType.邮政EMS.ToString();
                                                 //order.WL_COMPANYID = ((int)order.Logic).ToString();
                                                 //order.WL_COMPANYNAME = order.Logic.ToString();
-                                                order.WL_NUMBER = 下单结果.retBody.waybillNo;
+                                                order.WL_NUMBER = 下单结果.retBodyObj.waybillNo;
                                                 order.Status = Settings.Setings.EnumOrderStatus.已获取物流单号;
                                                 order.logi_CreateDate = DateTime.Now.ToString("yyyyMMdd");
                                                 order.ErrMsg = "创建物流订单完成";
                                                 order.logi_jinjianRiqi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                                                order.logi_dstRoute = 下单结果.retBody.routeCode;
+                                                order.logi_dstRoute = 下单结果.retBodyObj.routeCode;
                                                 order.logi_PayType = "寄件人";//payment_mode
                                                 order.logi_monAccNum = "";
                                                 order.logi_baojiaJine = order.needBaojia.ToString("#0.00");
@@ -1636,6 +1636,7 @@ where
                                         order.ErrMsg = $"邮政物流新接口下单不成功:提交过来的对象(NewEmsResponseBase resobj)为NULL, (ServerCreateLogic2)SendErrorMessage: {errMsg}";
                                         errMsg = order.ErrMsg;
                                         order.Status = Settings.Setings.EnumOrderStatus.异常_物流下单不成功;
+                                        AddMsgOut(@"(ServerCreateLogic2)SendErrorMessage返回resobj为空", Settings.Setings.EnumMessageType.异常, 0, errMsg);
                                     }
                                     break;
                                 }
@@ -3785,12 +3786,12 @@ where
                         order.WL_COMPANYNAME = Settings.Setings.EnumLogicType.邮政EMS.ToString();
                         //order.WL_COMPANYID = ((int)order.Logic).ToString();
                         //order.WL_COMPANYNAME = order.Logic.ToString();
-                        order.WL_NUMBER = 下单结果.retBody.waybillNo;
+                        order.WL_NUMBER = 下单结果.retBodyObj.waybillNo;
                         order.Status = Settings.Setings.EnumOrderStatus.已获取物流单号;
                         order.logi_CreateDate = DateTime.Now.ToString("yyyyMMdd");
                         order.ErrMsg = "创建物流订单完成";
                         order.logi_jinjianRiqi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                        order.logi_dstRoute = 下单结果.retBody.routeCode;
+                        order.logi_dstRoute = 下单结果.retBodyObj.routeCode;
                         order.logi_PayType = "寄件人";//payment_mode
                         order.logi_monAccNum = "";
                         order.logi_baojiaJine = order.needBaojia.ToString("#0.00");
@@ -8070,12 +8071,12 @@ WHERE Bid={order.Bid}
                                                     order.WL_COMPANYNAME = Setings.EnumLogicType.邮政EMS.ToString();
                                                     //order.WL_COMPANYID = ((int)order.Logic).ToString();
                                                     //order.WL_COMPANYNAME = order.Logic.ToString();
-                                                    order.WL_NUMBER = 下单结果.retBody.waybillNo;
+                                                    order.WL_NUMBER = 下单结果.retBodyObj.waybillNo;
                                                     order.Status = Settings.Setings.EnumOrderStatus.已获取物流单号;
                                                     order.logi_CreateDate = DateTime.Now.ToString("yyyyMMdd");
                                                     order.ErrMsg = "创建物流订单完成";
                                                     order.logi_jinjianRiqi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                                                    order.logi_dstRoute = 下单结果.retBody.routeCode;
+                                                    order.logi_dstRoute = 下单结果.retBodyObj.routeCode;
                                                     order.logi_PayType = "寄件人";//payment_mode
                                                     order.logi_monAccNum = "";
                                                     order.logi_baojiaJine = order.needBaojia.ToString("#0.00");
