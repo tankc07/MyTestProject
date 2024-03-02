@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using MOD;
+using Newtonsoft.Json;
+using Settings;
+using YJT;
 
 namespace CenterServer
 {
@@ -30,6 +34,7 @@ namespace CenterServer
             _handMain = YJT.Text.ExtName.RemoveDbVarcharInvalid(YJT.ConfigTxt.AppConfigFIle.GetValueEX("handMain", "否", true), true);
             _isDebugMode = YJT.Text.ExtName.RemoveDbVarcharInvalid(YJT.ConfigTxt.AppConfigFIle.GetValueEX("IsDebugMode", "false", true), true);
             _isDebugPrint = YJT.Text.ExtName.RemoveDbVarcharInvalid(YJT.ConfigTxt.AppConfigFIle.GetValueEX("IsDebugPrint", "false", true), true);
+            ShowDebug($@"IsDebugMode: {_isDebugMode}, IsDebugPrint: {_isDebugPrint}", 2);
             if (YJT.Text.Verification.IsNullOrEmpty(_handIp) == true || YJT.Text.Verification.IsNullOrEmpty(_handMac) == true)
             {
                 Console.WriteLine("配置文件不正确");
@@ -56,11 +61,16 @@ namespace CenterServer
                 return;
             }
             MOD.SysMod.ClinetTag ct = Common.PubMethod.GetClientTag();
+            ShowDebug(JsonConvert.SerializeObject(ct), 2);
             YJT.StaticResources.Add("userObj", ct, true);
             YJT.StaticResources.Add("handObj", _handMac, true);
             Console.WriteLine("等待其他软件运行,期间等待60秒");
             //Modify: 修改时间: 2024-02-22 By:Ly 修改内容: 增加 "172.16.7.46" 跳过启动时的60秒倒计时.
-            if (!new[] { "172.16.7.50", "172.16.7.46", "172.16.7.46|" }.Contains(ct.Ip) || _isDebugMode == "true")
+            //如果是调试模式或者ip=数组中的ip,则跳过倒计时, 否则等待60秒, 如: ip=150,_isDebugMode=false, 则等待60秒, ip=150,_isDebugMode=true, 则跳过60秒
+            if (new[] { "172.16.7.50", "172.16.7.46", "172.16.7.46|" }.Contains(ct.Ip) || _isDebugMode == "true")
+            {
+            }
+            else
             {
                 for (int i = 0; i < 60; i++)
                 {
@@ -208,15 +218,17 @@ namespace CenterServer
                         orderThis = bll.GetNeedServerHandle(_handIp, _handMac, out isOk, out errCode, out errMsg);
 
                         //强制false, 只获取当前运行服务端的IP生成的订单.
-                        if (thisServer.Ip.Contains("172.16.7.46") && _isDebugMode == "true")
-                        {
-                            //测试用, 如果取不到IP是172.16.7.46的订单, 则拿取一个172.16.2.150生成的订单
-                            //orderThis = bll.GetNeedServerHandle(_handIp, _handMac, out isOk, out errCode, out errMsg)
-                            //             ?? bll.GetNeedServerHandle("172.16.2.150", "94C691F3D450", out isOk, out errCode, out errMsg);
+                        //if (thisServer.Ip.Contains("172.16.7.46") && _isDebugMode == "true")
+                        //{
+                        //    //测试用, 如果取不到IP是172.16.7.46的订单, 则拿取一个172.16.2.150生成的订单
+                        //    //orderThis = bll.GetNeedServerHandle(_handIp, _handMac, out isOk, out errCode, out errMsg)
+                        //    //             ?? bll.GetNeedServerHandle("172.16.2.150", "94C691F3D450", out isOk, out errCode, out errMsg);
 
-                            orderThis = bll.GetNeedServerHandle(_handIp, _handMac, out isOk, out errCode, out errMsg)
-                                        ?? bll.GetNeedServerHandle2(out isOk, out errCode, out errMsg, "346553", Settings.Setings.EnumOrderStatus.已回写电商平台);
-                        }
+                        //    orderThis = bll.GetNeedServerHandle(_handIp, _handMac, out isOk, out errCode, out errMsg)
+                        //                ?? bll.GetNeedServerHandle2(out isOk, out errCode, out errMsg, "346553", Settings.Setings.EnumOrderStatus.已获取电商信息);
+                        //    //if (orderThis != null)
+                        //    //    orderThis.PrintStatus = Setings.EnumOrderPrintStatus.等待打印;
+                        //}
 
                         ShowDebug(orderThis != null ? @"获取orderThis成功" : @"获取orderThis为null", orderThis != null ? 1 : 2);
                         //修改
@@ -805,6 +817,7 @@ namespace CenterServer
                             Console.WriteLine(@"未获取到要处理的单据,等待30秒后重新获取");
                             ShowDebug(@"未获取到要处理的单据,(orderThis=null),等待30秒", 1);
                             YJT.MSystem.GC.Collect();
+                            ShowDebug(@"清理GC", 2);
                             System.Threading.Thread.Sleep(1000 * 30);
                             ShowDebug(@"等待30秒已完成.", 1);
                         }
@@ -1723,7 +1736,7 @@ namespace CenterServer
                         Console.ForegroundColor = originColor;
                         break;
                 }
-                Console.WriteLine(msg);
+                Console.WriteLine($@"{DateTime.Now:HH:mm:ss:fff}: {msg}");
                 Console.ForegroundColor = originColor;
             }
         }
