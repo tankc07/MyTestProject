@@ -62,3 +62,17 @@ string senderSafetyCode = "",
 int valuableFlag = 0,
 string waybillNo = "",
 string subMailNo = ""
+
+|$4|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
+
+
+Error converting value "{"routeCode":"030-035-R02-909","markDestinationCode":"R02","packageCode":"","logisticsOrderNo":"12312313","packageCodeName":"R02","markDestinationName":"R02","waybillNo":"9746557007887"}" to type 'LogisticsCore.NewEMS.Response.CreateOrderResponseBody'. Path 'retBody', line 1, position 310.
+
+{
+    "serialNo": "343636a5-17f7-4587-9f39-3e5a718b112a",
+    "retCode": "00000",
+    "retMsg": "成功！",
+    "retBody": "{\"routeCode\":\"030-035-R02-909\",\"markDestinationCode\":\"R02\",\"packageCode\":\"\",\"logisticsOrderNo\":\"12312313\",\"packageCodeName\":\"R02\",\"markDestinationName\":\"R02\",\"waybillNo\":\"9746557007887\"}",
+    "retDate": "2024-02-29 12:55:34",
+    "success": true
+}
