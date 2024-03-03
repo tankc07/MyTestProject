@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ using LogisticsCore.NewEMS.Request;
 using LogisticsCore.NewEMS.Response;
 using MOD;
 using MOD.HdErp;
+using Newtonsoft.Json;
 using Settings;
 
 namespace BLL
@@ -4313,6 +4315,10 @@ UPDATE
             {
                 if (_clientInfoObj != null)
                 {
+                    if (ConfigurationManager.AppSettings["IsDebugMode"] == "true")
+                    {
+                        Console.WriteLine(JsonConvert.SerializeObject(_clientInfoObj));
+                    }
                     if (_hand.VerDbClient(_clientInfoObj, out isOk, out errCode, out errMsg))
                     {
                         return _hand;
@@ -4362,28 +4368,48 @@ UPDATE
                 //MOD.SysMod.ClinetTag ct = Common.PubMethod.GetClientTag();
                 //YJT.StaticResources.Add("userObj", ct, true);
                 string qz = "";
-                
+
                 object handObj = YJT.StaticResources.GetObject("handObj");
-                var _basePath = AppDomain.CurrentDomain.BaseDirectory + @"\DebugLogs\";
-                if (!Directory.Exists(_basePath))
+                if (ConfigurationManager.AppSettings["IsDebugMode"] == "true")
                 {
-                    Directory.CreateDirectory(_basePath);
-                }
-                var time = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
-                if (handObj != null)
-                {
-                    qz = handObj.ToString();
-                    File.WriteAllText($@"{_basePath}验证本客户端与SQL获取客户端的信息是否一致_VerDbClient_{time}.txt", $"{Environment.NewLine}handObj 不为 null, handObj = {handObj.ToString()}");
+                    var _basePath = AppDomain.CurrentDomain.BaseDirectory + @"\DebugLogs\";
+                    if (!Directory.Exists(_basePath))
+                    {
+                        Directory.CreateDirectory(_basePath);
+                    }
+                    var time = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+                    if (handObj != null)
+                    {
+                        qz = handObj.ToString();
+                        File.WriteAllText($@"{_basePath}验证本客户端与SQL获取客户端的信息是否一致_VerDbClient_{time}.txt", $"{Environment.NewLine}handObj 不为 null, handObj = {handObj.ToString()}");
+                    }
+                    else
+                    {
+                        File.WriteAllText($@"{_basePath}验证本客户端与SQL获取客户端的信息是否一致_VerDbClient_{time}.txt", $"{Environment.NewLine}handObj 为 null");
+                    }
                 }
                 else
                 {
-                    File.WriteAllText($@"{_basePath}验证本客户端与SQL获取客户端的信息是否一致_VerDbClient_{time}.txt", $"{Environment.NewLine}handObj 为 null");
+                    if (handObj != null)
+                    {
+                        qz = handObj.ToString();
+                    }
                 }
 
                 string tip = YJT.DataBase.Common.ObjectTryToObj<string>(dt.Rows[0]["ip"], "无");
                 System.IO.File.AppendAllText($@"d:\YDECAP\debug{qz}.txt", tip + "\r\n");
                 System.IO.File.AppendAllText($@"d:\YDECAP\debug{qz}.txt", tag.ComputerName + "\r\n");
                 System.IO.File.AppendAllText($@"d:\YDECAP\debug{qz}.txt", tag.Mac + "\r\n");
+                if (ConfigurationManager.AppSettings["IsDebugMode"] == "true")
+                {
+                    if (tip == "172.16.7.46")
+                    {
+                        if (tag.Ip == "192.168.79.131|")
+                        {
+                            tip = tag.Ip.Replace("|","");
+                        }
+                    }
+                }
                 //if (tip == "172.16.7.50")
                 //{
                 //	tip = "172.16.2.150";
@@ -9145,7 +9171,8 @@ order by
                 dt.Dispose();
                 dt = null;
             }
-            catch (Exception e){
+            catch (Exception e)
+            {
                 Console.WriteLine($@"GetNeedServerHandle: 从数据库获取要处理的单据时异常: Exception: {e}");
             }
             return order;

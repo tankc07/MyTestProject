@@ -37,7 +37,7 @@ namespace CenterServer
             ShowDebug($@"IsDebugMode: {_isDebugMode}, IsDebugPrint: {_isDebugPrint}", 2);
             if (YJT.Text.Verification.IsNullOrEmpty(_handIp) == true || YJT.Text.Verification.IsNullOrEmpty(_handMac) == true)
             {
-                Console.WriteLine("配置文件不正确");
+                Console.WriteLine(@"配置文件不正确");
                 Console.ReadKey();
                 return;
             }
@@ -56,15 +56,17 @@ namespace CenterServer
             uint l = 0;
             if (YJT.MSystem.Common.MutexCheck("CenterServer" + _handIp + _handMac, out l, 1) == false)
             {
-                Console.WriteLine("不能重复运行,按任意键退出");
+                Console.WriteLine(@"不能重复运行,按任意键退出");
                 Console.ReadKey(false);
                 return;
             }
             MOD.SysMod.ClinetTag ct = Common.PubMethod.GetClientTag();
             ShowDebug(JsonConvert.SerializeObject(ct), 2);
+            if(_isDebugMode == "true")
+                Console.ReadKey();
             YJT.StaticResources.Add("userObj", ct, true);
             YJT.StaticResources.Add("handObj", _handMac, true);
-            Console.WriteLine("等待其他软件运行,期间等待60秒");
+            Console.WriteLine(@"等待其他软件运行,期间等待60秒");
             //Modify: 修改时间: 2024-02-22 By:Ly 修改内容: 增加 "172.16.7.46" 跳过启动时的60秒倒计时.
             //如果是调试模式或者ip=数组中的ip,则跳过倒计时, 否则等待60秒, 如: ip=150,_isDebugMode=false, 则等待60秒, ip=150,_isDebugMode=true, 则跳过60秒
             if (new[] { "172.16.7.50", "172.16.7.46", "172.16.7.46|" }.Contains(ct.Ip) || _isDebugMode == "true")
@@ -90,7 +92,7 @@ namespace CenterServer
 
             if (ct == null)
             {
-                Console.WriteLine("未能获取服务器信息,按任意键退出");
+                Console.WriteLine(@"未能获取服务器信息,按任意键退出");
                 Console.ReadKey(false);
                 return;
             }
@@ -102,7 +104,7 @@ namespace CenterServer
             bll = BLL.Blll.init();
             if (bll == null)
             {
-                Console.WriteLine("业务层初始化失败");
+                Console.WriteLine(@"业务层初始化失败");
                 Console.ReadKey(false);
                 return;
             }
@@ -133,9 +135,9 @@ namespace CenterServer
                         break;
                     }
                 }
-                Console.WriteLine("-----------------------------------------------------------");
+                Console.WriteLine(@"-----------------------------------------------------------");
                 Console.WriteLine(@"如需退出,按 alt+S 键");
-                Console.WriteLine("-----------------------------------------------------------");
+                Console.WriteLine(@"-----------------------------------------------------------");
                 t = Console.ReadKey(true);
             }
             Console.WriteLine(@"退出...............");
@@ -815,9 +817,9 @@ namespace CenterServer
                         else
                         {
                             Console.WriteLine(@"未获取到要处理的单据,等待30秒后重新获取");
-                            ShowDebug(@"未获取到要处理的单据,(orderThis=null),等待30秒", 1);
                             YJT.MSystem.GC.Collect();
-                            ShowDebug(@"清理GC", 2);
+                            ShowDebug(@"清理GC完成", 2);
+                            ShowDebug(@"未获取到要处理的单据,(orderThis=null),等待30秒", 1);
                             System.Threading.Thread.Sleep(1000 * 30);
                             ShowDebug(@"等待30秒已完成.", 1);
                         }

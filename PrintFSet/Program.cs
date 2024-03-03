@@ -15,7 +15,7 @@ namespace PrintFSet
 			List<string> prints = fr.GetPrints();
 			if (prints == null || prints.Count <= 0)
 			{
-				Console.WriteLine("此电脑没有打印机");
+				Console.WriteLine(@"此电脑没有打印机");
 				return;
 			}
 			foreach (string item in prints)
@@ -30,12 +30,12 @@ namespace PrintFSet
 			string orderType = "";
 			if (args == null || args.Length == 0)
 			{
-				Console.WriteLine("顺丰票据:sf");
-				Console.WriteLine("邮政票据:yz");
-				Console.WriteLine("百世票据:bs");
-				Console.WriteLine("京东快递:jd");
-				Console.WriteLine("随货票据:sh");
-				Console.WriteLine("申通快递:st");
+				Console.WriteLine(@"顺丰票据:sf");
+				Console.WriteLine(@"邮政票据:yz");
+				Console.WriteLine(@"百世票据:bs");
+				Console.WriteLine(@"京东快递:jd");
+				Console.WriteLine(@"随货票据:sh");
+				Console.WriteLine(@"申通快递:st");
 
 				orderType =Console.ReadLine();
 				if (orderType == "sf")
@@ -58,7 +58,7 @@ namespace PrintFSet
 				}
 				else if (orderType == "bs")
 				{
-					Console.WriteLine("打印方案不存在");
+					Console.WriteLine(@"打印方案不存在");
 					Console.ReadKey(false);
 					return;
 
@@ -69,7 +69,7 @@ namespace PrintFSet
 				}
 				else
 				{
-					Console.WriteLine("打印方案不存在");
+					Console.WriteLine(@"打印方案不存在");
 					Console.ReadKey(false);
 					return;
 				}
@@ -80,7 +80,7 @@ namespace PrintFSet
 			}
 			else
 			{
-				Console.WriteLine("打印方案不存在");
+				Console.WriteLine(@"打印方案不存在");
 				Console.ReadKey(false);
 				return;
 			}
@@ -108,12 +108,12 @@ namespace PrintFSet
 			
 			else
 			{
-				Console.WriteLine("打印方案不存在");
+				Console.WriteLine(@"打印方案不存在");
 				Console.ReadKey(false);
 				return;
 			}
 
-			Console.WriteLine("默认34,是否需要改变,不改变,直接回车");
+			Console.WriteLine(@"默认34,是否需要改变,不改变,直接回车");
 			string bid = Console.ReadLine();
 			if (YJT.Text.Verification.IsNullOrEmpty(bid))
 			{
