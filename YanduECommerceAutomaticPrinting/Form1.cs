@@ -11,6 +11,8 @@ using MOD;
 using Microsoft.Win32;
 using System.Reflection;
 using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
+using System.Configuration;
+using System.Runtime.InteropServices;
 
 namespace YanduECommerceAutomaticPrinting
 {
@@ -902,12 +904,22 @@ namespace YanduECommerceAutomaticPrinting
 				}
 			}
 		}
-		private void Form1_Load(object sender, EventArgs e)
+        [DllImport("user32.dll")]
+        public static extern short GetAsyncKeyState(Keys vKey);
+        private void Form1_Load(object sender, EventArgs e)
 		{
-			//for (int i = 0; i < 30; i++)
+			//Console.WriteLine(@"暂停600秒, 按下Ctrl+C跳过");
+			//for (int i = 0; i < 6000; i++)
 			//{
-			//	System.Threading.Thread.Sleep(1000);
+   //             // 检测是否按下了Ctrl + C
+   //             if ((GetAsyncKeyState(Keys.ControlKey) & 0x8000) != 0 && (GetAsyncKeyState(Keys.C) & 0x8000) != 0)
+   //             {
+   //                 Console.WriteLine(@"按下了Ctrl + C，跳出循环！");
+   //                 break;
+   //             }
+   //             System.Threading.Thread.Sleep(100);
 			//}
+
 
 			this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw | ControlStyles.AllPaintingInWmPaint, true);
 			this.UpdateStyles();
@@ -958,21 +970,21 @@ namespace YanduECommerceAutomaticPrinting
 
 					try
 					{
-						subKey1.DeleteValue(@"ComDB");
+						subKey1?.DeleteValue(@"ComDB");
 
 					}
 					catch { }
 					try
 					{
-						subKey2.DeleteValue(@"ComDB");
+						subKey2?.DeleteValue(@"ComDB");
 
 					}
 					catch { }
-					subKey1.Close();
-					subKey1.Dispose();
+					subKey1?.Close();
+					subKey1?.Dispose();
 					subKey1 = null;
-					subKey2.Close();
-					subKey2.Dispose();
+					subKey2?.Close();
+					subKey2?.Dispose();
 					subKey2 = null;
 					key.Close();
 					key.Dispose();
@@ -2541,6 +2553,15 @@ namespace YanduECommerceAutomaticPrinting
 					if (_isId)
 					{
 						double weight = 0d;
+						if ((_clientTag.Ip.Contains("172.16.7.46") &&
+						    ConfigurationManager.AppSettings["IsDebugMode"] == "true") || ConfigurationManager.AppSettings["IsRandomWeight"] == "true")
+						{
+							if (Settings.Configs.GetIsNotCheckCom == "是")
+							{
+								var num = (new Random().Next(100, 299)/100d).ToString("#0.00");
+								label8.Text = num;
+							}
+						}
 						if (_inputGroup.V3 > 0)
 						{
 						}
@@ -3555,7 +3576,7 @@ namespace YanduECommerceAutomaticPrinting
 		{
 			try
 			{
-				_comPort.Close();
+				_comPort?.Close();
 				_comPort = null;
 				try
 				{
@@ -3565,21 +3586,21 @@ namespace YanduECommerceAutomaticPrinting
 
 					try
 					{
-						subKey1.DeleteValue(@"ComDB");
+						subKey1?.DeleteValue(@"ComDB");
 
 					}
 					catch { }
 					try
 					{
-						subKey2.DeleteValue(@"ComDB");
+						subKey2?.DeleteValue(@"ComDB");
 
 					}
 					catch { }
-					subKey1.Close();
-					subKey1.Dispose();
+					subKey1?.Close();
+					subKey1?.Dispose();
 					subKey1 = null;
-					subKey2.Close();
-					subKey2.Dispose();
+					subKey2?.Close();
+					subKey2?.Dispose();
 					subKey2 = null;
 					key.Close();
 					key.Dispose();
