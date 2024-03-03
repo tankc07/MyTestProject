@@ -644,14 +644,13 @@
             <param name="paras"></param>
             <returns></returns>
         </member>
-        <member name="M:YJT.DataBase.DbHelperSqlServer.ExecuteToDataTable(System.String,System.Data.Common.DbParameter[],System.Boolean,System.Int32,System.Int32)">
+        <member name="M:YJT.DataBase.DbHelperSqlServer.ExecuteToDataTable(System.String,System.Data.Common.DbParameter[],System.Boolean)">
             <summary>
             返回一个datatab对象
             </summary>
             <param name="sqlStr"></param>
             <param name="paras"></param>
             <param name="enableMultipleConn">是否启用多链接方式</param>
-            <param name="tryCount">重试次数</param>
             <returns></returns>
         </member>
         <member name="M:YJT.DataBase.DbHelperSqlServer.CloseConn">
@@ -785,14 +784,13 @@
             <param name="enableMultipleConn"></param>
             <returns></returns>
         </member>
-        <member name="M:YJT.DataBase.DbHelper.ExecuteToDataTable(System.String,System.Data.Common.DbParameter[],System.Boolean,System.Int32,System.Int32)">
+        <member name="M:YJT.DataBase.DbHelper.ExecuteToDataTable(System.String,System.Data.Common.DbParameter[],System.Boolean)">
             <summary>
             返回一个表
             </summary>
             <param name="sqlStr"></param>
             <param name="paras"></param>
             <param name="enableMultipleConn">是否启用多连接方式</param>
-            <param name="tryCount">发生错误重试次数</param>
             <returns></returns>
         </member>
         <member name="M:YJT.DataBase.DbHelper.FormatSqlStr(System.String)">
@@ -814,27 +812,6 @@
             <summary>
             数据库相关工具
             </summary>
-        </member>
-        <member name="M:YJT.DataBase.Common.Substring(System.String,System.Int32,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
-            <summary>
-            按varchar长度方式判断截取字符串
-            </summary>
-            <param name="str"></param>
-            <param name="length"></param>
-            <param name="keepSingQuote">是否去掉单引号,只是去掉</param>
-            <param name="isTrim">是否去掉前后的空格</param>
-            <param name="isParaMode">是否使用sql的参数模式,否则一个单引号返回两个,如果已经去掉,此内容则无效</param>
-            <param name="isReverse">是否从后向前截取</param>
-            <returns></returns>
-        </member>
-        <member name="M:YJT.DataBase.Common.StringLenght(System.String,System.Boolean,System.Boolean)">
-            <summary>
-            按varchar长度方式判断字符串长度
-            </summary>
-            <param name="str"></param>
-            <param name="keepSingQuote">是否去掉单引号,只是去掉</param>
-            <param name="isTrim">是否去掉前后的空格</param>
-            <returns></returns>
         </member>
         <member name="M:YJT.DataBase.Common.IsNotDbNull(System.Object)">
             <summary>
@@ -1649,110 +1626,12 @@
             <param name="sourceData"></param>
             <returns></returns>
         </member>
-        <member name="P:YJT.Excel.CellMerge.algin">
-            <summary>
-            对齐方式
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.LineStyle">
-            <summary>
-            变宽线条类型,1,Excel.XlLineStyle.xlContinuous
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.InnerBorderLineStyle">
-            <summary>
-            内部单元格边框线型号1,Excel.XlLineStyle.xlContinuous必须指定(InnerBorderLineStyle,InnerBorderLineWeight,InnerBorderColorIndex,InnerBorderColor)
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.InnerBorderLineWeight">
-            <summary>
-            内部单元格线宽度Microsoft.Office.Interop.Excel.XlBorderWeight必须指定(InnerBorderLineStyle,InnerBorderLineWeight,InnerBorderColorIndex,InnerBorderColor)
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.InnerBorderColorIndex">
-            <summary>
-            内部单元格xxx,Microsoft.Office.Interop.Excel.XlColorIndex必须指定(InnerBorderLineStyle,InnerBorderLineWeight,InnerBorderColorIndex,InnerBorderColor)
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.InnerBorderColor">
-            <summary>
-            内部单元格颜色,System.Drawing.Color.Black.ToArgb()必须指定(InnerBorderLineStyle,InnerBorderLineWeight,InnerBorderColorIndex,InnerBorderColor)
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.FontSize">
-            <summary>
-            字体大小
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.TextUnderline">
-            <summary>
-            字体是否有下划线
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.Align">
-            <summary>
-            文本内部对齐方式-4108居中对齐,Microsoft.Office.Interop.Excel.XlHAlign
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.TextAlign">
-            <summary>
-            文本居中方式(-4108水平居中) Microsoft.Office.Interop.Excel.XlHAlign
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.TextAlignV">
-            <summary>
-            文本纵向居中方式
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.Width">
-            <summary>
-            单元格宽度
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.BColor">
-            <summary>
-            单元格背景色自定义 System.Drawing.Color.FromArgb(255, 255, 255).ToArgb();
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.BColorIndex">
-            <summary>
-            单元格背景色的常值设置方式
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.FontColor">
-            <summary>
-            字体的颜色
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.IsAutoFit">
-            <summary>
-            是否自动调整列宽
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.isFontBold">
-            <summary>
-            字体是否加粗
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.IsAutoWrapText">
-            <summary>
-            是否文本自动换行
-            </summary>
-        </member>
-        <member name="P:YJT.Excel.CellStyle.CellFormatStr">
-            <summary>
-            单元格显示文本格式 @ 为 文本格式
-            </summary>
-        </member>
-        <member name="M:YJT.Excel.ExportExcelForDataTable(System.Data.DataTable,System.String,System.Int32,System.Int32,System.Collections.Generic.List{YJT.Excel.CellCustom},System.Collections.Generic.List{YJT.Excel.CellStyle},System.Collections.Generic.List{YJT.Excel.CellMerge})">
+        <member name="M:YJT.Excel.ExportExcelForDataTable(System.Data.DataTable,System.String)">
             <summary>
             通过datatable生成excel对象
             </summary>
             <param name="sourceData"></param>
             <param name="outFileName"></param>
-            <param name="startCol"></param>
-            <param name="startRow"></param>
             <returns></returns>
         </member>
         <member name="M:YJT.Ftp.GetFileList(System.String,System.Text.Encoding)">
@@ -2004,31 +1883,7 @@
             <param name="errors"></param>
             <returns></returns>
         </member>
-        <member name="M:YJT.Http.FunBytesGetString(System.String,System.String@,System.Boolean@,System.Object,System.Net.CookieContainer@,System.String,System.String,System.String,System.Int32,System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.String,System.String,System.Int32,System.String,System.String,System.String,System.Boolean,System.Int32)">
-            <summary>
-            字符串方式下载http或https协议的内容
-            </summary>
-            <param name="url"></param>
-            <param name="errMsg"></param>
-            <param name="IsOk"></param>
-            <param name="postData"></param>
-            <param name="cookie"></param>
-            <param name="certFilePath"></param>
-            <param name="certPwd"></param>
-            <param name="proxyIp"></param>
-            <param name="proxyPort"></param>
-            <param name="refererUrl"></param>
-            <param name="Headers"></param>
-            <param name="encoding"></param>
-            <param name="sendMode"></param>
-            <param name="ssl"></param>
-            <param name="contentType"></param>
-            <param name="accept"></param>
-            <param name="expect100Continue">是否启用100Continue协议验证</param>
-            <param name="timeOut">超时-1为默认,可选15000</param>
-            <returns></returns>
-        </member>
-        <member name="M:YJT.Http.FunBytesGetStringByte(System.String,System.String@,System.Boolean@,System.Object,System.Net.CookieContainer@,System.String,System.String,System.String,System.Int32,System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.String,System.String,System.Int32,System.String,System.String,System.String,System.Boolean,System.Int32)">
+        <member name="M:YJT.Http.FunBytesGetString(System.String,System.String@,System.Boolean@,System.String,System.Net.CookieContainer@,System.String,System.String,System.String,System.Int32,System.String,System.Collections.Generic.Dictionary{System.String,System.String},System.String,System.String,System.Int32,System.String,System.String,System.String,System.Boolean,System.Int32)">
             <summary>
             字符串方式下载http或https协议的内容
             </summary>
@@ -2151,13 +2006,6 @@
             <param name="height"></param>
             <returns></returns>
         </member>
-        <member name="M:YJT.Picture.VerificationCode.DistortPic(System.Drawing.Image)">
-            <summary>
-            扭曲早点更加处理
-            </summary>
-            <param name="oldImg"></param>
-            <returns></returns>
-        </member>
         <member name="T:YJT.Picture.PictureControl">
             <summary>
             图片操作与控制
@@ -2189,12 +2037,6 @@
             处理json相关操作
             </summary>
         </member>
-        <member name="M:YJT.Json.CustomContractResolver.#ctor(System.Boolean,System.Collections.Generic.List{System.String})">
-            <summary>
-            
-            </summary>
-            <param name="order">false asc,true desc</param>
-        </member>
         <member name="T:YJT.Json.EnumTimeFormat">
             <summary>
             格式化时候,日期类型所使用的类型
@@ -2215,7 +2057,7 @@
             HH:mm:ss
             </summary>
         </member>
-        <member name="M:YJT.Json.FunStrSerializeToStr(System.Object,YJT.Json.EnumTimeFormat,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Nullable{System.Boolean},System.Collections.Generic.List{System.String})">
+        <member name="M:YJT.Json.FunStrSerializeToStr(System.Object,YJT.Json.EnumTimeFormat,System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             把一个类序列化成一个JSON文本
             </summary>
@@ -2224,12 +2066,9 @@
             <param name="enumConverStr">是否把枚举转换成字符串</param>
             <param name="isFormatStr">是否把输出的字符串格式化</param>
             <param name="removeNull">是否移除对象为null的属性,xxx? 也包括</param>
-            <param name="isConvertImg">IMAGE對象参与序列化</param>
-            <param name="isOrder">是否启用排序,</param>
-            <param name="removePName">不序列化某属性,所有类中都不序列化</param>
             <returns></returns>
         </member>
-        <member name="M:YJT.Json.FunObjGetClassObjByJsonStr``1(System.String,System.Boolean,System.Boolean)">
+        <member name="M:YJT.Json.FunObjGetClassObjByJsonStr``1(System.String,System.Boolean)">
             <summary>
             把JSON字符串转换成需要的类型,无法转换会根据参数抛出异常,还是返回对象默认值
             </summary>
@@ -6360,13 +6199,6 @@
             <param name="v"></param>
             <returns></returns>
         </member>
-        <member name="M:YJT.Number.Numeric.Convert.Floor(System.Double)">
-            <summary>
-            如果有小数,则返回这个数向上进位的整数
-            </summary>
-            <param name="s"></param>
-            <returns></returns>
-        </member>
         <member name="M:YJT.OtherService.你好现在佳薪棠.#ctor(System.Int32)">
             <summary>
             构造对象
@@ -6898,12 +6730,6 @@
             打印设计
             </summary>
         </member>
-        <member name="M:YJT.Print.FastReport.PrintToJpg(System.Int32,System.Int32,System.Int32,System.UInt32)">
-            <summary>
-            保存成图片
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:YJT.Print.FastReport.Print(System.Boolean,System.String,System.Object)">
             <summary>
             直接打印
@@ -7107,34 +6933,6 @@
             验证字符串相关类
             </summary>
         </member>
-        <member name="M:YJT.Text.Verification.GetEncodeAll(System.String)">
-            <summary>
-            获取字符串的编码,遍历所有编码
-            </summary>
-            <param name="str"></param>
-            <returns></returns>
-        </member>
-        <member name="M:YJT.Text.Verification.GetEncodeB(System.String)">
-            <summary>
-            获取字符串的编码,遍历固定的编码
-            </summary>
-            <param name="str"></param>
-            <returns></returns>
-        </member>
-        <member name="M:YJT.Text.Verification.IsUtf8(System.String)">
-            <summary>
-            检查是否是UTF-8编码
-            </summary>
-            <param name="str"></param>
-            <returns></returns>
-        </member>
-        <member name="M:YJT.Text.Verification.IsAnsiEncoded(System.String)">
-            <summary>
-            检查是否是Ansi编码,
-            </summary>
-            <param name="input"></param>
-            <returns></returns>
-        </member>
         <member name="M:YJT.Text.Verification.IsNullOrEmpty(System.String,System.Boolean,System.Boolean,System.String[])">
             <summary>
             验证字符串是否为空,或是没有长度,返回   false:表示有内容
@@ -7163,7 +6961,7 @@
             </summary>
             <param name="a">字符串1</param>
             <param name="b">字符串2</param>
-            <param name="ignoreCase">是否忽略大小写</param>
+            <param name="DistinguishUpperLower">是否忽略大小写</param>
             <param name="IgnoreCaseTrim">是否忽略前后空格</param>
             <returns>返回内容是否一致,注意介绍</returns>
         </member>
@@ -7269,7 +7067,7 @@
             判断字符串是否在列表中
             </summary>
             <param name="str"></param>
-            <param name="ignoreCase">忽略大小写</param>
+            <param name="DistinguishUpperLower"></param>
             <param name="p"></param>
             <returns></returns>
         </member>
@@ -7516,16 +7314,12 @@
             <param name="count">要多少个</param>
             <returns></returns>
         </member>
-        <member name="M:YJT.Text.ExtName.RemoveDbVarcharInvalid(System.String,System.Boolean,System.Collections.Generic.Dictionary{System.String,System.String},System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:YJT.Text.ExtName.RemoveDbVarcharInvalid(System.String,System.Boolean)">
             <summary>
             仅限于sql拼接时候,对字符串去除前导空格,后导空格,单引号
             </summary>
             <param name="str">字符串</param>
             <param name="keepSingleQuote">是否保留单引号为两个单引号</param>
-            <param name="convertTab">替换列表 ExtName有默认值</param>
-            <param name="removeDoubleSpace">移除 双空格或者连续的空格替换成单一的空格,用于默认替换</param>
-            <param name="trim">去掉前后空格</param>
-            <param name="removeSpace">是否移除所有空格</param>
             <returns></returns>
         </member>
         <member name="M:YJT.Text.ExtName.YjtSubString(System.String,System.Int32,System.Int32)">
