@@ -902,6 +902,12 @@ namespace CenterServer
                         }
                     }
                 }
+
+                if (ldyjPages != po.Ldyjs.Count)
+                {
+                    Blll_AddMsgOutEve($"ErpId = {po.ErpId}, 路单药检数量与封面数量不一致, 路单药检数量: po.Ldyjs.Count ={po.Ldyjs.Count}, 封面药检数量: ldyjPages = {ldyjPages}"
+                        , Settings.Setings.EnumMessageType.异常, "封面药检数量错误", -99, "", "bid:" + printObj.Bid, DateTime.Now);
+                }
                 printContentType = printContentType + $"路单药检 共计页数:{ldyjPages.ToString()} \r\n";
                 totalPage += ldyjPages;
             }
