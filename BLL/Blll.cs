@@ -1062,7 +1062,7 @@ where
                             //开始计算
                             if (order.Weight <= 3.0)
                             {
-                                if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true))
+                                if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "山西" }, true))
                                 {
                                     //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
                                     order.Logic = Settings.Setings.EnumLogicType.新邮政Ems;
@@ -7480,7 +7480,7 @@ WHERE Bid={order.Bid}
                                 //开始计算
                                 if (order.Weight <= 3.0)
                                 {
-                                    if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true))
+                                    if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "山西" }, true))
                                     {
                                         //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
                                         order.Logic = Settings.Setings.EnumLogicType.新邮政Ems;
