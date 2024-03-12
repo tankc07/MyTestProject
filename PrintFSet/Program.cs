@@ -36,6 +36,7 @@ namespace PrintFSet
 				Console.WriteLine(@"京东快递:jd");
 				Console.WriteLine(@"随货票据:sh");
 				Console.WriteLine(@"申通快递:st");
+				Console.WriteLine(@"新邮政票据:nyz");
 
 				orderType =Console.ReadLine();
 				if (orderType == "sf")
@@ -55,6 +56,10 @@ namespace PrintFSet
 				{
 					args = new string[] { @"D:\YDmycode\YanduECommerceAutomaticPrinting\CenterServer\bin\Debug\frx\Logic_ShenTong.frx" };
 
+				}
+				else if (orderType == "nyz")
+				{
+					args = new string[] { @"E:\NewPrintServer\服务端\Debug\frx\Logic_NewEms.frx" };
 				}
 				else if (orderType == "bs")
 				{
@@ -105,7 +110,10 @@ namespace PrintFSet
 			{
 				orderType = "st";
 			}
-			
+			else if (filename == "Logic_NewEms.frx")
+			{
+				orderType = "nyz";
+			}
 			else
 			{
 				Console.WriteLine(@"打印方案不存在");
@@ -209,6 +217,12 @@ namespace PrintFSet
 					fr.AddMod(order);
 					fr.Design();
 				}
+				else if(orderType == "nyz")
+				{
+                    fr.LoadPrintFrx(args[0]);
+                    fr.AddMod(order);
+                    fr.Design();
+                }
 			}
 			
 			Console.ReadKey();
