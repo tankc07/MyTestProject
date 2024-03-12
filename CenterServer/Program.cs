@@ -62,7 +62,7 @@ namespace CenterServer
             }
             MOD.SysMod.ClinetTag ct = Common.PubMethod.GetClientTag();
             ShowDebug(JsonConvert.SerializeObject(ct), 2);
-            if(_isDebugMode == "true")
+            if (_isDebugMode == "true")
                 Console.ReadKey();
             YJT.StaticResources.Add("userObj", ct, true);
             YJT.StaticResources.Add("handObj", _handMac, true);
@@ -377,44 +377,44 @@ namespace CenterServer
                                                         if (isOk == true)
                                                         {
                                                             PrintWL(orderThis, orderThis);
-                                                            PrintSH(orderThis, orderThis);
-                                                            PrintObj po = new PrintObj(orderThis.CUSTOMNAME, orderThis.CUSTOMID, orderThis.ErpId, orderThis.WmsYewy);
-                                                            if (YJT.Text.Verification.IsNotNullOrEmpty(orderThis.IsHeTong))
-                                                            {
-                                                                List<MOD.HdErp.HdErpHeTong> t1 = null;
-                                                                PrintHT(orderThis, orderThis, out t1);
-                                                                if (t1 != null)
-                                                                {
-                                                                    po.HeTongs = t1;
-                                                                }
-                                                            }
-                                                            if (YJT.Text.Verification.IsNotNullOrEmpty(orderThis.IsSyzz) || YJT.Text.Verification.IsNotNullOrEmpty(orderThis.IsPj))
-                                                            {
-                                                                List<MOD.ModGoodsInfo> t2 = null;
-                                                                PrintPJ(orderThis, orderThis, out t2);
-                                                                if (t2 != null)
-                                                                {
-                                                                    po.Pjs = t2;
-                                                                }
-                                                            }
+                                                            //PrintSH(orderThis, orderThis);
+                                                            //PrintObj po = new PrintObj(orderThis.CUSTOMNAME, orderThis.CUSTOMID, orderThis.ErpId, orderThis.WmsYewy);
+                                                            //if (YJT.Text.Verification.IsNotNullOrEmpty(orderThis.IsHeTong))
+                                                            //{
+                                                            //	List<MOD.HdErp.HdErpHeTong> t1 = null;
+                                                            //	PrintHT(orderThis, orderThis, out t1);
+                                                            //	if (t1 != null)
+                                                            //	{
+                                                            //		po.HeTongs = t1;
+                                                            //	}
+                                                            //}
+                                                            //if (YJT.Text.Verification.IsNotNullOrEmpty(orderThis.IsSyzz) || YJT.Text.Verification.IsNotNullOrEmpty(orderThis.IsPj))
+                                                            //{
+                                                            //	List<MOD.ModGoodsInfo> t2 = null;
+                                                            //	PrintPJ(orderThis, orderThis, out t2);
+                                                            //	if (t2 != null)
+                                                            //	{
+                                                            //		po.Pjs = t2;
+                                                            //	}
+                                                            //}
 
-                                                            if (YJT.Text.Verification.IsNotNullOrEmpty(orderThis.IsYjbb) || orderThis.AGENTNAME.Contains("刘聪聪1"))
-                                                            {
-                                                                List<MOD.ModGoodsInfo> t3 = null;
-                                                                PrintLDYJ(orderThis, orderThis, out t3);
-                                                                if (t3 != null)
-                                                                {
-                                                                    po.Ldyjs = t3;
-                                                                }
-                                                            }
-                                                            if (
-                                                                (po.HeTongs != null && po.HeTongs.Count > 0) ||
-                                                                (po.Pjs != null && po.Pjs.Count > 0) ||
-                                                                (po.Ldyjs != null && po.Ldyjs.Count > 0)
-                                                            )
-                                                            {
-                                                                ComplatePrint(po, orderThis, orderThis);
-                                                            }
+                                                            //if (YJT.Text.Verification.IsNotNullOrEmpty(orderThis.IsYjbb) || orderThis.AGENTNAME.Contains("刘聪聪1"))
+                                                            //{
+                                                            //	List<MOD.ModGoodsInfo> t3 = null;
+                                                            //	PrintLDYJ(orderThis, orderThis, out t3);
+                                                            //	if (t3 != null)
+                                                            //	{
+                                                            //		po.Ldyjs = t3;
+                                                            //	}
+                                                            //}
+                                                            //if (
+                                                            //	(po.HeTongs != null && po.HeTongs.Count > 0) ||
+                                                            //	(po.Pjs != null && po.Pjs.Count > 0) ||
+                                                            //	(po.Ldyjs != null && po.Ldyjs.Count > 0)
+                                                            //)
+                                                            //{
+                                                            //	ComplatePrint(po, orderThis, orderThis);
+                                                            //}
                                                         }
                                                         //生成新的物流订单
                                                         //直接打印吧
@@ -816,7 +816,7 @@ namespace CenterServer
                         }
                         else
                         {
-                            Console.WriteLine(@"未获取到要处理的单据,等待30秒后重新获取");
+                            Console.WriteLine($@"{DateTime.Now:HH:mm:ss}: 未获取到要处理的单据,等待30秒后重新获取");
                             YJT.MSystem.GC.Collect();
                             ShowDebug(@"清理GC完成", 2);
                             ShowDebug(@"未获取到要处理的单据,(orderThis=null),等待30秒", 1);
@@ -1081,10 +1081,12 @@ namespace CenterServer
 
 
 
-
+            //电商发货
+            //1686
             //打印路单药检
             if (ldyjPages > 0)
             {
+                bool isPrintLdyj = false;
                 fmPath = YJT.Path.FunStrGetLocalPath() + @"\frx\WmsHPLDYJ.frx";
                 if (System.IO.File.Exists(fmPath))
                 {
@@ -1147,6 +1149,7 @@ namespace CenterServer
                                 else
                                 {
                                     frWmsLdyj.Print(false, Settings.Configs.GetHeTongPrinterName, updateObj);
+                                    isPrintLdyj = true;
                                 }
                                 tab1.Rows.Clear();
                             }
@@ -1165,6 +1168,7 @@ namespace CenterServer
                         else
                         {
                             frWmsLdyj.Print(false, Settings.Configs.GetHeTongPrinterName, updateObj);
+                            isPrintLdyj = true;
                         }
                         tab1.Rows.Clear();
                     }
@@ -1173,6 +1177,38 @@ namespace CenterServer
                         tab1.Dispose();
                     }
                     catch { }
+                    if (isPrintLdyj == true)
+                    {
+                        long erpid = 0;
+                        if (long.TryParse(updateObj.WmsDanjbh, out erpid))
+                        {
+                            if (bll.BCWmsPrintLDYJ(1686, erpid, out errMsg) == false)
+                            {
+                                Blll_AddMsgOutEve(
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + ":回写路单药检时失败",
+                                Settings.Setings.EnumMessageType.异常,
+                                Common.PubMethod.GetNameSpace(),
+                                -100,
+                                errMsg,
+                                "",
+                                DateTime.Now
+                                );
+                            }
+                        }
+                        else
+                        {
+                            Blll_AddMsgOutEve(
+                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + ":汇达ERP的销售单号不正确",
+                                Settings.Setings.EnumMessageType.异常,
+                                Common.PubMethod.GetNameSpace(),
+                                -100,
+                                "erpid不能转换long",
+                                "",
+                                DateTime.Now
+                                );
+                        }
+
+                    }
                     tab1 = null;
 
                 }
