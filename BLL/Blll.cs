@@ -805,6 +805,47 @@ where
             }
 
         }
+        public bool BCWmsPrintLDYJ(long userId, long outid, out string errMsg)
+        {
+            errMsg = "";
+            bool res = false;
+
+            string printDate = YJT.DataBase.Common.ConvertStringValue(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), YJT.DataBase.Common.ConvertType.日期, 0, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), false, YJT.DataBase.Common.DbType.Oracle);
+            if (outid > 0)
+            {
+                string sqlCmd = $@"
+update
+	wms_wave_dtl aa
+set
+	aa.yjdprintmanid={userId.ToString()},
+	aa.yjdprintflag=CASE WHEN NVL(aa.yjdprintflag,0)<9 THEN NVL(aa.yjdprintflag,0)+1 ELSE 9 END,
+	aa.yjdprintdate={printDate}
+where
+	','||nvl(aa.orders_set,'')||',' like '%,{outid.ToString()},%' ";
+                try
+                {
+                    int dbres = _dbhWms.ExecuteNonQuery(sqlCmd, null, System.Data.CommandType.Text, false, true, "");
+                    if (dbres > 0)
+                    {
+                        res = true;
+                    }
+                    else
+                    {
+                        errMsg = "更新记录失败 SQL:+" + sqlCmd;
+                    }
+                }
+                catch (Exception ee)
+                {
+                    errMsg = ee.ToString();
+                }
+
+            }
+            else
+            {
+                errMsg = "outid 值不正确: " + outid.ToString();
+            }
+            return res;
+        }
 
         public void ServerCopyLogicInfo2(BllMod.Order orderTo, BllMod.Order orderForm, bool v, out bool isOk, out int errCode, out string errMsg)
         {
@@ -1021,7 +1062,7 @@ where
                             //开始计算
                             if (order.Weight <= 3.0)
                             {
-                                if(YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北","河南", "山东", "山西" }, true))
+                                if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true))
                                 {
                                     //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
                                     order.Logic = Settings.Setings.EnumLogicType.新邮政Ems;
@@ -1078,8 +1119,8 @@ where
                                     YJT.Logistics.ShunFengLogistic.ClassCreateOrder.CargoDetailsClass 货品 = new YJT.Logistics.ShunFengLogistic.ClassCreateOrder.CargoDetailsClass()
                                     {
                                         count = 1,
-                                        name = "药品",
-                                        specifications = "药品",
+                                        name = "西药",
+                                        specifications = "西药",
                                         weight = order.Weight
                                     };
                                     YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ContactinfoClass 发件方 = new YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ContactinfoClass()
@@ -1134,7 +1175,7 @@ where
                                     }
                                     YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ServiceListClass 增值服务 = YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ServiceListClass.CtorService(YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ServiceListClass.enum增值服务类别.配送服务, null);
                                     //增值服务 = null;
-                                    YJT.Logistics.ShunFengLogistic.ClassCreateOrder a = _sf.Ctor_CreateOrderObj(order.ERPORDER_ID, 发件方, 收件方, 增值服务, 货品, 备注, "13", YJT.Logistics.ShunFengLogistic.ClassCreateOrder.enum产品类型.顺丰标快, YJT.Logistics.ShunFengLogistic.ClassCreateOrder.enum付款方式.寄付月结);
+                                    YJT.Logistics.ShunFengLogistic.ClassCreateOrder a = _sf.Ctor_CreateOrderObj(order.ERPORDER_ID, 发件方, 收件方, 增值服务, 货品, 备注, "13", YJT.Logistics.ShunFengLogistic.ClassCreateOrder.enum产品类型.陆运包裹, YJT.Logistics.ShunFengLogistic.ClassCreateOrder.enum付款方式.寄付月结);
                                     double tTotal_amt = 0d;
                                     if (!double.TryParse(order.total_amt, out tTotal_amt))
                                     {
@@ -3863,8 +3904,8 @@ where
                     YJT.Logistics.ShunFengLogistic.ClassCreateOrder.CargoDetailsClass 货品 = new YJT.Logistics.ShunFengLogistic.ClassCreateOrder.CargoDetailsClass()
                     {
                         count = 1,
-                        name = "药品",
-                        specifications = "药品",
+                        name = "西药",
+                        specifications = "西药",
                         weight = order.Weight
                     };
                     YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ContactinfoClass 发件方 = new YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ContactinfoClass()
@@ -4412,7 +4453,7 @@ UPDATE
                     {
                         if (tag.Ip == "192.168.79.131|")
                         {
-                            tip = tag.Ip.Replace("|","");
+                            tip = tag.Ip.Replace("|", "");
                         }
                     }
                 }
