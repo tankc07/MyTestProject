@@ -26,7 +26,7 @@ D:\YdecapServerLogExc
 1.2 服务端需要已下目录
 D:\decapServerLog
 
-2 enableInput 和 notcheckcom 文件
+2 客户端要求: enableInput 和 notcheckcom 文件 
 D:\YDECAP\notcheckcom
     为[客户端]读取Settings项目中的配置, 确定是否需要跳过检测电子秤.(不连接电子秤的电脑需要创建这个无扩展名文件)
 D:\YDECAP\enableInput
