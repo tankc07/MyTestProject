@@ -1063,7 +1063,10 @@ where
                             if (order.Weight <= 3.0)
                             {
                                 //order.Logic = Settings.Setings.EnumLogicType.申通快递;
-                                if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true))
+                                if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true)
+                                    || (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "湖北" }, true)
+                                        && YJT.Text.Verification.IsLikeIn(order.CITYNAME, new List<string>() { "黄冈" }, true)
+                                        && YJT.Text.Verification.IsLikeIn(order.DISTRICTNAME, new List<string>() { "武穴" }, true)))
                                 {
                                     //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
                                     order.Logic = Settings.Setings.EnumLogicType.新邮政Ems;
@@ -7482,7 +7485,10 @@ WHERE Bid={order.Bid}
                                 if (order.Weight <= 3.0)
                                 {
                                     //order.Logic = Settings.Setings.EnumLogicType.申通快递;
-                                    if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true))
+                                    if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true)
+                                        || (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "湖北" }, true)
+                                            && YJT.Text.Verification.IsLikeIn(order.CITYNAME, new List<string>() { "黄冈" }, true)
+                                            && YJT.Text.Verification.IsLikeIn(order.DISTRICTNAME, new List<string>() { "武穴" }, true)))
                                     {
                                         //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
                                         order.Logic = Settings.Setings.EnumLogicType.新邮政Ems;
