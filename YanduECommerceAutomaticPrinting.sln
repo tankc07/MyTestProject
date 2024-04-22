@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "测试", "测试\测试.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogisticsCore", "LogisticsCore\LogisticsCore.csproj", "{8761B651-20F4-44AA-9C7B-9DB036E13A19}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CenterServerManager", "CenterServerManager\CenterServerManager.csproj", "{F39F0CE9-7A05-4453-B1FF-79DD247DDBB5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{8761B651-20F4-44AA-9C7B-9DB036E13A19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8761B651-20F4-44AA-9C7B-9DB036E13A19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8761B651-20F4-44AA-9C7B-9DB036E13A19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F39F0CE9-7A05-4453-B1FF-79DD247DDBB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F39F0CE9-7A05-4453-B1FF-79DD247DDBB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F39F0CE9-7A05-4453-B1FF-79DD247DDBB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F39F0CE9-7A05-4453-B1FF-79DD247DDBB5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
