@@ -4832,10 +4832,13 @@ select
 	aa.receiveaddr as 收货地址,
 	aa.reccompanyid as 客户ID,
 	aa.exportmemo as 备注,
-	sysdate as 发货日期1, --第三方取得是打印日期
 	aa.detaillines as 品种总数,
-	aa.credate as 开票日期, --打印日期为开票日期+当前时间
-	aa.time4 as 发货日期2,
+	--sysdate as 发货日期1, --第三方取得是打印日期
+	--aa.credate as 开票日期, --打印日期为开票日期+当前时间
+	--aa.time4 as 发货日期2,
+    to_char(sysdate,'yyyy-mm-dd hh24:mi:ss') as 发货日期1, --2024-04-24 修改汇达随货同行单,日期格式化, By:ly
+    to_char(aa.credate,'yyyy-mm-dd hh24:mi:ss') as 开票日期, --2024-04-24 修改汇达随货同行单,日期格式化, By:ly
+    to_char(aa.time4,'yyyy-mm-dd hh24:mi:ss') as 发货日期2, --2024-04-24 修改汇达随货同行单,日期格式化, By:ly
 	aa.ZX_SAINPUTMAN as 开票员,
     ff.CONNPHONE as 收货单位联系方式    --2024-04-23 修改汇达随货同行单,新增收货单位联系方式, By:ly
 from
@@ -4846,7 +4849,7 @@ where  aa.transid=ff.TRANSID(+) --2024-04-23 修改汇达随货同行单,新增�
 ";
                     string sqlCmd2 = $@"
 select 
-	Row_Number() Over(order by bb.outdtlid asc) as 序号 ,
+	Row_Number() Over(order by bb.goodsid asc) as 序号 ,
 	bb.outid wms单据编号,
 	bb.outdtlid wms细表序号,
 	bb.goodsid as 商品IDWMS,
@@ -4863,8 +4866,10 @@ select
 	bb.price*bb.GOODSQTY as 总金额,
     round(bb.goodsqty / nvl(bb.packsize, 999999),3) as 件数,
 	bb.packsize 包装单位,
-	bb.proddate 生产日期,
-	bb.VALIDDATE 有效期,
+	--bb.proddate 生产日期,
+	--bb.VALIDDATE 有效期,
+    to_char(bb.proddate,'yyyy-mm-dd') as 生产日期, --2024-04-24 修改汇达随货同行单,日期格式化, 原生产日期不含时间部分 By:ly    
+    to_char(bb.VALIDDATE,'yyyy-mm-dd') as 有效期, --2024-04-24 修改汇达随货同行单,日期格式化, 原有效期不含时间部分 By:ly
 	bb.approvedocno as 批准文号,
 	bb.prodarea as 产地,
 	gg.ddlname as 运输条件,
@@ -4889,7 +4894,8 @@ from
 where
 	bb.outid={wmsDanjbh}
 order by
-	bb.outdtlid asc
+	--bb.outdtlid asc
+    bb.goodsid asc  --2024-04-24 修改汇达随货同行单,明细排序与WMS打印方案不一致问题, By:ly
 ";
                     System.Data.DataTable dt = _dbhWms.ExecuteToDataTable(sqlCmd, null, true);
                     if (dt.Rows.Count > 0)
