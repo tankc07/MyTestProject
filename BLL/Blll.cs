@@ -4836,11 +4836,13 @@ select
 	aa.detaillines as 品种总数,
 	aa.credate as 开票日期, --打印日期为开票日期+当前时间
 	aa.time4 as 发货日期2,
-	aa.ZX_SAINPUTMAN as 开票员
+	aa.ZX_SAINPUTMAN as 开票员,
+    ff.CONNPHONE as 收货单位联系方式    --2024-04-23 修改汇达随货同行单,新增收货单位联系方式, By:ly
 from
-	wms_out_order_v aa
-where
-	aa.outid={wmsDanjbh}
+	wms_out_order_v aa,
+    wms_transport_address_v ff  --2024-04-23 修改汇达随货同行单,新增收货单位联系方式, By:ly
+where  aa.transid=ff.TRANSID(+) --2024-04-23 修改汇达随货同行单,新增收货单位联系方式, By:ly
+	and aa.outid={wmsDanjbh}
 ";
                     string sqlCmd2 = $@"
 select 
@@ -4918,6 +4920,7 @@ order by
                             货主ID = YJT.DataBase.Common.ObjectTryToObj(dt.Rows[0]["货主ID"], ""),
                             货主原单据编号 = YJT.DataBase.Common.ObjectTryToObj(dt.Rows[0]["货主原单据编号"], ""),
                             货主名称 = YJT.DataBase.Common.ObjectTryToObj(dt.Rows[0]["货主名称"], ""),
+                            收货单位联系方式 = YJT.DataBase.Common.ObjectTryToObj(dt.Rows[0]["收货单位联系方式"], ""),
                         };
                         try
                         {

@@ -1326,6 +1326,7 @@ namespace CenterServer
                     _shtxFr.AddValue("总计散件", danjM.总计散件);
                     _shtxFr.AddValue("打印日期最新", danjM.打印日期最新);
                     _shtxFr.AddValue("电商ID", printObj.Bid);
+                    _shtxFr.AddValue("收货单位联系方式", danjM.收货单位联系方式);
                     System.Data.DataTable dt = YJT.DataTableHandle.ListToClass.ToDataTable(danjM.mx);
                     _shtxFr.AddDataTable("mx", dt);
 

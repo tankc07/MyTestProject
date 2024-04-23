@@ -241,6 +241,11 @@ namespace MOD
 			{
 				get; set;
 			}
+
+			public string 收货单位联系方式
+			{
+				get; set;
+			}
 			public List<Mod_PrintDataD> mx = new List<Mod_PrintDataD>();
 		}
 

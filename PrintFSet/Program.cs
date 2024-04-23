@@ -204,6 +204,7 @@ namespace PrintFSet
 							fr.AddValue("总计散件", danjM.总计散件);
 							fr.AddValue("打印日期最新", danjM.打印日期最新);
 							fr.AddValue("电商ID", order.Bid);
+							fr.AddValue("收货单位联系方式", danjM.收货单位联系方式);
 							System.Data.DataTable dt = YJT.DataTableHandle.ListToClass.ToDataTable(danjM.mx);
 							fr.AddDataTable("mx", dt);
 							fr.LoadPrintFrx(fullFileName);
