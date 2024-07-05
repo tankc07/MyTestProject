@@ -38,28 +38,34 @@ namespace PrintFSet
 				Console.WriteLine(@"申通快递:st");
 				Console.WriteLine(@"新邮政票据:nyz");
 
+				var frxPath = AppDomain.CurrentDomain.BaseDirectory + @"frx\";
+				if (BLL.Blll._clientInfoObj.Ip.Contains(@"192.168.50."))
+				{
+					frxPath = @"E:\WorkSpace\Source\Work_Project\面单打印模板\frx\";
+                }
+
 				orderType =Console.ReadLine();
 				if (orderType == "sf")
 				{
-					args = new string[] { @"D:\YDmycode\YanduECommerceAutomaticPrinting\CenterServer\bin\Debug\frx\Logic_Shunfeng.frx" };
+					args = new string[] { frxPath + @"Logic_Shunfeng.frx" };
 				}
 				else if (orderType == "yz")
 				{
-					args = new string[] { @"D:\YDmycode\YanduECommerceAutomaticPrinting\CenterServer\bin\Debug\frx\Logic_EmsYouzheng.frx" };
+					args = new string[] { frxPath + @"Logic_EmsYouzheng.frx" };
 				}
 				else if (orderType == "jd")
 				{
-					args = new string[] { @"D:\YDmycode\YanduECommerceAutomaticPrinting\CenterServer\bin\Debug\frx\Logic_JingdongWl.frx" };
+					args = new string[] { frxPath + @"Logic_JingdongWl.frx" };
 					
 				}
 				else if (orderType == "st")
 				{
-					args = new string[] { @"D:\YDmycode\YanduECommerceAutomaticPrinting\CenterServer\bin\Debug\frx\Logic_ShenTong.frx" };
+					args = new string[] { frxPath + @"Logic_ShenTong.frx" };
 
 				}
 				else if (orderType == "nyz")
 				{
-					args = new string[] { @"E:\NewPrintServer\服务端\Debug\frx\Logic_NewEms.frx" };
+					args = new string[] { frxPath + @"Logic_NewEms.frx" };
 				}
 				else if (orderType == "bs")
 				{
@@ -70,7 +76,7 @@ namespace PrintFSet
 				}
 				else if (orderType == "sh")
 				{
-					args = new string[] { @"D:\YDmycode\YanduECommerceAutomaticPrinting\CenterServer\bin\Debug\frx\shtx_hd.frx" };
+					args = new string[] { frxPath + @"shtx_hd.frx" };
 				}
 				else
 				{
