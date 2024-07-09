@@ -1,0 +1,51 @@
+[
+ {
+  "orderId": "LJ202204141438",
+  "senderContact": {
+   "name": "李先生",
+   "company": "xx公司",
+   "mobile": "13188888888",
+   "phone": "010-88888888",
+   "fullAddress": "上海市青浦区香花桥街道崧复路xxx号",
+   "warehouseCode": "WH001",
+   "extendProps": {
+    "key": "oaid",
+    "value": "dfsdfsdf"
+   }
+  },
+  "receiverContact": {
+   "name": "陈先生",
+   "company": "xx公司",
+   "mobile": "13188888888",
+   "phone": "010-88888888",
+   "fullAddress": "江苏省无锡市江阴市新桥镇北欧印象xx栋xxx号",
+   "extendProps": {
+    "key": "oaid",
+    "value": "asdasadad"
+   }
+  },
+  "orderOrigin": 1,
+  "customerCode": "010K2731958",
+  "productsReq": {
+   "productCode": "ed-m-0001"
+  },
+  "settleType": 3,
+  "cargoes": [
+   {
+    "name": "服装",
+    "quantity": 2,
+    "weight": 10,
+    "volume": 100,
+    "length": 10,
+    "width": 10,
+    "hight": 10,
+    "remark": "请携带包装袋"
+   }
+  ],
+  "pickupType": 1,
+  "remark": "请轻拿轻放",
+  "extendProps": {
+   "autoSubscribe": "1"
+  }
+ }
+]

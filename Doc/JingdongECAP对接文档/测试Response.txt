@@ -1,0 +1,59 @@
+{
+ "code": 0,
+ "data": {
+  "commonFeeInfoResponse": {
+   "calWeight": 10,
+   "currency": "CNY",
+   "expDate": 1720538274158,
+   "feeDetailInfoResponseList": [
+    {
+     "amount": 30,
+     "costName": "快递运费",
+     "costNo": "QIPSF",
+     "currency": "CNY",
+     "preAmount": 30,
+     "productCode": "ed-m-0001",
+     "productName": "京东标快"
+    }
+   ],
+   "totalAmount": 30,
+   "totalPreAmount": 30
+  },
+  "extendFields": {
+   "orderId": "LJ202204141438"
+  },
+  "faceSheetResponse": {
+   "faceSheetInfo": {
+    "endSiteId": 2181685,
+    "endSiteName": "◆江阴新华营业部",
+    "road": "012",
+    "startSiteId": 402488,
+    "startSiteName": "G上海重固营业部"
+    "startSiteName": "G上海重固营业部"
+   }
+  },
+  "freightPre": 30,
+  "needRetry": false,
+  "orderCode": "EOU0028981307723",
+  "presortResult": {
+   "endDeliveryType": "0",
+   "endRoadArea": "012",
+   "endStationName": "◆江阴新华营业部",
+   "endStationNo": "2181685",
+   "endStationPresortResultType": "1",
+   "endStationType": "4",
+   "startDeliveryType": "0",
+   "startRoadArea": "016",
+   "startStationName": "G上海重固营业部",
+   "startStationNo": "402488",
+   "startStationPresortResultType": "1",
+   "startStationType": "4"
+  },
+  "waybillCode": "JDVA27889904253"
+ },
+ "mills": 567,
+ "msg": "成功",
+ "requestId": "7ff2c47a-6528-469c-9b38-3470acfbb88f",
+ "subMsg": "自动订阅失败[原因:缺少推送配置]",
+ "success": true
+}
