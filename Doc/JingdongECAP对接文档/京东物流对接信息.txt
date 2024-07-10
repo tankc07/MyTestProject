@@ -28,6 +28,11 @@ A123b456c789
 010K2731958
 保定中诚汇达医药贸易有限公司
 
+appKey
+0cdc29884bde4f978c48a3be1f473946
+appSecret
+f462cc68dd9d45e6a920bf3a818d9c1b
+
 13230273357
 access token：	d9b8c0c8beef451289cdda371e55b1ab	复制
 2025-07-09 21:07:09到期，到期后需重新授权	
