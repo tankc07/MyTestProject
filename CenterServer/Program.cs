@@ -184,6 +184,19 @@ namespace CenterServer
                 outMsg2 = ("\r\n-------------------------------------------------------------\r\n" + dt.ToString("yyyy-MM-dd HH:mm:ss") + "\r\n");
             }
             Console.WriteLine(outMsg2);
+            if (!Directory.Exists(@"D:\YdecapServerLog\"))
+            {
+                try
+                {
+                    Directory.CreateDirectory(@"D:\YdecapServerLog\");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+                
+            }
             System.IO.File.AppendAllText(@"D:\YdecapServerLog\" + DateTime.Now.ToString("yyyyMMdd") + @".txt", outMsg2);
         }
         static bool _isPause = false;
