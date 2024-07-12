@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LogisticsCore.JingDong;
+using LogisticsCore.JingDong.Model;
+using LogisticsCore.JingDong.Request;
 using LogisticsCore.NewEMS;
 using LogisticsCore.NewEMS.Model;
 using LogisticsCore.NewEMS.Request;
@@ -61,7 +61,10 @@ namespace BLL
         YJT.Logistics.JingDongChunPeiLogistics _jdWl = YJT.Logistics.JingDongChunPeiLogistics.Init(Settings.APITokenKey.JingdongWlAppKey, Settings.APITokenKey.JingdongWlAppSecret, Settings.APITokenKey.JingdongWlToken, Settings.APITokenKey.JingdongWlAccessUrl, Settings.APITokenKey.JingdongWlDeptNo);
         YJT.Logistics.ZhongTongLogistics _ztkdWl = YJT.Logistics.ZhongTongLogistics.Init(Settings.APITokenKey.ZhongTongWlAppKey, Settings.APITokenKey.ZhongTongappSecret, Settings.APITokenKey.ZhongTongCustomid, Settings.APITokenKey.ZhongTongCustomPwd, Settings.APITokenKey.ZhongTongWlAppKeyTest, Settings.APITokenKey.ZhongTongappSecretTest, Settings.APITokenKey.ZhongTongIsTest);
         YJT.Logistics.ShenTongLogistic _shenTongWl = YJT.Logistics.ShenTongLogistic.Init(Settings.APITokenKey.ShenTongAppKey, Settings.APITokenKey.ShenTongSecretKey, Settings.APITokenKey.ShenTongResourceCode, Settings.APITokenKey.ShenTongFormOrderCode, Settings.APITokenKey.ShenTongSiteCode, Settings.APITokenKey.ShenTongCustomerName, Settings.APITokenKey.ShenTongSitePwd, Settings.APITokenKey.ShenTongIsTest);
-        //
+        //TODO:更换生产环境token和接口地址
+        FreshMedicineDelivery _jdFmd = FreshMedicineDelivery.Init(APITokenKey.JdFreshMedicineDeliveryAppKey, APITokenKey.JdFreshMedicineDeliveryAppSecret,
+            APITokenKey.JdFreshMedicineDeliveryTestAccessToken, APITokenKey.JdFreshMedicineDeliveryTestBaseUrl, APITokenKey.JdFreshMdicineDeliveryCustomerCode);
+
         /// <summary>
         /// 私有构造函数
         /// </summary>
@@ -359,6 +362,51 @@ SELECT
                 //	AddMsgOut(ee.ToString(), Settings.Setings.EnumMessageType.异常, 0, "写入物流日志错误");
                 //}
 
+            }
+            else if (item.Logic == Setings.EnumLogicType.京东生鲜医药快递)
+            {
+                var cancelRequest = new CancelOrderByVendorCodeAndDeliveryIdRequest
+                {
+                    cancelTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                    customerCode = APITokenKey.JdFreshMdicineDeliveryCustomerCode,
+                    interceptReason = "放弃订单",
+                    waybillNo = item.WL_NUMBER
+                };
+                string sendData = "";
+                string recData = "";
+                var res = _jdFmd.CancelOrder(cancelRequest, out isOk, out errCode, out errMsg, out sendData,
+                    out recData);
+                try
+                {
+                    if (!System.IO.Directory.Exists(@"D:\WLLOG"))
+                    {
+                        System.IO.Directory.CreateDirectory(@"D:\WLLOG");
+                    }
+                    System.IO.File.AppendAllText(@"D:\WLLOG\JingdongCancel_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "---------------------------------------------\r\n");
+                    System.IO.File.AppendAllText(@"D:\WLLOG\JingdongCancel_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + sendData + "\r\n");
+                    System.IO.File.AppendAllText(@"D:\WLLOG\JingdongCancel_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "返回-----------------------------------------------------------------\r\n");
+                    System.IO.File.AppendAllText(@"D:\WLLOG\JingdongCancel_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + recData + "\r\n");
+                }
+                catch (Exception ee)
+                {
+                    AddMsgOut(ee.ToString(), Settings.Setings.EnumMessageType.异常, 0, "写入物流日志错误");
+                }
+
+                if (isOk == true)
+                {
+                    if (res.success)
+                    {
+                        item.WL_NUMBER = "已删" + item.WL_NUMBER;
+                        item.Status = Setings.EnumOrderStatus.停止完成;
+                        errMsg = res.data;
+                    }
+                    else
+                    {
+                        item.WL_NUMBER = "已删" + item.WL_NUMBER;
+                        item.Status = Setings.EnumOrderStatus.停止完成;
+                        errMsg = "没有取消:" + res.message;
+                    }
+                }
             }
             else if (item.Logic == Setings.EnumLogicType.中通快递)
             {
@@ -1059,14 +1107,28 @@ where
                     {
                         if (order.Logic == Settings.Setings.EnumLogicType.Default)
                         {
-                            //开始计算
-                            if (order.Weight <= 3.0)
+                            #region 计算物流分配
+
+                            //1 订单金额大于2000元以上 >> 京东生鲜医药快递
+                            if (Convert.ToDouble(order.total_amt) > 2000d)
                             {
-                                //order.Logic = Settings.Setings.EnumLogicType.申通快递;
-                                if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true)
-                                    || (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "湖北" }, true)
-                                        && YJT.Text.Verification.IsLikeIn(order.CITYNAME, new List<string>() { "黄冈" }, true)
-                                        && YJT.Text.Verification.IsLikeIn(order.DISTRICTNAME, new List<string>() { "武穴" }, true)))
+                                order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
+                            }
+                            //2 京津冀且重量大于3公斤 >> 京东生鲜医药快递
+                            else if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北" }, true) && order.Weight > 3.0)
+                            {
+                                order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
+                            }
+                            //3 重量大于3公斤小于20公斤 >> 京东生鲜医药快递
+                            else if (order.Weight > 3.0 && order.Weight < 20.0)
+                            {
+                                order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
+                            }
+                            //4 重量小于3公斤->地区属于("北京", "天津", "河北", "河南", "山东", "山西") >> 新邮政Ems
+                            //             ->其他地区 >> 申通快递  
+                            else if (order.Weight <= 3.0)
+                            {
+                                if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true))
                                 {
                                     //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
                                     order.Logic = Settings.Setings.EnumLogicType.新邮政Ems;
@@ -1076,21 +1138,13 @@ where
                                     order.Logic = Settings.Setings.EnumLogicType.申通快递;
                                 }
                             }
+                            //5 以上都不符合的 默认 >> 顺丰
                             else
                             {
-                                //if (order.PlatformType == Setings.EnumPlatformType.小药药 || order.PlatformType == Setings.EnumPlatformType.药京采)
-                                if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北" }, true))
-                                {
-                                    order.Logic = Settings.Setings.EnumLogicType.邮政EMS;
-                                }
-                                else
-                                {
-                                    order.Logic = Setings.EnumLogicType.顺丰;
-                                }
+                                order.Logic = Setings.EnumLogicType.顺丰;
                             }
 
-
-
+                            #endregion
                         }
                         ///设置发货人
                         order.logi_sendAddress = @"河北省保定市莲池区北三环801号";
@@ -1850,6 +1904,236 @@ where
                                         isOk = false;
                                         errMsg = order.ErrMsg;
                                         errCode = -9;
+                                    }
+                                    break;
+                                }
+                            case Setings.EnumLogicType.京东生鲜医药快递:
+                                {
+                                    string 备注2 = "";
+                                    if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsFp))
+                                    {
+                                        备注2 = 备注2 + "发票";
+                                    }
+                                    if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsPj))
+                                    {
+                                        备注2 = 备注2 + " 货品批件";
+                                    }
+                                    if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsQysy))
+                                    {
+                                        备注2 = 备注2 + " 企业首营";
+                                    }
+                                    if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsSyzz))
+                                    {
+                                        备注2 = 备注2 + " 货品首营";
+                                    }
+                                    if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsYjbb))
+                                    {
+                                        备注2 = 备注2 + " 药检报告";
+                                    }
+                                    if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsHeTong))
+                                    {
+                                        备注2 = 备注2 + " 购销合同";
+                                    }
+                                    string stxt2 = "";
+                                    string otxt2 = "";
+                                    var checkRequest = new RangeCheckDeliveryQueryApiRequest
+                                    {
+                                        orderId = order.ErpId + "_" + order.logi_SubOrderSn.ToString(),
+                                        customerCode = APITokenKey.JdFreshMdicineDeliveryCustomerCode,
+                                        goodsType = 1,
+                                        receiverContactRequest = new ReceiverContactRequest
+                                        {
+                                            receiverAddress = order.ADDRESS,
+                                            receiverCityName = order.CITYNAME,
+                                            receiverTownName = order.STREETNAME,
+                                            receiverProvinceName = order.PROVINCENAME,
+                                            receiverCountyName = order.DISTRICTNAME,
+                                        },
+                                        senderContactRequest = new SenderContactRequest
+                                        {
+                                            senderAddress = order.logi_sendAddress,
+                                            senderProvinceName = order.logi_sendSheng,
+                                            senderCityName = order.logi_sendShi,
+                                            senderCountyName = order.logi_sendXian,
+                                            senderTownName = null
+                                        }
+                                    };
+
+                                    var res = _jdFmd.CheckOrder(checkRequest, out isOk, out errCode, out errMsg, out stxt2, out otxt2);
+                                    try
+                                    {
+                                        if (!System.IO.Directory.Exists(@"D:\WLLOG"))
+                                        {
+                                            System.IO.Directory.CreateDirectory(@"D:\WLLOG");
+                                        }
+                                        System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_check" + DateTime.Now.ToString("yyyyMMdd") + ".txt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "---------------------------------------------\r\n");
+                                        System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_check" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + stxt2 + "\r\n");
+                                        System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_check" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "返回-----------------------------------------------------------------\r\n");
+                                        System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_check" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + otxt2 + "\r\n");
+
+                                    }
+                                    catch (Exception ee)
+                                    {
+                                        AddMsgOut(ee.ToString(), Settings.Setings.EnumMessageType.异常, 0, "写入物流日志错误");
+                                    }
+
+                                    if (isOk = true && res.HasData)
+                                    {
+                                        order.logi_dstRoute = res.data.originalSortCenterId + "_" +
+                                                              res.data.originalSortCenterName + "-|-" +
+                                                              res.data.targetSortCenterId + "-" +
+                                                              res.data.targetSortCenterName;
+                                        order.JingdongWl = res.data.aging + "@<|||>@\n" +
+                                                           res.data.agingName + "@<|||>@\n" +
+                                                           res.data.collectionAddress + "@<|||>@\n" +
+                                                           res.data.coverCode + "@<|||>@\n" +
+                                                           res.data.distributeCode + "@<|||>@\n" +
+                                                           res.data.isHideContractNumbers + "@<|||>@\n" +
+                                                           res.data.isHideName + "@<|||>@\n" +
+                                                           res.data.qrcodeUrl + "@<|||>@\n" +
+                                                           res.data.road + "@<|||>@\n" +
+                                                           res.data.siteId + "@<|||>@\n" +
+                                                           res.data.siteName + "@<|||>@\n" +
+                                                           res.data.siteType + "@<|||>@\n" +
+                                                           res.data.targetCrossCode + "@<|||>@\n" +
+                                                           res.data.originalCrossCode + "@<|||>@\n" +
+                                                           res.data.originalSortCenterId + "@<|||>@\n" +
+                                                           res.data.originalSortCenterName + "@<|||>@\n" +
+                                                           res.data.originalTabletrolleyCode + "@<|||>@\n" +
+                                                           res.data.targetSortCenterId + "@<|||>@\n" +
+                                                           res.data.targetSortCenterName + "@<|||>@\n" +
+                                                           res.data.targetTabletrolleyCode + "@<|||>@\n";
+
+                                        #region 京东生鲜医药下单
+                                        //下单前置校验通过, 才尝试下单
+                                        var request = new NoOrderNumberReceiveRequest
+                                        {
+                                            orderId = order.ErpId + "_" + order.logi_SubOrderSn.ToString(),
+                                            senderContactRequest = new SenderContactModel
+                                            {
+                                                senderPhone = order.logi_sendPhone,
+                                                senderName = order.logi_sendMan,
+                                                senderAddress = order.logi_sendAddress,
+                                                senderMobile = order.logi_sendPhone,
+                                            },
+                                            customerCode = APITokenKey.JdFreshMdicineDeliveryCustomerCode,
+                                            remark = 备注2,
+                                            salePlatform = "0030001",
+                                            cargoesRequest = new CargoesModel
+                                            {
+                                                volume = 1,
+                                                goodsCount = 1,
+                                                weight = order.Weight,
+                                                description = "药品",
+                                                goodsName = null,
+                                                packageQty = 1
+                                            },
+                                            receiverContactRequest = new ReceiverContactModel
+                                            {
+                                                receiverName = order.RECVNAME,
+                                                receiverMobile = order.logi_TelNum,
+                                                receiverAddress = order.ADDRESS,
+                                                receiverPhone = order.logi_TelNum,
+                                                receiverCityName = order.CITYNAME,
+                                                receiverTownName = order.STREETNAME,
+                                                receiverProvinceName = order.PROVINCENAME,
+                                                receiverCountyName = order.DISTRICTNAME,
+                                            },
+                                            promiseTimeType = 29,
+                                            goodsType = 24,
+                                        };
+
+                                        var res2 = _jdFmd.CreateOrder(request, out isOk, out errCode, out errMsg, out stxt2, out otxt2);
+                                        try
+                                        {
+                                            if (!System.IO.Directory.Exists(@"D:\WLLOG"))
+                                            {
+                                                System.IO.Directory.CreateDirectory(@"D:\WLLOG");
+                                            }
+                                            System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "---------------------------------------------\r\n");
+                                            System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + stxt2 + "\r\n");
+                                            System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "返回-----------------------------------------------------------------\r\n");
+                                            System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + otxt2 + "\r\n");
+
+                                        }
+                                        catch (Exception ee)
+                                        {
+                                            AddMsgOut(ee.ToString(), Settings.Setings.EnumMessageType.异常, 0, "写入物流日志错误");
+                                        }
+                                        if (isOk == true && YJT.Text.Verification.IsNotNullOrEmpty(res2.data.waybillNo))
+                                        {
+                                            isOk = true;
+                                            errCode = 0;
+                                            errMsg = order.ErrMsg;
+                                            //为了回写 物流ID使用原来 Setings.EnumLogicType.京东物流 的ID值
+                                            order.WL_COMPANYID = "4";
+                                            order.WL_COMPANYNAME = Setings.EnumLogicType.京东物流.ToString();
+                                            order.WL_NUMBER = res2.data.waybillNo;
+                                            order.Status = Settings.Setings.EnumOrderStatus.已获取物流单号;
+                                            order.logi_CreateDate = DateTime.Now.ToString("yyyyMMdd");
+                                            order.ErrMsg = "创建物流订单完成";
+
+                                            order.logi_jinjianRiqi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                                            order.logi_baojiaJine = "0.00";
+                                            order.logi_dsJine = "0.00";
+                                            order.logi_feiyongTotal = 0.ToString("#0.00");
+                                            order.logi_goodName = request.cargoesRequest.description;
+                                            order.logi_goodQty = request.cargoesRequest.packageQty.ToString();
+                                            order.logi_logcNum = "";
+                                            order.logi_monAccNum = "";
+                                            order.logi_sendAddress = order.logi_sendAddress;
+                                            order.logi_sendMan = order.logi_sendMan;
+                                            order.logi_sendSheng = order.logi_sendSheng;
+                                            order.logi_sendShi = order.logi_sendShi;
+                                            order.logi_sendXian = order.logi_sendXian;
+                                            order.logi_shoufqianshu = "";
+                                            order.logi_shoufRiqi = "";
+                                            order.logi_shouhuory = "";
+                                            order.logi_ChanpinTypeStr = "生鲜医药[快递]";
+                                            order.logi_PayType = "月结";//坑
+                                            order.logi_OrderId = res2.data.waybillNo;
+
+                                            double total = 0;
+                                            double baojia = 0;
+                                            double yunfei = 0;
+                                            if (!double.TryParse(order.logi_feiyongTotal, out total))
+                                            {
+                                                total = 0;
+                                            }
+                                            if (!double.TryParse(order.logi_baojiaJine, out baojia))
+                                            {
+                                                baojia = 0;
+                                            }
+                                            yunfei = total;
+                                            if (yunfei <= 0)
+                                            {
+                                                order.logi_ysJine = yunfei.ToString("#0.000");
+                                                order.logi_ysJineTotal = order.logi_ysJine;
+                                            }
+                                            else
+                                            {
+                                                order.logi_ysJine = "";
+                                                order.logi_ysJineTotal = "";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            order.ErrMsg = "京东物流下单不成功:" + errMsg;
+                                            order.Status = Settings.Setings.EnumOrderStatus.异常_物流下单不成功;
+                                            isOk = false;
+                                            errCode = -1;
+                                            errMsg = order.ErrMsg;
+                                        }
+                                        #endregion
+
+                                    }
+                                    else
+                                    {
+                                        order.ErrMsg = "京东生鲜医药快递下单前置校验不成功:" + errMsg;
+                                        order.Status = Settings.Setings.EnumOrderStatus.异常_物流下单不成功;
+                                        isOk = false;
+                                        errCode = -1;
+                                        errMsg = order.ErrMsg;
                                     }
                                     break;
                                 }
@@ -2998,6 +3282,10 @@ where
                 {
                     orderNew = ServerCreateLogicSubJingDongWl(orderNew, out isOk, out errCode, out errMsg);
                 }
+                else if (orderNew.Logic == Setings.EnumLogicType.京东生鲜医药快递)
+                {
+                    orderNew = ServerCreateLogicSubJdFreshMedicineDelivery(orderNew, out isOk, out errCode, out errMsg);
+                }
                 else if (orderNew.Logic == Setings.EnumLogicType.中通快递)
                 {
                     orderNew = ServerCreateLogicSubZhongTongWl(orderNew, out isOk, out errCode, out errMsg);
@@ -3503,6 +3791,238 @@ where
             return order;
         }
 
+        private BllMod.Order ServerCreateLogicSubJdFreshMedicineDelivery(BllMod.Order order, out bool isOk,
+            out int errCode, out string errMsg)
+        {
+            //TODO:实现京东生鲜医药快递接口子单物流方法
+            string 备注2 = "";
+            if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsFp))
+            {
+                备注2 = 备注2 + "发票";
+            }
+            if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsPj))
+            {
+                备注2 = 备注2 + " 货品批件";
+            }
+            if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsQysy))
+            {
+                备注2 = 备注2 + " 企业首营";
+            }
+            if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsSyzz))
+            {
+                备注2 = 备注2 + " 货品首营";
+            }
+            if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsYjbb))
+            {
+                备注2 = 备注2 + " 药检报告";
+            }
+            if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsHeTong))
+            {
+                备注2 = 备注2 + " 购销合同";
+            }
+            string stxt2 = "";
+            string otxt2 = "";
+            var checkRequest = new RangeCheckDeliveryQueryApiRequest
+            {
+                orderId = order.ErpId + "_" + order.logi_SubOrderSn.ToString(),
+                customerCode = APITokenKey.JdFreshMdicineDeliveryCustomerCode,
+                goodsType = 1,
+                receiverContactRequest = new ReceiverContactRequest
+                {
+                    receiverAddress = order.ADDRESS,
+                    receiverCityName = order.CITYNAME,
+                    receiverTownName = order.STREETNAME,
+                    receiverProvinceName = order.PROVINCENAME,
+                    receiverCountyName = order.DISTRICTNAME,
+                },
+                senderContactRequest = new SenderContactRequest
+                {
+                    senderAddress = order.logi_sendAddress,
+                    senderProvinceName = order.logi_sendSheng,
+                    senderCityName = order.logi_sendShi,
+                    senderCountyName = order.logi_sendXian,
+                    senderTownName = null
+                }
+            };
+
+            var res = _jdFmd.CheckOrder(checkRequest, out isOk, out errCode, out errMsg, out stxt2, out otxt2);
+            try
+            {
+                if (!System.IO.Directory.Exists(@"D:\WLLOG"))
+                {
+                    System.IO.Directory.CreateDirectory(@"D:\WLLOG");
+                }
+                System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_check" + DateTime.Now.ToString("yyyyMMdd") + ".txt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "---------------------------------------------\r\n");
+                System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_check" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + stxt2 + "\r\n");
+                System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_check" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "返回-----------------------------------------------------------------\r\n");
+                System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_check" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + otxt2 + "\r\n");
+
+            }
+            catch (Exception ee)
+            {
+                AddMsgOut(ee.ToString(), Settings.Setings.EnumMessageType.异常, 0, "写入物流日志错误");
+            }
+
+            if (isOk = true && res.HasData)
+            {
+                order.logi_dstRoute = res.data.originalSortCenterId + "_" +
+                                      res.data.originalSortCenterName + "-|-" +
+                                      res.data.targetSortCenterId + "-" +
+                                      res.data.targetSortCenterName;
+                order.JingdongWl = res.data.aging + "@<|||>@\n" +
+                                   res.data.agingName + "@<|||>@\n" +
+                                   res.data.collectionAddress + "@<|||>@\n" +
+                                   res.data.coverCode + "@<|||>@\n" +
+                                   res.data.distributeCode + "@<|||>@\n" +
+                                   res.data.isHideContractNumbers + "@<|||>@\n" +
+                                   res.data.isHideName + "@<|||>@\n" +
+                                   res.data.qrcodeUrl + "@<|||>@\n" +
+                                   res.data.road + "@<|||>@\n" +
+                                   res.data.siteId + "@<|||>@\n" +
+                                   res.data.siteName + "@<|||>@\n" +
+                                   res.data.siteType + "@<|||>@\n" +
+                                   res.data.targetCrossCode + "@<|||>@\n" +
+                                   res.data.originalCrossCode + "@<|||>@\n" +
+                                   res.data.originalSortCenterId + "@<|||>@\n" +
+                                   res.data.originalSortCenterName + "@<|||>@\n" +
+                                   res.data.originalTabletrolleyCode + "@<|||>@\n" +
+                                   res.data.targetSortCenterId + "@<|||>@\n" +
+                                   res.data.targetSortCenterName + "@<|||>@\n" +
+                                   res.data.targetTabletrolleyCode + "@<|||>@\n";
+
+                #region 京东生鲜医药下单
+                //下单前置校验通过, 才尝试下单
+                var request = new NoOrderNumberReceiveRequest
+                {
+                    orderId = order.ErpId + "_" + order.logi_SubOrderSn.ToString(),
+                    senderContactRequest = new SenderContactModel
+                    {
+                        senderPhone = order.logi_sendPhone,
+                        senderName = order.logi_sendMan,
+                        senderAddress = order.logi_sendAddress,
+                        senderMobile = order.logi_sendPhone,
+                    },
+                    customerCode = APITokenKey.JdFreshMdicineDeliveryCustomerCode,
+                    remark = 备注2,
+                    salePlatform = "0030001",
+                    cargoesRequest = new CargoesModel
+                    {
+                        volume = 1,
+                        goodsCount = 1,
+                        weight = order.Weight,
+                        description = "药品",
+                        goodsName = null,
+                        packageQty = 1
+                    },
+                    receiverContactRequest = new ReceiverContactModel
+                    {
+                        receiverName = order.RECVNAME,
+                        receiverMobile = order.logi_TelNum,
+                        receiverAddress = order.ADDRESS,
+                        receiverPhone = order.logi_TelNum,
+                        receiverCityName = order.CITYNAME,
+                        receiverTownName = order.STREETNAME,
+                        receiverProvinceName = order.PROVINCENAME,
+                        receiverCountyName = order.DISTRICTNAME,
+                    },
+                    promiseTimeType = 29,
+                    goodsType = 24,
+                };
+
+                var res2 = _jdFmd.CreateOrder(request, out isOk, out errCode, out errMsg, out stxt2, out otxt2);
+                try
+                {
+                    if (!System.IO.Directory.Exists(@"D:\WLLOG"))
+                    {
+                        System.IO.Directory.CreateDirectory(@"D:\WLLOG");
+                    }
+                    System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "---------------------------------------------\r\n");
+                    System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + stxt2 + "\r\n");
+                    System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "返回-----------------------------------------------------------------\r\n");
+                    System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + otxt2 + "\r\n");
+
+                }
+                catch (Exception ee)
+                {
+                    AddMsgOut(ee.ToString(), Settings.Setings.EnumMessageType.异常, 0, "写入物流日志错误");
+                }
+                if (isOk == true && YJT.Text.Verification.IsNotNullOrEmpty(res2.data.waybillNo))
+                {
+                    isOk = true;
+                    errCode = 0;
+                    errMsg = order.ErrMsg;
+                    //为了回写 物流ID使用原来 Setings.EnumLogicType.京东物流 的ID值
+                    order.WL_COMPANYID = "4";
+                    order.WL_COMPANYNAME = Setings.EnumLogicType.京东物流.ToString();
+                    order.WL_NUMBER = res2.data.waybillNo;
+                    order.Status = Settings.Setings.EnumOrderStatus.已获取物流单号;
+                    order.logi_CreateDate = DateTime.Now.ToString("yyyyMMdd");
+                    order.ErrMsg = "创建物流订单完成";
+
+                    order.logi_jinjianRiqi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    order.logi_baojiaJine = "0.00";
+                    order.logi_dsJine = "0.00";
+                    order.logi_feiyongTotal = 0.ToString("#0.00");
+                    order.logi_goodName = request.cargoesRequest.description;
+                    order.logi_goodQty = request.cargoesRequest.packageQty.ToString();
+                    order.logi_logcNum = "";
+                    order.logi_monAccNum = "";
+                    order.logi_sendAddress = order.logi_sendAddress;
+                    order.logi_sendMan = order.logi_sendMan;
+                    order.logi_sendSheng = order.logi_sendSheng;
+                    order.logi_sendShi = order.logi_sendShi;
+                    order.logi_sendXian = order.logi_sendXian;
+                    order.logi_shoufqianshu = "";
+                    order.logi_shoufRiqi = "";
+                    order.logi_shouhuory = "";
+                    order.logi_ChanpinTypeStr = "生鲜医药[快递]";
+                    order.logi_PayType = "月结";//坑
+                    order.logi_OrderId = res2.data.waybillNo;
+
+                    double total = 0;
+                    double baojia = 0;
+                    double yunfei = 0;
+                    if (!double.TryParse(order.logi_feiyongTotal, out total))
+                    {
+                        total = 0;
+                    }
+                    if (!double.TryParse(order.logi_baojiaJine, out baojia))
+                    {
+                        baojia = 0;
+                    }
+                    yunfei = total;
+                    if (yunfei <= 0)
+                    {
+                        order.logi_ysJine = yunfei.ToString("#0.000");
+                        order.logi_ysJineTotal = order.logi_ysJine;
+                    }
+                    else
+                    {
+                        order.logi_ysJine = "";
+                        order.logi_ysJineTotal = "";
+                    }
+                }
+                else
+                {
+                    order.ErrMsg = "京东物流下单不成功:" + errMsg;
+                    order.Status = Settings.Setings.EnumOrderStatus.异常_物流下单不成功;
+                    isOk = false;
+                    errCode = -1;
+                    errMsg = order.ErrMsg;
+                }
+                #endregion
+
+            }
+            else
+            {
+                order.ErrMsg = "京东生鲜医药快递下单前置校验不成功:" + errMsg;
+                order.Status = Settings.Setings.EnumOrderStatus.异常_物流下单不成功;
+                isOk = false;
+                errCode = -1;
+                errMsg = order.ErrMsg;
+            }
+            return order;
+        }
         private BllMod.Order ServerCreateLogicSubEmsYouzheng(BllMod.Order order, out bool isOk, out int errCode, out string errMsg)
         {
             string 备注 = "";
@@ -7490,14 +8010,28 @@ WHERE Bid={order.Bid}
                         {
                             if (order.Logic == Settings.Setings.EnumLogicType.Default)
                             {
-                                //开始计算
-                                if (order.Weight <= 3.0)
+                                #region 计算物流分配
+
+                                //1 订单金额大于2000元以上 >> 京东生鲜医药快递
+                                if (Convert.ToDouble(order.total_amt) > 2000d)
                                 {
-                                    //order.Logic = Settings.Setings.EnumLogicType.申通快递;
-                                    if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true)
-                                        || (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "湖北" }, true)
-                                            && YJT.Text.Verification.IsLikeIn(order.CITYNAME, new List<string>() { "黄冈" }, true)
-                                            && YJT.Text.Verification.IsLikeIn(order.DISTRICTNAME, new List<string>() { "武穴" }, true)))
+                                    order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
+                                }
+                                //2 京津冀且重量大于3公斤 >> 京东生鲜医药快递
+                                else if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北" }, true) && order.Weight > 3.0)
+                                {
+                                    order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
+                                }
+                                //3 重量大于3公斤小于20公斤 >> 京东生鲜医药快递
+                                else if (order.Weight > 3.0 && order.Weight < 20.0)
+                                {
+                                    order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
+                                }
+                                //4 重量小于3公斤->地区属于("北京", "天津", "河北", "河南", "山东", "山西") >> 新邮政Ems
+                                //             ->其他地区 >> 申通快递  
+                                else if (order.Weight <= 3.0)
+                                {
+                                    if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true))
                                     {
                                         //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
                                         order.Logic = Settings.Setings.EnumLogicType.新邮政Ems;
@@ -7507,21 +8041,13 @@ WHERE Bid={order.Bid}
                                         order.Logic = Settings.Setings.EnumLogicType.申通快递;
                                     }
                                 }
+                                //5 以上都不符合的 默认 >> 顺丰
                                 else
                                 {
-                                    //if (order.PlatformType == Setings.EnumPlatformType.小药药 || order.PlatformType == Setings.EnumPlatformType.药京采)
-                                    if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北" }, true))
-                                    {
-                                        order.Logic = Settings.Setings.EnumLogicType.邮政EMS;
-                                    }
-                                    else
-                                    {
-                                        order.Logic = Setings.EnumLogicType.顺丰;
-                                    }
+                                    order.Logic = Setings.EnumLogicType.顺丰;
                                 }
 
-
-
+                                #endregion
                             }
                             ///设置发货人
                             order.logi_sendAddress = @"河北省保定市莲池区北三环801号";
@@ -7548,152 +8074,434 @@ WHERE Bid={order.Bid}
                             {
                                 order.Logic = Setings.EnumLogicType.Default;
                             }
+
                             switch (order.Logic)
                             {
                                 case Setings.EnumLogicType.京东物流:
-                                    string 备注2 = "";
-                                    if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsFp))
                                     {
-                                        备注2 = 备注2 + "发票";
-                                    }
-                                    if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsPj))
-                                    {
-                                        备注2 = 备注2 + " 货品批件";
-                                    }
-                                    if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsQysy))
-                                    {
-                                        备注2 = 备注2 + " 企业首营";
-                                    }
-                                    if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsSyzz))
-                                    {
-                                        备注2 = 备注2 + " 货品首营";
-                                    }
-                                    if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsYjbb))
-                                    {
-                                        备注2 = 备注2 + " 药检报告";
-                                    }
-                                    if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsHeTong))
-                                    {
-                                        备注2 = 备注2 + " 购销合同";
-                                    }
-                                    YJT.Logistics.JingDongChunPeiLogistics.ClassCreateOrder createClass = new YJT.Logistics.JingDongChunPeiLogistics.ClassCreateOrder("0030001", order.ErpId, order.logi_sendMan, order.logi_sendAddress, order.logi_sendPhone, order.RECVNAME, order.ADDRESS, order.logi_TelNum, 1, order.Weight, 1)
-                                    {
-                                        province = order.PROVINCENAME,
-                                        city = order.CITYNAME,
-                                        county = order.DISTRICTNAME,
-                                        town = order.STREETNAME,
-                                        description = "药品",
-                                        senderMobile = order.logi_sendPhone,
-                                        senderTel = order.logi_sendPhone,
-
-                                        receiveMobile = order.logi_PhonNum,
-                                        receiveTel = order.logi_TelNum,
-
-                                        remark = 备注2
-                                    };
-                                    string stxt2 = "";
-                                    string otxt2 = "";
-                                    YJT.Logistics.JingDongChunPeiLogistics.ClassCreateOrderRes res2 = _jdWl.CreateOrder(createClass, out isOk, out errCode, out errMsg, out stxt2, out otxt2);
-                                    try
-                                    {
-                                        if (!System.IO.Directory.Exists(@"D:\WLLOG"))
+                                        string 备注2 = "";
+                                        if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsFp))
                                         {
-                                            System.IO.Directory.CreateDirectory(@"D:\WLLOG");
+                                            备注2 = 备注2 + "发票";
                                         }
-                                        System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "---------------------------------------------\r\n");
-                                        System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + stxt2 + "\r\n");
-                                        System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "返回-----------------------------------------------------------------\r\n");
-                                        System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + otxt2 + "\r\n");
 
-                                    }
-                                    catch (Exception ee)
-                                    {
-                                        AddMsgOut(ee.ToString(), Settings.Setings.EnumMessageType.异常, 0, "写入物流日志错误");
-                                    }
-                                    if (isOk == true && YJT.Text.Verification.IsNotNullOrEmpty(res2.deliveryId))
-                                    {
-                                        order.WL_COMPANYID = ((int)order.Logic).ToString();
-                                        order.WL_COMPANYNAME = order.Logic.ToString();
-                                        order.WL_NUMBER = res2.deliveryId;
-                                        order.Status = Settings.Setings.EnumOrderStatus.已获取物流单号;
-                                        order.logi_CreateDate = DateTime.Now.ToString("yyyyMMdd");
-                                        order.ErrMsg = "创建物流订单完成";
-                                        order.logi_jinjianRiqi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
-                                        order.logi_baojiaJine = "0.00";
-                                        order.logi_dsJine = "0.00";
-                                        order.logi_feiyongTotal = 0.ToString("#0.00");
-                                        order.logi_goodName = createClass.description;
-                                        order.logi_goodQty = createClass.packageCount.ToString();
-                                        order.logi_logcNum = "";
-                                        order.logi_monAccNum = "";
-                                        order.logi_sendAddress = order.logi_sendAddress;
-                                        order.logi_sendMan = order.logi_sendMan;
-                                        order.logi_sendSheng = order.logi_sendSheng;
-                                        order.logi_sendShi = order.logi_sendShi;
-                                        order.logi_sendXian = order.logi_sendXian;
-                                        order.logi_shoufqianshu = "";
-                                        order.logi_shoufRiqi = "";
-                                        order.logi_shouhuory = "";
-                                        order.logi_ChanpinTypeStr = "纯配";
-                                        order.logi_PayType = "月结";//坑
-                                        order.logi_OrderId = res2.deliveryId;
-
-                                        order.logi_dstRoute = "";
-                                        if (res2.preSortResult != null)
+                                        if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsPj))
                                         {
-
-                                            order.logi_dstRoute = res2.preSortResult.sourceSortCenterId.Value.ToString() + "-" + res2.preSortResult.sourceSortCenterName + "-|-" + res2.preSortResult.targetSortCenterId.Value.ToString() + "-" + res2.preSortResult.targetSortCenterName;
-                                            order.JingdongWl = res2.preSortResult.aging.Value.ToString() + "@<|||>@\n" +
-                                                res2.preSortResult.agingName.Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.collectionAddress.Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.coverCode.Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.distributeCode.Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.isHideContractNumbers.Value.ToString().Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.isHideName.ToString().Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.qrcodeUrl.Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.road.Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.siteId.Value.ToString().Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.siteName.Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.siteType.Value.ToString().Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.slideNo.Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.sourceCrossCode.Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.sourceSortCenterId.Value.ToString().Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.sourceSortCenterName.Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.sourceTabletrolleyCode.Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.targetSortCenterId.Value.ToString().Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.targetSortCenterName.Replace("'", "") + "@<|||>@\n" +
-                                                res2.preSortResult.targetTabletrolleyCode.Replace("'", "") + "@<|||>@\n";
+                                            备注2 = 备注2 + " 货品批件";
                                         }
-                                        double total = 0;
-                                        double baojia = 0;
-                                        double yunfei = 0;
-                                        if (!double.TryParse(order.logi_feiyongTotal, out total))
+
+                                        if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsQysy))
                                         {
-                                            total = 0;
+                                            备注2 = 备注2 + " 企业首营";
                                         }
-                                        if (!double.TryParse(order.logi_baojiaJine, out baojia))
+
+                                        if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsSyzz))
                                         {
-                                            baojia = 0;
+                                            备注2 = 备注2 + " 货品首营";
                                         }
-                                        yunfei = total;
-                                        if (yunfei <= 0)
+
+                                        if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsYjbb))
                                         {
-                                            order.logi_ysJine = yunfei.ToString("#0.000");
-                                            order.logi_ysJineTotal = order.logi_ysJine;
+                                            备注2 = 备注2 + " 药检报告";
+                                        }
+
+                                        if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsHeTong))
+                                        {
+                                            备注2 = 备注2 + " 购销合同";
+                                        }
+
+                                        YJT.Logistics.JingDongChunPeiLogistics.ClassCreateOrder createClass =
+                                            new YJT.Logistics.JingDongChunPeiLogistics.ClassCreateOrder("0030001",
+                                                order.ErpId, order.logi_sendMan, order.logi_sendAddress,
+                                                order.logi_sendPhone, order.RECVNAME, order.ADDRESS, order.logi_TelNum, 1,
+                                                order.Weight, 1)
+                                            {
+                                                province = order.PROVINCENAME,
+                                                city = order.CITYNAME,
+                                                county = order.DISTRICTNAME,
+                                                town = order.STREETNAME,
+                                                description = "药品",
+                                                senderMobile = order.logi_sendPhone,
+                                                senderTel = order.logi_sendPhone,
+
+                                                receiveMobile = order.logi_PhonNum,
+                                                receiveTel = order.logi_TelNum,
+
+                                                remark = 备注2
+                                            };
+                                        string stxt2 = "";
+                                        string otxt2 = "";
+                                        YJT.Logistics.JingDongChunPeiLogistics.ClassCreateOrderRes res2 =
+                                            _jdWl.CreateOrder(createClass, out isOk, out errCode, out errMsg, out stxt2,
+                                                out otxt2);
+                                        try
+                                        {
+                                            if (!System.IO.Directory.Exists(@"D:\WLLOG"))
+                                            {
+                                                System.IO.Directory.CreateDirectory(@"D:\WLLOG");
+                                            }
+
+                                            System.IO.File.AppendAllText(
+                                                @"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt",
+                                                DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +
+                                                "---------------------------------------------\r\n");
+                                            System.IO.File.AppendAllText(
+                                                @"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt",
+                                                "\t" + stxt2 + "\r\n");
+                                            System.IO.File.AppendAllText(
+                                                @"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt",
+                                                "返回-----------------------------------------------------------------\r\n");
+                                            System.IO.File.AppendAllText(
+                                                @"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt",
+                                                "\t" + otxt2 + "\r\n");
+
+                                        }
+                                        catch (Exception ee)
+                                        {
+                                            AddMsgOut(ee.ToString(), Settings.Setings.EnumMessageType.异常, 0, "写入物流日志错误");
+                                        }
+
+                                        if (isOk == true && YJT.Text.Verification.IsNotNullOrEmpty(res2.deliveryId))
+                                        {
+                                            order.WL_COMPANYID = ((int)order.Logic).ToString();
+                                            order.WL_COMPANYNAME = order.Logic.ToString();
+                                            order.WL_NUMBER = res2.deliveryId;
+                                            order.Status = Settings.Setings.EnumOrderStatus.已获取物流单号;
+                                            order.logi_CreateDate = DateTime.Now.ToString("yyyyMMdd");
+                                            order.ErrMsg = "创建物流订单完成";
+                                            order.logi_jinjianRiqi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                                            order.logi_baojiaJine = "0.00";
+                                            order.logi_dsJine = "0.00";
+                                            order.logi_feiyongTotal = 0.ToString("#0.00");
+                                            order.logi_goodName = createClass.description;
+                                            order.logi_goodQty = createClass.packageCount.ToString();
+                                            order.logi_logcNum = "";
+                                            order.logi_monAccNum = "";
+                                            order.logi_sendAddress = order.logi_sendAddress;
+                                            order.logi_sendMan = order.logi_sendMan;
+                                            order.logi_sendSheng = order.logi_sendSheng;
+                                            order.logi_sendShi = order.logi_sendShi;
+                                            order.logi_sendXian = order.logi_sendXian;
+                                            order.logi_shoufqianshu = "";
+                                            order.logi_shoufRiqi = "";
+                                            order.logi_shouhuory = "";
+                                            order.logi_ChanpinTypeStr = "纯配";
+                                            order.logi_PayType = "月结"; //坑
+                                            order.logi_OrderId = res2.deliveryId;
+
+                                            order.logi_dstRoute = "";
+                                            if (res2.preSortResult != null)
+                                            {
+
+                                                order.logi_dstRoute =
+                                                    res2.preSortResult.sourceSortCenterId.Value.ToString() + "-" +
+                                                    res2.preSortResult.sourceSortCenterName + "-|-" +
+                                                    res2.preSortResult.targetSortCenterId.Value.ToString() + "-" +
+                                                    res2.preSortResult.targetSortCenterName;
+                                                order.JingdongWl = res2.preSortResult.aging.Value.ToString() + "@<|||>@\n" +
+                                                                   res2.preSortResult.agingName.Replace("'", "") +
+                                                                   "@<|||>@\n" +
+                                                                   res2.preSortResult.collectionAddress.Replace("'", "") +
+                                                                   "@<|||>@\n" +
+                                                                   res2.preSortResult.coverCode.Replace("'", "") +
+                                                                   "@<|||>@\n" +
+                                                                   res2.preSortResult.distributeCode.Replace("'", "") +
+                                                                   "@<|||>@\n" +
+                                                                   res2.preSortResult.isHideContractNumbers.Value.ToString()
+                                                                       .Replace("'", "") + "@<|||>@\n" +
+                                                                   res2.preSortResult.isHideName.ToString()
+                                                                       .Replace("'", "") + "@<|||>@\n" +
+                                                                   res2.preSortResult.qrcodeUrl.Replace("'", "") +
+                                                                   "@<|||>@\n" +
+                                                                   res2.preSortResult.road.Replace("'", "") + "@<|||>@\n" +
+                                                                   res2.preSortResult.siteId.Value.ToString()
+                                                                       .Replace("'", "") + "@<|||>@\n" +
+                                                                   res2.preSortResult.siteName.Replace("'", "") +
+                                                                   "@<|||>@\n" +
+                                                                   res2.preSortResult.siteType.Value.ToString()
+                                                                       .Replace("'", "") + "@<|||>@\n" +
+                                                                   res2.preSortResult.slideNo.Replace("'", "") +
+                                                                   "@<|||>@\n" +
+                                                                   res2.preSortResult.sourceCrossCode.Replace("'", "") +
+                                                                   "@<|||>@\n" +
+                                                                   res2.preSortResult.sourceSortCenterId.Value.ToString()
+                                                                       .Replace("'", "") + "@<|||>@\n" +
+                                                                   res2.preSortResult.sourceSortCenterName
+                                                                       .Replace("'", "") + "@<|||>@\n" +
+                                                                   res2.preSortResult.sourceTabletrolleyCode.Replace("'",
+                                                                       "") + "@<|||>@\n" +
+                                                                   res2.preSortResult.targetSortCenterId.Value.ToString()
+                                                                       .Replace("'", "") + "@<|||>@\n" +
+                                                                   res2.preSortResult.targetSortCenterName
+                                                                       .Replace("'", "") + "@<|||>@\n" +
+                                                                   res2.preSortResult.targetTabletrolleyCode.Replace("'",
+                                                                       "") + "@<|||>@\n";
+                                            }
+
+                                            double total = 0;
+                                            double baojia = 0;
+                                            double yunfei = 0;
+                                            if (!double.TryParse(order.logi_feiyongTotal, out total))
+                                            {
+                                                total = 0;
+                                            }
+
+                                            if (!double.TryParse(order.logi_baojiaJine, out baojia))
+                                            {
+                                                baojia = 0;
+                                            }
+
+                                            yunfei = total;
+                                            if (yunfei <= 0)
+                                            {
+                                                order.logi_ysJine = yunfei.ToString("#0.000");
+                                                order.logi_ysJineTotal = order.logi_ysJine;
+                                            }
+                                            else
+                                            {
+                                                order.logi_ysJine = "";
+                                                order.logi_ysJineTotal = "";
+                                            }
+
                                         }
                                         else
                                         {
-                                            order.logi_ysJine = "";
-                                            order.logi_ysJineTotal = "";
+                                            order.ErrMsg = "京东物流下单不成功:" + errMsg;
+                                            order.Status = Settings.Setings.EnumOrderStatus.异常_物流下单不成功;
+                                            flag = true;
+                                        }
+                                    }
+                                    break;
+                                case Setings.EnumLogicType.京东生鲜医药快递:
+                                    {
+                                        string 备注2 = "";
+                                        if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsFp))
+                                        {
+                                            备注2 = 备注2 + "发票";
+                                        }
+                                        if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsPj))
+                                        {
+                                            备注2 = 备注2 + " 货品批件";
+                                        }
+                                        if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsQysy))
+                                        {
+                                            备注2 = 备注2 + " 企业首营";
+                                        }
+                                        if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsSyzz))
+                                        {
+                                            备注2 = 备注2 + " 货品首营";
+                                        }
+                                        if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsYjbb))
+                                        {
+                                            备注2 = 备注2 + " 药检报告";
+                                        }
+                                        if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsHeTong))
+                                        {
+                                            备注2 = 备注2 + " 购销合同";
+                                        }
+                                        string stxt2 = "";
+                                        string otxt2 = "";
+                                        var checkRequest = new RangeCheckDeliveryQueryApiRequest
+                                        {
+                                            orderId = order.ErpId + "_" + order.logi_SubOrderSn.ToString(),
+                                            customerCode = APITokenKey.JdFreshMdicineDeliveryCustomerCode,
+                                            goodsType = 1,
+                                            receiverContactRequest = new ReceiverContactRequest
+                                            {
+                                                receiverAddress = order.ADDRESS,
+                                                receiverCityName = order.CITYNAME,
+                                                receiverTownName = order.STREETNAME,
+                                                receiverProvinceName = order.PROVINCENAME,
+                                                receiverCountyName = order.DISTRICTNAME,
+                                            },
+                                            senderContactRequest = new SenderContactRequest
+                                            {
+                                                senderAddress = order.logi_sendAddress,
+                                                senderProvinceName = order.logi_sendSheng,
+                                                senderCityName = order.logi_sendShi,
+                                                senderCountyName = order.logi_sendXian,
+                                                senderTownName = null
+                                            }
+                                        };
+
+                                        var res = _jdFmd.CheckOrder(checkRequest, out isOk, out errCode, out errMsg, out stxt2, out otxt2);
+                                        try
+                                        {
+                                            if (!System.IO.Directory.Exists(@"D:\WLLOG"))
+                                            {
+                                                System.IO.Directory.CreateDirectory(@"D:\WLLOG");
+                                            }
+                                            System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_check" + DateTime.Now.ToString("yyyyMMdd") + ".txt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "---------------------------------------------\r\n");
+                                            System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_check" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + stxt2 + "\r\n");
+                                            System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_check" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "返回-----------------------------------------------------------------\r\n");
+                                            System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_check" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + otxt2 + "\r\n");
+
+                                        }
+                                        catch (Exception ee)
+                                        {
+                                            AddMsgOut(ee.ToString(), Settings.Setings.EnumMessageType.异常, 0, "写入物流日志错误");
                                         }
 
-                                    }
-                                    else
-                                    {
-                                        order.ErrMsg = "京东物流下单不成功:" + errMsg;
-                                        order.Status = Settings.Setings.EnumOrderStatus.异常_物流下单不成功;
-                                        flag = true;
+                                        if (isOk = true && res.HasData)
+                                        {
+                                            order.logi_dstRoute = res.data.originalSortCenterId + "_" +
+                                                                  res.data.originalSortCenterName + "-|-" +
+                                                                  res.data.targetSortCenterId + "-" +
+                                                                  res.data.targetSortCenterName;
+                                            order.JingdongWl = res.data.aging + "@<|||>@\n" +
+                                                               res.data.agingName + "@<|||>@\n" +
+                                                               res.data.collectionAddress + "@<|||>@\n" +
+                                                               res.data.coverCode + "@<|||>@\n" +
+                                                               res.data.distributeCode + "@<|||>@\n" +
+                                                               res.data.isHideContractNumbers + "@<|||>@\n" +
+                                                               res.data.isHideName + "@<|||>@\n" +
+                                                               res.data.qrcodeUrl + "@<|||>@\n" +
+                                                               res.data.road + "@<|||>@\n" +
+                                                               res.data.siteId + "@<|||>@\n" +
+                                                               res.data.siteName + "@<|||>@\n" +
+                                                               res.data.siteType + "@<|||>@\n" +
+                                                               res.data.targetCrossCode + "@<|||>@\n" +
+                                                               res.data.originalCrossCode + "@<|||>@\n" +
+                                                               res.data.originalSortCenterId + "@<|||>@\n" +
+                                                               res.data.originalSortCenterName + "@<|||>@\n" +
+                                                               res.data.originalTabletrolleyCode + "@<|||>@\n" +
+                                                               res.data.targetSortCenterId + "@<|||>@\n" +
+                                                               res.data.targetSortCenterName + "@<|||>@\n" +
+                                                               res.data.targetTabletrolleyCode + "@<|||>@\n";
+
+                                            #region 京东生鲜医药下单
+                                            //上面下单前置校验通过, 才尝试下单
+                                            //TODO:是否需要增加保价
+                                            var request = new NoOrderNumberReceiveRequest
+                                            {
+                                                orderId = order.ErpId + "_" + order.logi_SubOrderSn.ToString(),
+                                                senderContactRequest = new SenderContactModel
+                                                {
+                                                    senderPhone = order.logi_sendPhone,
+                                                    senderName = order.logi_sendMan,
+                                                    senderAddress = order.logi_sendAddress,
+                                                    senderMobile = order.logi_sendPhone,
+                                                },
+                                                customerCode = APITokenKey.JdFreshMdicineDeliveryCustomerCode,
+                                                remark = 备注2,
+                                                salePlatform = "0030001",
+                                                cargoesRequest = new CargoesModel
+                                                {
+                                                    volume = 1,
+                                                    goodsCount = 1,
+                                                    weight = order.Weight,
+                                                    description = "药品",
+                                                    goodsName = null,
+                                                    packageQty = 1
+                                                },
+                                                receiverContactRequest = new ReceiverContactModel
+                                                {
+                                                    receiverName = order.RECVNAME,
+                                                    receiverMobile = order.logi_TelNum,
+                                                    receiverAddress = order.ADDRESS,
+                                                    receiverPhone = order.logi_TelNum,
+                                                    receiverCityName = order.CITYNAME,
+                                                    receiverTownName = order.STREETNAME,
+                                                    receiverProvinceName = order.PROVINCENAME,
+                                                    receiverCountyName = order.DISTRICTNAME,
+                                                },
+                                                promiseTimeType = 29,
+                                                goodsType = 24,
+                                            };
+
+                                            var res2 = _jdFmd.CreateOrder(request, out isOk, out errCode, out errMsg, out stxt2, out otxt2);
+                                            try
+                                            {
+                                                if (!System.IO.Directory.Exists(@"D:\WLLOG"))
+                                                {
+                                                    System.IO.Directory.CreateDirectory(@"D:\WLLOG");
+                                                }
+                                                System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "---------------------------------------------\r\n");
+                                                System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + stxt2 + "\r\n");
+                                                System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "返回-----------------------------------------------------------------\r\n");
+                                                System.IO.File.AppendAllText(@"D:\WLLOG\Jingdong_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + otxt2 + "\r\n");
+
+                                            }
+                                            catch (Exception ee)
+                                            {
+                                                AddMsgOut(ee.ToString(), Settings.Setings.EnumMessageType.异常, 0, "写入物流日志错误");
+                                            }
+                                            if (isOk == true && YJT.Text.Verification.IsNotNullOrEmpty(res2.data.waybillNo))
+                                            {
+                                                isOk = true;
+                                                errCode = 0;
+                                                errMsg = order.ErrMsg;
+                                                //为了回写 物流ID使用原来 Setings.EnumLogicType.京东物流 的ID值
+                                                order.WL_COMPANYID = "4";
+                                                order.WL_COMPANYNAME = Setings.EnumLogicType.京东物流.ToString();
+                                                order.WL_NUMBER = res2.data.waybillNo;
+                                                order.Status = Settings.Setings.EnumOrderStatus.已获取物流单号;
+                                                order.logi_CreateDate = DateTime.Now.ToString("yyyyMMdd");
+                                                order.ErrMsg = "创建物流订单完成";
+
+                                                order.logi_jinjianRiqi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                                                order.logi_baojiaJine = "0.00";
+                                                order.logi_dsJine = "0.00";
+                                                order.logi_feiyongTotal = 0.ToString("#0.00");
+                                                order.logi_goodName = request.cargoesRequest.description;
+                                                order.logi_goodQty = request.cargoesRequest.packageQty.ToString();
+                                                order.logi_logcNum = "";
+                                                order.logi_monAccNum = "";
+                                                order.logi_sendAddress = order.logi_sendAddress;
+                                                order.logi_sendMan = order.logi_sendMan;
+                                                order.logi_sendSheng = order.logi_sendSheng;
+                                                order.logi_sendShi = order.logi_sendShi;
+                                                order.logi_sendXian = order.logi_sendXian;
+                                                order.logi_shoufqianshu = "";
+                                                order.logi_shoufRiqi = "";
+                                                order.logi_shouhuory = "";
+                                                order.logi_ChanpinTypeStr = "生鲜医药[快递]";
+                                                order.logi_PayType = "月结";//坑
+                                                order.logi_OrderId = res2.data.waybillNo;
+
+                                                double total = 0;
+                                                double baojia = 0;
+                                                double yunfei = 0;
+                                                if (!double.TryParse(order.logi_feiyongTotal, out total))
+                                                {
+                                                    total = 0;
+                                                }
+                                                if (!double.TryParse(order.logi_baojiaJine, out baojia))
+                                                {
+                                                    baojia = 0;
+                                                }
+                                                yunfei = total;
+                                                if (yunfei <= 0)
+                                                {
+                                                    order.logi_ysJine = yunfei.ToString("#0.000");
+                                                    order.logi_ysJineTotal = order.logi_ysJine;
+                                                }
+                                                else
+                                                {
+                                                    order.logi_ysJine = "";
+                                                    order.logi_ysJineTotal = "";
+                                                }
+                                            }
+                                            else
+                                            {
+                                                order.ErrMsg = "京东物流下单不成功:" + errMsg;
+                                                order.Status = Settings.Setings.EnumOrderStatus.异常_物流下单不成功;
+                                                isOk = false;
+                                                errCode = -1;
+                                                errMsg = order.ErrMsg;
+                                            }
+                                            #endregion
+
+                                        }
+                                        else
+                                        {
+                                            order.ErrMsg = "京东生鲜医药快递下单前置校验不成功:" + errMsg;
+                                            order.Status = Settings.Setings.EnumOrderStatus.异常_物流下单不成功;
+                                            isOk = false;
+                                            errCode = -1;
+                                            errMsg = order.ErrMsg;
+                                        }
                                     }
                                     break;
                                 case Settings.Setings.EnumLogicType.顺丰:
@@ -8707,6 +9515,10 @@ WHERE Bid={order.Bid}
                             flag = true;
                             break;
                         case Settings.Setings.EnumLogicType.京东物流:
+                            order.ErrMsg = "物流信息获取完成";
+                            flag = true;
+                            break;
+                        case Setings.EnumLogicType.京东生鲜医药快递:
                             order.ErrMsg = "物流信息获取完成";
                             flag = true;
                             break;
