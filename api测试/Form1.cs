@@ -1,143 +1,146 @@
-﻿using api测试.Properties;
-using MOD;
+﻿using MOD;
 using Settings;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Unicode;
 using System.Windows.Forms;
 using FastReport;
+using LogisticsCore.JingDong;
+using LogisticsCore.JingDong.Model;
+using LogisticsCore.JingDong.Request;
+using LogisticsCore.JingDong.Response;
 using LogisticsCore.NewEMS;
 using LogisticsCore.NewEMS.Model;
+using LopOpensdkDotnet.Support;
 using Newtonsoft.Json;
 using SqlSugar;
-using YJT;
-using static System.Runtime.CompilerServices.RuntimeHelpers;
 using DbType = SqlSugar.DbType;
-using YJT.Encrypt.SHAEncrypt;
-using YJT.Encrypt.Base64;
+using LopOpensdkDotnet.Filters;
+using LopOpensdkDotnet;
 
 namespace api测试
 {
-	
-	public partial class Form1 : Form
-	{
-		struct LOGFONT
-		{
-			public int lfHeight;
-			// Other fields omitted for brevity
-		}
-		[DllImport("user32.dll")]
-		public static extern bool GetCursorPos(ref System.Drawing.Point lpPoint);
 
-		[DllImport("user32.dll")]
-		public static extern IntPtr WindowFromPoint(System.Drawing.Point point);
-		[DllImport("user32.dll")]
-		static extern int SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-		[DllImport("user32.dll")]
-		static extern int SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
-		[DllImport("gdi32.dll")]
-		static extern IntPtr CreateFontIndirect(LOGFONT lplf);
-		[DllImport("gdi32.dll")]
-		static extern bool DeleteObject(IntPtr hObject);
-		const uint WM_SETFONT = 0x30;
-		const int GWL_WNDPROC = -4;
-		public Form1()
-		{
-			InitializeComponent();
-		}
-		IntPtr hwnd;
-		private void timer1_Tick(object sender, EventArgs e)
-		{
-			try
-			{
-				System.Drawing.Point mousePos = new System.Drawing.Point();
-				GetCursorPos(ref mousePos);
-				hwnd = WindowFromPoint(mousePos);
-				textBox1.Text = hwnd.ToString();
-			}
-			catch (Exception ee){
-				textBox1.Text = ee.ToString();
-			}
-			
-		}
+    public partial class Form1 : Form
+    {
+        struct LOGFONT
+        {
+            public int lfHeight;
+            // Other fields omitted for brevity
+        }
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(ref System.Drawing.Point lpPoint);
 
-		private void button1_Click(object sender, EventArgs e)
-		{
-			timer1.Enabled = !timer1.Enabled;
-		}
+        [DllImport("user32.dll")]
+        public static extern IntPtr WindowFromPoint(System.Drawing.Point point);
+        [DllImport("user32.dll")]
+        static extern int SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+        [DllImport("user32.dll")]
+        static extern int SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+        [DllImport("gdi32.dll")]
+        static extern IntPtr CreateFontIndirect(LOGFONT lplf);
+        [DllImport("gdi32.dll")]
+        static extern bool DeleteObject(IntPtr hObject);
+        const uint WM_SETFONT = 0x30;
+        const int GWL_WNDPROC = -4;
+        public Form1()
+        {
+            InitializeComponent();
+        }
+        IntPtr hwnd;
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Drawing.Point mousePos = new System.Drawing.Point();
+                GetCursorPos(ref mousePos);
+                hwnd = WindowFromPoint(mousePos);
+                textBox1.Text = hwnd.ToString();
+            }
+            catch (Exception ee)
+            {
+                textBox1.Text = ee.ToString();
+            }
 
-		private void Form1_Load(object sender, EventArgs e)
-		{
-			
-		}
+        }
 
-		private void button2_Click(object sender, EventArgs e)
-		{
-			System.Drawing.Graphics graphics = System.Drawing.Graphics.FromHwnd(hwnd);
-			System.Drawing.Font font = new System.Drawing.Font("Arial", 100);
-			graphics.DrawString("Hello, World!", font, System.Drawing.Brushes.Black, new System.Drawing.PointF(0, 0));
-		}
+        private void button1_Click(object sender, EventArgs e)
+        {
+            timer1.Enabled = !timer1.Enabled;
+        }
 
-		private void button3_Click(object sender, EventArgs e)
-		{
-			//var a = Control.FromHandle(hwnd);
-			//if (a != null)
-			//{
-			//	textBox1.Text = a.ToString();
-			//	Form form = (Form)Control.FromHandle(hwnd);
-			//	if (form == null)
-			//	{
-			//		form = Control.FromHandle(hwnd).FindForm();
-			//	}
-			//	if (form != null)
-			//	{
-			//		System.Drawing.Font font = new System.Drawing.Font("Arial", 100);
-			//		form.Font = font;
-			//	}
-			//}
+        private void Form1_Load(object sender, EventArgs e)
+        {
 
-			FontDialog fd = new FontDialog();
-			if (fd.ShowDialog() == DialogResult.OK)
-			{
-				Font font = fd.Font;
+        }
 
-				//System.Drawing.Font font = new System.Drawing.Font("Arial",1,FontStyle.Bold);
-				IntPtr hFont = font.ToHfont();
-				SendMessage(hwnd, WM_SETFONT, hFont, hFont);
-			}
+        private void button2_Click(object sender, EventArgs e)
+        {
+            System.Drawing.Graphics graphics = System.Drawing.Graphics.FromHwnd(hwnd);
+            System.Drawing.Font font = new System.Drawing.Font("Arial", 100);
+            graphics.DrawString("Hello, World!", font, System.Drawing.Brushes.Black, new System.Drawing.PointF(0, 0));
+        }
 
+        private void button3_Click(object sender, EventArgs e)
+        {
+            //var a = Control.FromHandle(hwnd);
+            //if (a != null)
+            //{
+            //	textBox1.Text = a.ToString();
+            //	Form form = (Form)Control.FromHandle(hwnd);
+            //	if (form == null)
+            //	{
+            //		form = Control.FromHandle(hwnd).FindForm();
+            //	}
+            //	if (form != null)
+            //	{
+            //		System.Drawing.Font font = new System.Drawing.Font("Arial", 100);
+            //		form.Font = font;
+            //	}
+            //}
 
-			//{
-			//	LOGFONT lo = new LOGFONT();
-			//	lo.lfHeight = 100;
-			//	int t1 = Marshal.SizeOf(lo);
-			//	IntPtr hFon2 = Marshal.AllocHGlobal(t1);
-			//	Marshal.StructureToPtr(lo, hFon2, true);
-			//	SendMessage(hwnd, WM_SETFONT, hFon2, (IntPtr)(-1));
-			//	//SetWindowLong(hwnd, GWL_WNDPROC, hFon2);
-			//	//SetWindowLong(hwnd, GWL_WNDPROC, hFont);
-			//}
+            FontDialog fd = new FontDialog();
+            if (fd.ShowDialog() == DialogResult.OK)
+            {
+                Font font = fd.Font;
 
-			//{
-			//	LOGFONT lf = new LOGFONT();
-			//	lf.lfHeight = 100;
-			//	IntPtr hFont = CreateFontIndirect(lf);
-
-			//	SendMessage(hwnd, WM_SETFONT, hFont, (IntPtr)(-1));
-
-			//	// Don't forget to delete the font handle when you're done
-			//	DeleteObject(hFont);
-			//}
+                //System.Drawing.Font font = new System.Drawing.Font("Arial",1,FontStyle.Bold);
+                IntPtr hFont = font.ToHfont();
+                SendMessage(hwnd, WM_SETFONT, hFont, hFont);
+            }
 
 
+            //{
+            //	LOGFONT lo = new LOGFONT();
+            //	lo.lfHeight = 100;
+            //	int t1 = Marshal.SizeOf(lo);
+            //	IntPtr hFon2 = Marshal.AllocHGlobal(t1);
+            //	Marshal.StructureToPtr(lo, hFon2, true);
+            //	SendMessage(hwnd, WM_SETFONT, hFon2, (IntPtr)(-1));
+            //	//SetWindowLong(hwnd, GWL_WNDPROC, hFon2);
+            //	//SetWindowLong(hwnd, GWL_WNDPROC, hFont);
+            //}
 
-		}
+            //{
+            //	LOGFONT lf = new LOGFONT();
+            //	lf.lfHeight = 100;
+            //	IntPtr hFont = CreateFontIndirect(lf);
+
+            //	SendMessage(hwnd, WM_SETFONT, hFont, (IntPtr)(-1));
+
+            //	// Don't forget to delete the font handle when you're done
+            //	DeleteObject(hFont);
+            //}
+
+
+
+        }
         static BLL.Blll bll = null;
         YJT.DataBase.DbHelper _dbhLocal = null;
 
@@ -538,22 +541,22 @@ order by
             //order.Logic = Setings.EnumLogicType.Default;
             //var res = db2.ServerCreateLogic(order, out isOk, out errCode, out errMsg);
             var json = txtJson.Text;
-            var ems = NewEms.Init(Settings.APITokenKey.NewEmsSenderNo, Settings.APITokenKey.NewEmsSignKey, APITokenKey.NewEmsAuthorization, 
-	            APITokenKey.NewEmsTestSignKey, APITokenKey.NewEmsTestAuthorization, APITokenKey.NewEmsBaseUrl, APITokenKey.NewEmsUrl, APITokenKey.NewEmsTestUrl, true);
+            var ems = NewEms.Init(Settings.APITokenKey.NewEmsSenderNo, Settings.APITokenKey.NewEmsSignKey, APITokenKey.NewEmsAuthorization,
+                APITokenKey.NewEmsTestSignKey, APITokenKey.NewEmsTestAuthorization, APITokenKey.NewEmsBaseUrl, APITokenKey.NewEmsUrl, APITokenKey.NewEmsTestUrl, true);
 
-            var senderModel = ems.GetAddressModel("稠义路1号金汇化纤8楼左边大门","江西省","南昌市","昌北区","张三","18178977225","18178977225","322000");
-            var receiverModel = ems.GetAddressModel("裕华西路北国商城1楼","河北省","保定市","莲池区","李四","13912345678","13912345678","071000");
+            var senderModel = ems.GetAddressModel("稠义路1号金汇化纤8楼左边大门", "江西省", "南昌市", "昌北区", "张三", "18178977225", "18178977225", "322000");
+            var receiverModel = ems.GetAddressModel("裕华西路北国商城1楼", "河北省", "保定市", "莲池区", "李四", "13912345678", "13912345678", "071000");
             var cargo = ems.GetCargoModel();
-            
 
-            var emsOrder = ems.GetCreateOrderModel(senderModel, receiverModel, new[]{cargo},Setings.EnumPlatformType.无.ToString(),"9999999",4,1.0,1.0,1.0,
-	            YJT.Text.ClassCreateText.FunStrCreateNumberStr(6),"无备注");
+
+            var emsOrder = ems.GetCreateOrderModel(senderModel, receiverModel, new[] { cargo }, Setings.EnumPlatformType.无.ToString(), "9999999", 4, 1.0, 1.0, 1.0,
+                YJT.Text.ClassCreateText.FunStrCreateNumberStr(6), "无备注");
             bool isOk;
             int errCode;
             string errMsg;
             string sendText;
             string resText;
-            var res = ems.SendNewEmsOrder(emsOrder,out isOk, out errCode, out errMsg, out sendText, out resText);
+            var res = ems.SendNewEmsOrder(emsOrder, out isOk, out errCode, out errMsg, out sendText, out resText);
         }
 
         public class JsonClass
@@ -580,7 +583,7 @@ order by
 
         private void button6_Click(object sender, EventArgs e)
         {
-	        var report = new Report();
+            var report = new Report();
             report.Load(@"E:\WorkSpace\Source\Work_Project\面单打印模板\frx\Logic_ShenTong - 副本.frx");
             //re.Design();
             report.Show();
@@ -589,14 +592,402 @@ order by
 
         private void button7_Click(object sender, EventArgs e)
         {
-	        var order = new CreateOrderModel();
-	        order.sender = new AddressModel();
+            var order = new CreateOrderModel();
+            order.sender = new AddressModel();
             order.receiver = new AddressModel();
             var cargo = new CargoModel();
             order.cargos = new List<CargoModel>();
             order.cargos.Add(cargo);
-            var json = JsonConvert.SerializeObject(order, new JsonSerializerSettings(){Formatting = Formatting.Indented, ContractResolver = new CamelCasePropertyNamesContractResolver()});
+            var json = JsonConvert.SerializeObject(order, new JsonSerializerSettings() { Formatting = Formatting.Indented, ContractResolver = new CamelCasePropertyNamesContractResolver() });
             txtLog.Text = json;
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            var client = new DefaultClient("https://uat-api.jdl.com");
+            // 系统参数，应用的app_ley和app_secret，可从【控制台-应用管理-概览】中查看；access_token是用户授权时获取的令牌，用户授权相关说明请查看https://cloud.jdl.com/#/devSupport/53392
+            var isvFilter = new IsvFilter("0cdc29884bde4f978c48a3be1f473946", "f462cc68dd9d45e6a920bf3a818d9c1b", "d9b8c0c8beef451289cdda371e55b1ab");
+            var errorResponseFilter = new ErrorResponseFilter();
+
+            var request = new GenericRequest();
+            // 对接方案编码，不同的对接方案取值不同，具体取值可在【控制台-应用管理-对接方案-编码】查看
+            request.Domain = "FreshMedicineDelivery";
+            // 接口调用地址，具体取值请看【接口文档-请求地址-调用路径（path）】
+            request.Path = @"/freshmedicinedelivery/delivery/create/order/v1";
+            // 固定是POST，并且是大写
+            request.Method = "POST";
+
+            // 请求报文，根据接口文档组织请求报文
+            var body = new NoOrderNumberReceiveRequest
+            {            
+                //orderId的值在下单成功后, 如果orderId不变, 地址即使改变不支持下单的地方, 也可以下单成功, 因为成功创建了京东订单, 只有取消后, 才能返回地址错误.
+                orderId = "测试订单SSSS1234567890",
+                senderContactRequest = new SenderContactModel
+                {
+                    senderName = "张三",
+                    senderAddress = "河北省保定市中诚汇达",
+                    senderCompany = null,
+                    senderMobile = "13333333333"
+                },
+                customerCode = "010K2731958",
+                remark = "测试备注",
+                salePlatform = "0030001",
+                cargoesRequest = new CargoesModel
+                {
+                    volume = 2.0,
+                    goodsCount = 1,
+                    weight = 1.0,
+                    goodsName = "药品",
+                    packageQty = 1
+                },
+                backContactRequest = null,
+                shipmentEndTime = null,
+                fileUrl = null,
+                receiverContactRequest = new ReceiverContactModel
+                {
+                    receiverName = "李四",
+                    receiverMobile = "19999999999",
+                    receiverProvince = null,
+                    receiverPostcode = null,
+                    receiverCompany = null,
+                    receiverCounty = null,
+                    receiverCity = null,
+                    receiverAddress = "北京市朝阳区11111号",
+                    receiverCityName = null,
+                    receiverTownName = null,
+                    receiverProvinceName = null,
+                    receiverTown = null,
+                    receiverCountyName = null,
+                    receiverOAID = null
+                },
+                shipmentStartTime = null,
+                siteType = null,
+                channelOrderId = null,
+                shopCode = null,
+                areaProvinceId = null,
+                areaCityId = null,
+                guaranteeValueAmount = null,
+                guaranteeValue = null,
+                pickUpStartTime = null,
+                promiseTimeType = 29,
+                receivable = null,
+                goodsType = 24,
+                receiptFlag = null,
+                transType = null,
+                pickUpEndTime = null,
+                siteId = null,
+                aging = null,
+                addedService = null,
+                boxNoList = null,
+                customerBoxList = null
+            };
+            var bodys = new List<NoOrderNumberReceiveRequest> { body };
+            //var bodyJson = JsonConvert.SerializeObject(wrapper,
+            //    new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented});
+
+            var bodyJson = System.Text.Json.JsonSerializer.Serialize(bodys,
+                new JsonSerializerOptions()
+                { WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) });
+            Console.WriteLine(bodyJson);
+            ShowLog(bodyJson);
+            request.Body = Encoding.UTF8.GetBytes(bodyJson);
+
+            request.AddFilter(isvFilter);
+            request.AddFilter(errorResponseFilter);
+
+            var options = new Options();
+
+            var response = client.Execute(request, options);
+            if (response != null)
+            {
+                var responseJson = JsonConvert.SerializeObject(response, Formatting.Indented);
+                ShowLog(responseJson);
+                if (response.Body != null)
+                {
+                    var decodedString = Encoding.UTF8.GetString(response.Body);
+                    ShowLog(decodedString);
+                }
+            }
+
+            ////response = (GenericResponse)response;
+            //var responseJson = JsonConvert.SerializeObject(response, Formatting.Indented);
+            //dynamic res = JsonConvert.DeserializeObject(responseJson);
+            //ShowLog(responseJson);
+
+            //if (res == null)
+            //{
+            //    ShowLog("Res 为空");
+            //    return;
+            //}
+            //byte[] decodedBytes = Convert.FromBase64String(res.Body.ToString());
+            //string decodedString = Encoding.UTF8.GetString(decodedBytes);
+            //var jsonObject = JsonConvert.DeserializeObject<NoOrderNumberReceiveResponse>(decodedString);
+            //var json = JsonConvert.SerializeObject(jsonObject);
+            //ShowLog(json);
+        }
+        private void button10_Click(object sender, EventArgs e)
+        {
+            var client = new DefaultClient("https://uat-api.jdl.com");
+            // 系统参数，应用的app_ley和app_secret，可从【控制台-应用管理-概览】中查看；access_token是用户授权时获取的令牌，用户授权相关说明请查看https://cloud.jdl.com/#/devSupport/53392
+            var isvFilter = new IsvFilter("0cdc29884bde4f978c48a3be1f473946", "f462cc68dd9d45e6a920bf3a818d9c1b", "d9b8c0c8beef451289cdda371e55b1ab");
+            var errorResponseFilter = new ErrorResponseFilter();
+
+            var request = new GenericRequest();
+            // 对接方案编码，不同的对接方案取值不同，具体取值可在【控制台-应用管理-对接方案-编码】查看
+            request.Domain = "FreshMedicineDelivery";
+            // 接口调用地址，具体取值请看【接口文档-请求地址-调用路径（path）】
+            request.Path = @"/freshmedicinedelivery/delivery/cancel/waybill/v1";
+            // 固定是POST，并且是大写
+            request.Method = "POST";
+
+            // 请求报文，根据接口文档组织请求报文
+            var body = new CancelOrderByVendorCodeAndDeliveryIdRequest
+            {
+                cancelOperator = null,
+                cancelTime = null,
+                cancelOperatorCodeType = null,
+                customerCode = "010K2731958",
+                interceptReason = "放弃订单",
+                waybillNo = txtJdwlNumber.Text
+            };
+            var bodys = new List<CancelOrderByVendorCodeAndDeliveryIdRequest> { body };
+            //var bodyJson = JsonConvert.SerializeObject(wrapper,
+            //    new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented});
+
+            var bodyJson = System.Text.Json.JsonSerializer.Serialize(bodys,
+                new JsonSerializerOptions()
+                { WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) });
+            Console.WriteLine(bodyJson);
+            ShowLog(bodyJson);
+            request.Body = Encoding.UTF8.GetBytes(bodyJson);
+
+            request.AddFilter(isvFilter);
+            request.AddFilter(errorResponseFilter);
+
+            var options = new Options();
+
+            var response = client.Execute(request, options);
+            if (response != null)
+            {
+                var responseJson = JsonConvert.SerializeObject(response, Formatting.Indented);
+                ShowLog(responseJson);
+                if (response.Body != null)
+                {
+                    var decodedString = Encoding.UTF8.GetString(response.Body);
+                    ShowLog(decodedString);
+                }
+            }
+        }
+        public void ShowLog(string msg)
+        {
+            if (txtLog.Lines.Length > 1000)
+            {
+                txtLog.Clear();
+            }
+
+            if (txtLog.Lines.Length == 0)
+            {
+                txtLog.AppendText(msg);
+            }
+            else
+            {
+                txtLog.AppendText(Environment.NewLine + "=============================" + Environment.NewLine);
+                txtLog.AppendText(msg);
+            }
+
+            txtLog.ScrollToCaret();
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            txtLog.Clear();
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            var client = new DefaultClient("https://uat-api.jdl.com");
+            // 系统参数，应用的app_ley和app_secret，可从【控制台-应用管理-概览】中查看；access_token是用户授权时获取的令牌，用户授权相关说明请查看https://cloud.jdl.com/#/devSupport/53392
+            var isvFilter = new IsvFilter("0cdc29884bde4f978c48a3be1f473946", "f462cc68dd9d45e6a920bf3a818d9c1b", "d9b8c0c8beef451289cdda371e55b1ab");
+            var errorResponseFilter = new ErrorResponseFilter();
+
+            var request = new GenericRequest();
+            // 对接方案编码，不同的对接方案取值不同，具体取值可在【控制台-应用管理-对接方案-编码】查看
+            request.Domain = "FreshMedicineDelivery";
+            // 接口调用地址，具体取值请看【接口文档-请求地址-调用路径（path）】
+            request.Path = APITokenKey.JdFreshMedicineDeliveryCheckOrderUrl;
+            // 固定是POST，并且是大写
+            request.Method = "POST";
+
+            // 请求报文，根据接口文档组织请求报文
+            var body = new RangeCheckDeliveryQueryApiRequest
+            {
+                orderId = "测试订单111111",
+                customerCode = APITokenKey.JdFreshMdicineDeliveryCustomerCode,
+                goodsType = 1,
+                receiverContactRequest = new ReceiverContactRequest
+                {
+                    receiverAddress = "河北省保定市中诚汇达",
+                    receiverCityName = null,
+                    receiverProvince = null,
+                    receiverCounty = null,
+                    receiverTownName = null,
+                    receiverCity = null,
+                    receiverTown = null,
+                    receiverProvinceName = null,
+                    receiverCountyName = null
+                },
+                senderContactRequest = new SenderContactRequest
+                {
+                    senderProvince = null,
+                    senderCity = null,
+                    senderCounty = null,
+                    senderTown = null,
+                    senderAddress = "北京市朝阳区111111号",
+                    senderProvinceName = null,
+                    senderCityName = null,
+                    senderCountyName = null,
+                    senderTownName = null
+                }
+            };
+            var bodys = new List<RangeCheckDeliveryQueryApiRequest> { body };
+            //var bodyJson = JsonConvert.SerializeObject(wrapper,
+            //    new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented});
+
+            var bodyJson = System.Text.Json.JsonSerializer.Serialize(bodys,
+                new JsonSerializerOptions()
+                { WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) });
+            Console.WriteLine(bodyJson);
+            ShowLog(bodyJson);
+            request.Body = Encoding.UTF8.GetBytes(bodyJson);
+
+            request.AddFilter(isvFilter);
+            request.AddFilter(errorResponseFilter);
+
+            var options = new Options();
+
+            var response = client.Execute(request, options);
+            if (response != null)
+            {
+                var responseJson = JsonConvert.SerializeObject(response, Formatting.Indented);
+                ShowLog(responseJson);
+                if (response.Body != null)
+                {
+                    var decodedString = Encoding.UTF8.GetString(response.Body);
+                    ShowLog(decodedString);
+                    var res = JsonConvert.DeserializeObject<RangeCheckDeliveryQueryApiResponse>(decodedString);
+                    if (res.HasData)
+                    {
+                        var logi_dstRoute = res.data.originalSortCenterId + "_" +
+                                            res.data.originalSortCenterName + "-|-" +
+                                            res.data.targetSortCenterId + "-" +
+                                            res.data.targetSortCenterName;
+
+                        var JingdongWl = res.data.aging + "@<|||>@\n" +
+                                         res.data.agingName + "@<|||>@\n" +
+                                         res.data.collectionAddress + "@<|||>@\n" +
+                                         res.data.coverCode + "@<|||>@\n" +
+                                         res.data.distributeCode + "@<|||>@\n" +
+                                         res.data.isHideContractNumbers + "@<|||>@\n" +
+                                         res.data.isHideName + "@<|||>@\n" +
+                                         res.data.qrcodeUrl + "@<|||>@\n" +
+                                         res.data.road + "@<|||>@\n" +
+                                         res.data.siteId + "@<|||>@\n" +
+                                         res.data.siteName + "@<|||>@\n" +
+                                         res.data.siteType + "@<|||>@\n" +
+                                         res.data.targetCrossCode + "@<|||>@\n" +
+                                         res.data.originalCrossCode + "@<|||>@\n" +
+                                         res.data.originalSortCenterId + "@<|||>@\n" +
+                                         res.data.originalSortCenterName + "@<|||>@\n" +
+                                         res.data.originalTabletrolleyCode + "@<|||>@\n" +
+                                         res.data.targetSortCenterId + "@<|||>@\n" +
+                                         res.data.targetSortCenterName + "@<|||>@\n" +
+                                         res.data.targetTabletrolleyCode + "@<|||>@\n";
+                        ShowLog(logi_dstRoute);
+                        ShowLog(JingdongWl);
+                    }
+                }
+            }
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            var isOk = false;
+            var errCode = -99;
+            var errMsg = "";
+
+            var jdwl = FreshMedicineDelivery.Init("0cdc29884bde4f978c48a3be1f473946",
+                "f462cc68dd9d45e6a920bf3a818d9c1b",
+                "d9b8c0c8beef451289cdda371e55b1ab",
+                "https://uat-api.jdl.com",
+                "010K2731958");
+
+            var request = new RangeCheckDeliveryQueryApiRequest
+            {
+                orderId = "测试订单111111",
+                customerCode = APITokenKey.JdFreshMdicineDeliveryCustomerCode,
+                goodsType = 1,
+                receiverContactRequest = new ReceiverContactRequest
+                {
+                    receiverAddress = "北京市朝阳区111111号",
+                    receiverCityName = null,
+                    receiverProvince = null,
+                    receiverCounty = null,
+                    receiverTownName = null,
+                    receiverCity = null,
+                    receiverTown = null,
+                    receiverProvinceName = null,
+                    receiverCountyName = null
+                },
+                senderContactRequest = new SenderContactRequest
+                {
+                    senderProvince = null,
+                    senderCity = null,
+                    senderCounty = null,
+                    senderTown = null,
+                    senderAddress = "河北省保定市中诚汇达",
+                    senderProvinceName = null,
+                    senderCityName = null,
+                    senderCountyName = null,
+                    senderTownName = null
+                }
+            };
+            var sendData = "";
+            var recData = "";
+            var res = jdwl.CheckOrder(request, out isOk, out errCode, out errMsg, out sendData, out recData);
+            if (isOk == true && res.HasData)
+            {
+                var logi_dstRoute = res.data.originalSortCenterId + "_" +
+                                    res.data.originalSortCenterName + "-|-" +
+                                    res.data.targetSortCenterId + "-" +
+                                    res.data.targetSortCenterName;
+
+                var JingdongWl = res.data.aging + "@<|||>@\n" +
+                                 res.data.agingName + "@<|||>@\n" +
+                                 res.data.collectionAddress + "@<|||>@\n" +
+                                 res.data.coverCode + "@<|||>@\n" +
+                                 res.data.distributeCode + "@<|||>@\n" +
+                                 res.data.isHideContractNumbers + "@<|||>@\n" +
+                                 res.data.isHideName + "@<|||>@\n" +
+                                 res.data.qrcodeUrl + "@<|||>@\n" +
+                                 res.data.road + "@<|||>@\n" +
+                                 res.data.siteId + "@<|||>@\n" +
+                                 res.data.siteName + "@<|||>@\n" +
+                                 res.data.siteType + "@<|||>@\n" +
+                                 res.data.targetCrossCode + "@<|||>@\n" +
+                                 res.data.originalCrossCode + "@<|||>@\n" +
+                                 res.data.originalSortCenterId + "@<|||>@\n" +
+                                 res.data.originalSortCenterName + "@<|||>@\n" +
+                                 res.data.originalTabletrolleyCode + "@<|||>@\n" +
+                                 res.data.targetSortCenterId + "@<|||>@\n" +
+                                 res.data.targetSortCenterName + "@<|||>@\n" +
+                                 res.data.targetTabletrolleyCode + "@<|||>@\n";
+                ShowLog(logi_dstRoute);
+                ShowLog(JingdongWl);
+            }
+            else
+            {
+                ShowLog(errMsg);
+            }
         }
     }
 }

@@ -44,6 +44,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\YanduECommerceAutomaticPrinting\Dlls\jos-sdk-net.dll</HintPath>
     </Reference>
+    <Reference Include="lop-opensdk-dotnet">
+      <HintPath>..\Doc\JingdongECAP对接文档\dotnet\dotnet\lop-opensdk-dotnet.dll</HintPath>
+    </Reference>
     <Reference Include="Oracle.ManagedDataAccess">
       <HintPath>..\YanduECommerceAutomaticPrinting\Dlls\Oracle.ManagedDataAccess.dll</HintPath>
     </Reference>
@@ -129,6 +132,9 @@
     </PackageReference>
     <PackageReference Include="SqlSugar">
       <Version>5.1.4.143</Version>
+    </PackageReference>
+    <PackageReference Include="System.Text.Json">
+      <Version>8.0.4</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
