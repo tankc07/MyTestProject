@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MOD;
@@ -2445,6 +2442,13 @@ namespace YanduECommerceAutomaticPrinting
                         //指定物流新邮政EMS, 邮政EMS新接口
                         _inputGroup.V2 = Settings.Setings.EnumLogicType.新邮政Ems;
                         _defLogic = Settings.Setings.EnumLogicType.新邮政Ems;
+                        _isLogic = true;
+                    }
+					else if (_tempInputStr.ToLower() == "Log_JdFreshMedicineDelivery".ToLower())
+                    {
+                        //指定物流京东生鲜医药快递, 京东生鲜医药接口
+                        _inputGroup.V2 = Settings.Setings.EnumLogicType.京东生鲜医药快递;
+                        _defLogic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
                         _isLogic = true;
                     }
                     else if (_tempInputStr.ToLower() == "Log_JiTuBaiShi".ToLower())
