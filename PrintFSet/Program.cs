@@ -34,8 +34,9 @@ namespace PrintFSet
 				Console.WriteLine(@"随货票据:sh");
 				Console.WriteLine(@"申通快递:st");
 				Console.WriteLine(@"新邮政票据:nyz");
+				Console.WriteLine(@"京东生鲜医药快递:jdfmd");
 
-				var frxPath = AppDomain.CurrentDomain.BaseDirectory + @"frx\";
+                var frxPath = AppDomain.CurrentDomain.BaseDirectory + @"frx\";
 				if (BLL.Blll._clientInfoObj.Ip.Contains(@"192.168.50."))
 				{
 					frxPath = @"E:\WorkSpace\Source\Work_Project\面单打印模板\frx\";
@@ -64,6 +65,10 @@ namespace PrintFSet
 				{
 					args = new string[] { frxPath + @"Logic_NewEms.frx" };
 				}
+				else if (orderType == "jdfmd")
+                {
+                    args = new string[] { frxPath + @"Logic_JingdongWl.frx" };
+                }
 				else if (orderType == "bs")
 				{
 					Console.WriteLine(@"打印方案不存在");
@@ -117,7 +122,11 @@ namespace PrintFSet
 			{
 				orderType = "nyz";
 			}
-			else
+			else if (filename == "Logic_JingdongWl.frx")
+            {
+                orderType = "jdfmd";
+            }
+            else
 			{
 				Console.WriteLine(@"打印方案不存在");
 				Console.ReadKey(false);
@@ -224,6 +233,36 @@ namespace PrintFSet
 				else if(orderType == "nyz")
 				{
                     fr.LoadPrintFrx(args[0]);
+                    fr.AddMod(order);
+                    fr.Design();
+                }
+				else if (orderType == "jdfmd")
+                {
+                    fr.LoadPrintFrx(args[0]);
+                    string[] tarr = order.JingdongWl.Split(new string[] { "@<|||>@\n" }, StringSplitOptions.None);
+                    if (tarr != null && tarr.Length > 0)
+                    {
+                        fr.AddValue("JD_aging", tarr[0]);
+                        fr.AddValue("JD_agingName", tarr[1]);
+                        fr.AddValue("JD_collectionAddress", tarr[2]);
+                        fr.AddValue("JD_coverCode", tarr[3]);
+                        fr.AddValue("JD_distributeCode", tarr[4]);
+                        fr.AddValue("JD_isHideContractNumbers", tarr[5]);
+                        fr.AddValue("JD_isHideName", tarr[6]);
+                        fr.AddValue("JD_qrcodeUrl", tarr[7]);
+                        fr.AddValue("JD_road", tarr[8]);
+                        fr.AddValue("JD_siteId", tarr[9]);
+                        fr.AddValue("JD_siteName", tarr[10]);
+                        fr.AddValue("JD_siteType", tarr[11]);
+                        fr.AddValue("JD_slideNo", tarr[12]);
+                        fr.AddValue("JD_sourceCrossCode", tarr[13]);
+                        fr.AddValue("JD_sourceSortCenterId", tarr[14]);
+                        fr.AddValue("JD_sourceSortCenterName", tarr[15]);
+                        fr.AddValue("JD_sourceTabletrolleyCode", tarr[16]);
+                        fr.AddValue("JD_targetSortCenterId", tarr[17]);
+                        fr.AddValue("JD_targetSortCenterName", tarr[18]);
+                        fr.AddValue("JD_targetTabletrolleyCode", tarr[19]);
+                    }
                     fr.AddMod(order);
                     fr.Design();
                 }
