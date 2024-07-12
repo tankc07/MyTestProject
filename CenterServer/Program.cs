@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
-using System.Runtime.InteropServices;
+using System.IO;
 using MOD;
 using Newtonsoft.Json;
 using Settings;
-using YJT;
 
 namespace CenterServer
 {
@@ -1739,6 +1735,31 @@ namespace CenterServer
                         printObj.Status = Settings.Setings.EnumOrderStatus.异常_打印方案不存在;
                         printObj.ErrMsg = "顺丰打印方案不存在";
                         Blll_AddMsgOutEve(printObj.ErrMsg, Settings.Setings.EnumMessageType.异常, "顺丰", -1, pfrPath, printObj.ErpId, DateTime.Now);
+                        bll.ServerForceFinesh(updateObj.Bid, printObj.ErrMsg, printObj.Status, Settings.Setings.EnumOrderPrintStatus.特殊_不更改此参数, out res, out errCode, out errMsg);
+                    }
+                    break;
+                case Setings.EnumLogicType.京东生鲜医药快递:
+                    //TODO:新增京东生鲜医药快递 PrintWL方法,分支
+                    pfrPath = pfrPath + @"\frx\Logic_JingdongWl.frx";
+                    if (File.Exists(pfrPath))
+                    {
+                        fr.LoadPrintFrx(pfrPath);
+                        string addModRes = fr.AddMod(printObj).ToString() + "个对象添加";
+                        Blll_AddMsgOutEve(addModRes, Settings.Setings.EnumMessageType.提示, "京东生鲜医药快递.Print", 1, "", "", DateTime.Now);
+                        if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
+                        {
+                            fr.Print(false, "Microsoft XPS Document Writer", updateObj);
+                        }
+                        else
+                        {
+                            fr.Print(false, Settings.Configs.GetEmsYouzPrinterName, updateObj);
+                        }
+                    }
+                    else
+                    {
+                        printObj.Status = Settings.Setings.EnumOrderStatus.异常_打印方案不存在;
+                        printObj.ErrMsg = "京东生鲜医药快递打印方案不存在";
+                        Blll_AddMsgOutEve(printObj.ErrMsg, Settings.Setings.EnumMessageType.异常, "京东生鲜医药快递接口", -1, pfrPath, printObj.ErpId, DateTime.Now);
                         bll.ServerForceFinesh(updateObj.Bid, printObj.ErrMsg, printObj.Status, Settings.Setings.EnumOrderPrintStatus.特殊_不更改此参数, out res, out errCode, out errMsg);
                     }
                     break;
