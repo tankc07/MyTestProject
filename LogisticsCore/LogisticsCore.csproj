@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="lop-opensdk-dotnet">
+      <HintPath>..\Doc\JingdongECAP对接文档\dotnet\dotnet\lop-opensdk-dotnet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -46,6 +49,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JingDong\FreshMedicineDelivery.cs" />
+    <Compile Include="JingDong\Model\AddedServiceModel.cs" />
+    <Compile Include="JingDong\Model\BackContactModel.cs" />
+    <Compile Include="JingDong\Model\CustomerBoxListModel.cs" />
+    <Compile Include="JingDong\Request\CancelOrderByVendorCodeAndDeliveryIdRequest.cs" />
+    <Compile Include="JingDong\Request\NoOrderNumberReceiveRequest.cs" />
+    <Compile Include="JingDong\Model\CargoesModel.cs" />
+    <Compile Include="JingDong\Model\ReceiverContactModel.cs" />
+    <Compile Include="JingDong\Model\SenderContactModel.cs" />
+    <Compile Include="JingDong\Request\RangeCheckDeliveryQueryApiRequest.cs" />
+    <Compile Include="JingDong\Response\CancelOrderByVendorCodeAndDeliveryIdResponse.cs" />
+    <Compile Include="JingDong\Response\NoOrderNumberReceiveResponse.cs" />
+    <Compile Include="JingDong\Response\FreshMedicineDeliveryResponseBase.cs" />
+    <Compile Include="JingDong\Response\RangeCheckDeliveryQueryApiResponse.cs" />
     <Compile Include="NewEMS\Model\AddressModel.cs" />
     <Compile Include="NewEMS\NewEmsLog.cs" />
     <Compile Include="NewEMS\Response\CancelOrderResponse.cs" />
