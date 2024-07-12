@@ -5,25 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using System.Xml;
 using LogisticsCore.NewEMS.Model;
 using LogisticsCore.NewEMS.Request;
 using LogisticsCore.NewEMS.Response;
-using MOD;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using RestSharp;
-using YJT.Logistics;
 using YJT.Text;
 using Formatting = Newtonsoft.Json.Formatting;
-using JsonConverter = System.Text.Json.Serialization.JsonConverter;
-using JsonIgnoreAttribute = System.Text.Json.Serialization.JsonIgnoreAttribute;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace LogisticsCore.NewEMS
 {
