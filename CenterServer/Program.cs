@@ -1753,7 +1753,7 @@ namespace CenterServer
                     break;
                 case Setings.EnumLogicType.京东生鲜医药快递:
                     //TODO:新增京东生鲜医药快递 PrintWL方法,分支
-                    pfrPath = pfrPath + @"\frx\Logic_JingdongWl.frx";
+                    pfrPath = pfrPath + @"\frx\Logic_JdFreshMedicineDelivery.frx";
                     if (File.Exists(pfrPath))
                     {
                         fr.LoadPrintFrx(pfrPath);

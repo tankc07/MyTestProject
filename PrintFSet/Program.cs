@@ -67,7 +67,7 @@ namespace PrintFSet
 				}
 				else if (orderType == "jdfmd")
                 {
-                    args = new string[] { frxPath + @"Logic_JingdongWl.frx" };
+                    args = new string[] { frxPath + @"Logic_JdFreshMedicineDelivery.frx" };
                 }
 				else if (orderType == "bs")
 				{
@@ -122,7 +122,7 @@ namespace PrintFSet
 			{
 				orderType = "nyz";
 			}
-			else if (filename == "Logic_JingdongWl.frx")
+			else if (filename == "Logic_JdFreshMedicineDelivery.frx")
             {
                 orderType = "jdfmd";
             }
