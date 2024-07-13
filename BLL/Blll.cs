@@ -63,7 +63,7 @@ namespace BLL
         YJT.Logistics.ShenTongLogistic _shenTongWl = YJT.Logistics.ShenTongLogistic.Init(Settings.APITokenKey.ShenTongAppKey, Settings.APITokenKey.ShenTongSecretKey, Settings.APITokenKey.ShenTongResourceCode, Settings.APITokenKey.ShenTongFormOrderCode, Settings.APITokenKey.ShenTongSiteCode, Settings.APITokenKey.ShenTongCustomerName, Settings.APITokenKey.ShenTongSitePwd, Settings.APITokenKey.ShenTongIsTest);
         //TODO:更换生产环境token和接口地址
         FreshMedicineDelivery _jdFmd = FreshMedicineDelivery.Init(APITokenKey.JdFreshMedicineDeliveryAppKey, APITokenKey.JdFreshMedicineDeliveryAppSecret,
-            APITokenKey.JdFreshMedicineDeliveryTestAccessToken, APITokenKey.JdFreshMedicineDeliveryTestBaseUrl, APITokenKey.JdFreshMdicineDeliveryCustomerCode);
+            APITokenKey.JdFreshMedicineDeliveryAccessToken, APITokenKey.JdFreshMedicineDeliveryBaseUrl, APITokenKey.JdFreshMdicineDeliveryCustomerCode);
 
         /// <summary>
         /// 私有构造函数
@@ -1138,10 +1138,10 @@ where
                                     order.Logic = Settings.Setings.EnumLogicType.申通快递;
                                 }
                             }
-                            //5 以上都不符合的 默认 >> 顺丰
+                            //5 以上都不符合的 默认 >> 京东生鲜医药快递
                             else
                             {
-                                order.Logic = Setings.EnumLogicType.顺丰;
+                                order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
                             }
 
                             #endregion
@@ -8041,10 +8041,10 @@ WHERE Bid={order.Bid}
                                         order.Logic = Settings.Setings.EnumLogicType.申通快递;
                                     }
                                 }
-                                //5 以上都不符合的 默认 >> 顺丰
+                                //5 以上都不符合的 默认 >> 京东生鲜医药快递
                                 else
                                 {
-                                    order.Logic = Setings.EnumLogicType.顺丰;
+                                    order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
                                 }
 
                                 #endregion
