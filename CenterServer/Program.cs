@@ -1789,7 +1789,7 @@ namespace CenterServer
                         }
                         else
                         {
-                            fr.Print(false, Settings.Configs.GetEmsYouzPrinterName, updateObj);
+                            fr.Print(false, Settings.Configs.GetJingDongPrinterName, updateObj);
                         }
                     }
                     else
