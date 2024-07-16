@@ -46,6 +46,14 @@ namespace CenterServer
             //a = Settings.Configs.GetShenTongPrinterName;
             //a = Settings.Configs.GetHeTongPrinterName;
             //a = Settings.Configs.GetFmPrinterName;
+            Console.WriteLine($@"                  顺丰: {Configs.GetShunfPrinterName}");
+            Console.WriteLine($@"                  邮政: {Configs.GetEmsYouzPrinterName}");
+            Console.WriteLine($@"               随货同行: {Configs.GetSHTXPrinterName}");
+            Console.WriteLine($@"京东物流 京东生鲜医药快递: {Configs.GetJingDongPrinterName}");
+            Console.WriteLine($@"                  中通: {Configs.GetZhongTongPrinterName}");
+            Console.WriteLine($@"                  申通: {Configs.GetShenTongPrinterName}");
+            Console.WriteLine($@"                  合同: {Configs.GetHeTongPrinterName}");
+            Console.WriteLine($@"               药品封面: {Configs.GetFmPrinterName}");
 
             //TODO:增加自动升级检查
 
@@ -72,11 +80,12 @@ namespace CenterServer
             {
                 for (int i = 0; i < 60; i++)
                 {
-                    Console.SetCursorPosition(0, 1);
+                    Console.SetCursorPosition(0, 9);
                     Console.WriteLine("剩余:" + (60 - i).ToString() + "秒");
                     System.Threading.Thread.Sleep(1000);
                 }
             }
+
 
 
             //Console.ReadKey();
