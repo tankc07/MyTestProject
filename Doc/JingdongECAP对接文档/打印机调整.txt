@@ -1,0 +1,3 @@
+		<!--京东物流打印机 N31C(EMS）改为 L640B（顺丰）-->
+		<!--<add key="GetJingDongPrinterName" value="\\172.16.2.187\ST-HPRT N31C" />--!>
+		<add key="GetJingDongPrinterName" value="\\172.16.2.187\BTP-L640B(BPLZ)(U)7" />
