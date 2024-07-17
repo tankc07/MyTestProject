@@ -12,7 +12,7 @@
         /// <summary>
         /// 寄托物数量；最大长度5，最大值99999
         /// </summary>
-        public int goodsCount { get; set; }
+        public int? goodsCount { get; set; }
         /// <summary>
         /// 包裹长(单位：cm,保留小数点后两位)；最大长度10
         /// </summary>

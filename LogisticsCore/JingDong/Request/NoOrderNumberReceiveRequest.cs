@@ -141,7 +141,7 @@ namespace LogisticsCore.JingDong.Request
         /// <summary>
         /// 保价金额(单位元，保留小数点后两位)；最大长度20
         /// </summary>
-        public string guaranteeValueAmount { get; set; }
+        public double? guaranteeValueAmount { get; set; }
 
         /// <summary>
         /// 是否保价(是：1，否：0，不填或者超出范围，默认是0)；最大长度4

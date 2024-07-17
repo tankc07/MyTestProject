@@ -2005,6 +2005,10 @@ where
                                                            res.data.targetTabletrolleyCode + "@<|||>@\n";
 
                                         #region 京东生鲜医药下单
+
+                                        //需要保价, 按照订单金额保(费率千分之二)
+                                        order.needBaojia = Convert.ToDouble(order.total_amt);
+
                                         //下单前置校验通过, 才尝试下单
                                         var request = new NoOrderNumberReceiveRequest
                                         {
@@ -2022,7 +2026,6 @@ where
                                             cargoesRequest = new CargoesModel
                                             {
                                                 volume = 1,
-                                                goodsCount = 1,
                                                 weight = order.Weight,
                                                 description = "药品",
                                                 goodsName = null,
@@ -2041,6 +2044,9 @@ where
                                             },
                                             promiseTimeType = 29,
                                             goodsType = 24,
+                                            //新增保价金额(根据总价计算)
+                                            guaranteeValue = 1,
+                                            guaranteeValueAmount = order.needBaojia,
                                         };
 
                                         var res2 = _jdFmd.CreateOrder(request, out isOk, out errCode, out errMsg, out stxt2, out otxt2);
@@ -2074,7 +2080,7 @@ where
                                             order.ErrMsg = "创建物流订单完成";
 
                                             order.logi_jinjianRiqi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                                            order.logi_baojiaJine = "0.00";
+                                            order.logi_baojiaJine = order.needBaojia.ToString("#0.00");
                                             order.logi_dsJine = "0.00";
                                             order.logi_feiyongTotal = 0.ToString("#0.00");
                                             order.logi_goodName = request.cargoesRequest.description;
@@ -3891,6 +3897,10 @@ where
                                    res.data.targetTabletrolleyCode + "@<|||>@\n";
 
                 #region 京东生鲜医药下单
+
+                //需要保价, 按照订单金额保(费率千分之二)
+                order.needBaojia = Convert.ToDouble(order.total_amt);
+
                 //下单前置校验通过, 才尝试下单
                 var request = new NoOrderNumberReceiveRequest
                 {
@@ -3908,7 +3918,6 @@ where
                     cargoesRequest = new CargoesModel
                     {
                         volume = 1,
-                        goodsCount = 1,
                         weight = order.Weight,
                         description = "药品",
                         goodsName = null,
@@ -3927,6 +3936,9 @@ where
                     },
                     promiseTimeType = 29,
                     goodsType = 24,
+                    //新增保价金额(根据总价计算)
+                    guaranteeValue = 1,
+                    guaranteeValueAmount = order.needBaojia,
                 };
 
                 var res2 = _jdFmd.CreateOrder(request, out isOk, out errCode, out errMsg, out stxt2, out otxt2);
@@ -3960,7 +3972,7 @@ where
                     order.ErrMsg = "创建物流订单完成";
 
                     order.logi_jinjianRiqi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    order.logi_baojiaJine = "0.00";
+                    order.logi_baojiaJine = order.needBaojia.ToString("#0.00");
                     order.logi_dsJine = "0.00";
                     order.logi_feiyongTotal = 0.ToString("#0.00");
                     order.logi_goodName = request.cargoesRequest.description;
@@ -8371,8 +8383,11 @@ WHERE Bid={order.Bid}
                                                                res.data.targetTabletrolleyCode + "@<|||>@\n";
 
                                             #region 京东生鲜医药下单
+
+                                            //需要保价, 按照订单金额保(费率千分之二)
+                                            order.needBaojia = Convert.ToDouble(order.total_amt);
+
                                             //上面下单前置校验通过, 才尝试下单
-                                            //TODO:是否需要增加保价
                                             var request = new NoOrderNumberReceiveRequest
                                             {
                                                 orderId = order.ErpId + "_" + order.logi_SubOrderSn.ToString(),
@@ -8389,7 +8404,6 @@ WHERE Bid={order.Bid}
                                                 cargoesRequest = new CargoesModel
                                                 {
                                                     volume = 1,
-                                                    goodsCount = 1,
                                                     weight = order.Weight,
                                                     description = "药品",
                                                     goodsName = null,
@@ -8408,6 +8422,9 @@ WHERE Bid={order.Bid}
                                                 },
                                                 promiseTimeType = 29,
                                                 goodsType = 24,
+                                                //新增保价金额(根据总价保价)
+                                                guaranteeValue = 1,
+                                                guaranteeValueAmount = order.needBaojia
                                             };
 
                                             var res2 = _jdFmd.CreateOrder(request, out isOk, out errCode, out errMsg, out stxt2, out otxt2);
@@ -8441,7 +8458,7 @@ WHERE Bid={order.Bid}
                                                 order.ErrMsg = "创建物流订单完成";
 
                                                 order.logi_jinjianRiqi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                                                order.logi_baojiaJine = "0.00";
+                                                order.logi_baojiaJine = order.needBaojia.ToString("#0.00");
                                                 order.logi_dsJine = "0.00";
                                                 order.logi_feiyongTotal = 0.ToString("#0.00");
                                                 order.logi_goodName = request.cargoesRequest.description;
