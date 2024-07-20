@@ -1790,6 +1790,10 @@ namespace CenterServer
                             fr.AddValue("JD_targetSortCenterName", tarr[18]);
                             fr.AddValue("JD_targetTabletrolleyCode", tarr[19]);
                         }
+                        //TODO:增加 商家ID:[JD_customerCode],商家订单号:[JD_orderId], 始发城市:[JD_sendCity]
+                        fr.AddValue("JD_customerCode", APITokenKey.JdFreshMdicineDeliveryCustomerCode);
+                        fr.AddValue("JD_orderId", printObj.ErpId);
+                        fr.AddValue("JD_sendCity", printObj.logi_sendShi);
                         string addModRes = fr.AddMod(printObj).ToString() + "个对象添加";
                         Blll_AddMsgOutEve(addModRes, Settings.Setings.EnumMessageType.提示, "京东生鲜医药快递.Print", 1, "", "", DateTime.Now);
                         if (BLL.Blll._clientInfoObj.Ip == "172.16.7.50" || BLL.Blll._clientInfoObj.Ip == "172.16.7.46" || _isDebugPrint == "true")
