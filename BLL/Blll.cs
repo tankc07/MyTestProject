@@ -1109,39 +1109,46 @@ where
                         {
                             #region 计算物流分配
 
-                            //1 订单金额大于2000元以上 >> 京东生鲜医药快递
-                            if (Convert.ToDouble(order.total_amt) > 2000d)
-                            {
-                                order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
-                            }
-                            //2 京津冀且重量大于3公斤 >> 京东生鲜医药快递
-                            else if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北" }, true) && order.Weight > 3.0)
-                            {
-                                order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
-                            }
-                            //3 重量大于3公斤小于20公斤 >> 京东生鲜医药快递
-                            else if (order.Weight > 3.0 && order.Weight < 20.0)
+                            if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "海南", "青海" }, true))
                             {
                                 order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
                             }
-                            //4 重量小于3公斤->地区属于("北京", "天津", "河北", "河南", "山东", "山西") >> 新邮政Ems
-                            //             ->其他地区 >> 申通快递  
-                            else if (order.Weight <= 3.0)
-                            {
-                                if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true))
-                                {
-                                    //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
-                                    order.Logic = Settings.Setings.EnumLogicType.新邮政Ems;
-                                }
-                                else
-                                {
-                                    order.Logic = Settings.Setings.EnumLogicType.申通快递;
-                                }
-                            }
-                            //5 以上都不符合的 默认 >> 京东生鲜医药快递
                             else
                             {
-                                order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
+                                //1 订单金额大于2000元以上 >> 京东生鲜医药快递
+                                if (Convert.ToDouble(order.total_amt) > 2000d)
+                                {
+                                    order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
+                                }
+                                //2 京津冀且重量大于3公斤 >> 京东生鲜医药快递
+                                else if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北" }, true) && order.Weight > 3.0)
+                                {
+                                    order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
+                                }
+                                //3 重量大于3公斤小于20公斤 >> 京东生鲜医药快递
+                                else if (order.Weight > 3.0 && order.Weight < 20.0)
+                                {
+                                    order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
+                                }
+                                //4 重量小于3公斤->地区属于("北京", "天津", "河北", "河南", "山东", "山西") >> 新邮政Ems
+                                //             ->其他地区 >> 申通快递  
+                                else if (order.Weight <= 3.0)
+                                {
+                                    if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true))
+                                    {
+                                        //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
+                                        order.Logic = Settings.Setings.EnumLogicType.新邮政Ems;
+                                    }
+                                    else
+                                    {
+                                        order.Logic = Settings.Setings.EnumLogicType.申通快递;
+                                    }
+                                }
+                                //5 以上都不符合的 默认 >> 京东生鲜医药快递
+                                else
+                                {
+                                    order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
+                                }
                             }
 
                             #endregion
