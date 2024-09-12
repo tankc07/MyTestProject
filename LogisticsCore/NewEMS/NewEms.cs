@@ -142,7 +142,7 @@ namespace LogisticsCore.NewEMS
                 subMailNo = null,
                 oneBillFeeType = null,
                 contentsAttribute = "3",
-                bizProductNo = "10",
+                bizProductNo = "1",//2024-09-13 由于EMS业务调整, 由10(电商标快)修改为1(特快专递)
                 weight = weight.ToString(),
                 volume = (length * width * height).ToString("#0.000"),
                 length = length.ToString("#0.00"),
