@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace CenterServerManager
+namespace CenterServerManager.Views
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
@@ -10,6 +10,11 @@ namespace CenterServerManager
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            
         }
     }
 }
