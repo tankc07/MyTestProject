@@ -279,8 +279,19 @@ namespace LogisticsCore.NewEMS
         {
             if (logisticsInterfaceBase == null)
                 throw new ArgumentNullException(nameof(logisticsInterfaceBase));
-            var logisticsInterfaceBaseJson = JsonConvert.SerializeObject(new[] { logisticsInterfaceBase }, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.Indented });
+            var logisticsInterfaceBaseJson = string.Empty;
+            if(logisticsInterfaceBase is CancelOrderModel)
+            {
+                logisticsInterfaceBaseJson = JsonConvert.SerializeObject(logisticsInterfaceBase, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.None });
+            }
+            else
+            {
+                logisticsInterfaceBaseJson = JsonConvert.SerializeObject(new[] { logisticsInterfaceBase }, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore, Formatting = Formatting.None });
+            }
+            //测试
+            //logisticsInterfaceBaseJson = @"{“language”:“zh-CN”,“orderId”:“QIAO-20200618-004”}";
             var secret = IsTest ? TestSignKey : SignKey;
+            //测试
             //secret = "TvaBgrhE46sft3nZlfe7xw==";
             var keyBytes = Convert.FromBase64String(secret);
             var plaintext = logisticsInterfaceBaseJson + secret;
