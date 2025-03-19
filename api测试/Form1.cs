@@ -23,6 +23,11 @@ using SqlSugar;
 using DbType = SqlSugar.DbType;
 using LopOpensdkDotnet.Filters;
 using LopOpensdkDotnet;
+using LogisticsCore.NewEMS.Response;
+using System.Text.RegularExpressions;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
+using YJT;
 
 namespace api测试
 {
@@ -544,21 +549,79 @@ order by
             var ems = NewEms.Init(Settings.APITokenKey.NewEmsSenderNo, Settings.APITokenKey.NewEmsSignKey, APITokenKey.NewEmsAuthorization,
                 APITokenKey.NewEmsTestSignKey, APITokenKey.NewEmsTestAuthorization, APITokenKey.NewEmsBaseUrl, APITokenKey.NewEmsUrl, APITokenKey.NewEmsTestUrl, true);
 
+            ShowLog(JsonConvert.SerializeObject(ems, new JsonSerializerSettings() { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
+
             var senderModel = ems.GetAddressModel("稠义路1号金汇化纤8楼左边大门", "江西省", "南昌市", "昌北区", "张三", "18178977225", "18178977225", "322000");
             var receiverModel = ems.GetAddressModel("裕华西路北国商城1楼", "河北省", "保定市", "莲池区", "李四", "13912345678", "13912345678", "071000");
             var cargo = ems.GetCargoModel();
 
-
             var emsOrder = ems.GetCreateOrderModel(senderModel, receiverModel, new[] { cargo }, Setings.EnumPlatformType.无.ToString(), "9999999", 4, 1.0, 1.0, 1.0,
                 YJT.Text.ClassCreateText.FunStrCreateNumberStr(6), "无备注");
+
+            ShowLog(JsonConvert.SerializeObject(emsOrder, new JsonSerializerSettings() { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
+
             bool isOk;
             int errCode;
             string errMsg;
             string sendText;
             string resText;
             var res = ems.SendNewEmsOrder(emsOrder, out isOk, out errCode, out errMsg, out sendText, out resText);
+            if (res is CreateOrderResponse)
+            {
+                var createOrderResponse = res as CreateOrderResponse;
+
+                ShowLog(JsonConvert.SerializeObject(createOrderResponse, new JsonSerializerSettings() { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
+
+                txtWaybillNo.Text = createOrderResponse.retBodyObj.waybillNo;
+                txtSendDate.Text = createOrderResponse.retDate;
+                txtLogisticsOrderNo.Text = createOrderResponse.retBodyObj.logisticsOrderNo;
+            }
+            else
+            {
+                txtWaybillNo.Text = "CreateOrderResponse 解析错误";
+            }
         }
 
+        private void button13_Click(object sender, EventArgs e)
+        {
+            bool isOk;
+            int errCode;
+            string errMsg;
+            string sJson;
+            string rJson;
+
+            var ems = NewEms.Init(Settings.APITokenKey.NewEmsSenderNo, Settings.APITokenKey.NewEmsSignKey, APITokenKey.NewEmsAuthorization,
+                APITokenKey.NewEmsTestSignKey, APITokenKey.NewEmsTestAuthorization, APITokenKey.NewEmsBaseUrl, APITokenKey.NewEmsUrl, APITokenKey.NewEmsTestUrl, true);
+            ShowLog(JsonConvert.SerializeObject(ems, new JsonSerializerSettings() { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
+
+            var waybillNo = txtWaybillNo.Text;
+            if (string.IsNullOrEmpty(waybillNo) || !Regex.IsMatch(waybillNo, @"^\d+$"))
+            {
+                MessageBox.Show("请输入正确的运单号");
+                return;
+            }
+            if (string.IsNullOrEmpty(txtSendDate.Text) || !DateTime.TryParseExact(txtSendDate.Text, "yyyy-MM-dd HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out DateTime sendtime))
+            {
+                MessageBox.Show("请输入正确的日期");
+                return;
+            }
+
+            var mod = ems.GetCancelOrderModel(txtLogisticsOrderNo.Text, waybillNo, DateTime.Now, out isOk, out errCode, out errMsg);
+
+            ShowLog(JsonConvert.SerializeObject(mod, new JsonSerializerSettings() { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
+
+            NewEmsResponseBase res = ems.SendNewEmsOrder(mod, out isOk, out errCode, out errMsg, out sJson, out rJson);
+
+            ShowLog(JsonConvert.SerializeObject(res, new JsonSerializerSettings() { Formatting = Formatting.Indented, NullValueHandling = NullValueHandling.Ignore }));
+        }
+        private void button14_Click(object sender, EventArgs e)
+        {
+            ShowLog(@"示例:|$4|efB6PnjDpgHG4xfrvYlXonyBuMJoGTynkfasopHvbl2u3nmNeP+rznA3DyRwb/2GeZL7I3rL6HKD5+Tv3Uy6x8jIDISbYG8Bg14caH2flYE=");
+            var ems = NewEms.Init(Settings.APITokenKey.NewEmsSenderNo, Settings.APITokenKey.NewEmsSignKey, APITokenKey.NewEmsAuthorization,
+                APITokenKey.NewEmsTestSignKey, APITokenKey.NewEmsTestAuthorization, APITokenKey.NewEmsBaseUrl, APITokenKey.NewEmsUrl, APITokenKey.NewEmsTestUrl, true);
+            var res = ems.GetSignBySm4EncryptEcb(new LogisticsInterfaceBase());
+            ShowLog(@"结果:" + res);
+        }
         public class JsonClass
         {
             public string language { get; set; }
@@ -619,7 +682,7 @@ order by
 
             // 请求报文，根据接口文档组织请求报文
             var body = new NoOrderNumberReceiveRequest
-            {            
+            {
                 //orderId的值在下单成功后, 如果orderId不变, 地址即使改变不支持下单的地方, 也可以下单成功, 因为成功创建了京东订单, 只有取消后, 才能返回地址错误.
                 orderId = "测试订单SSSS1234567890",
                 senderContactRequest = new SenderContactModel
@@ -989,5 +1052,7 @@ order by
                 ShowLog(errMsg);
             }
         }
+
+
     }
 }
