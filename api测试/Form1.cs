@@ -1053,6 +1053,63 @@ order by
             }
         }
 
+        private void button15_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(textBox2.Text))
+                return;
+            try
+            {
+                ShowLog(ToCHN(double.Parse(textBox2.Text)));
+            }
+            catch (Exception ex)
+            {
+                ShowLog(ex.Message);
+                textBox2.Text = "";
+            }
+        }
 
+        private void button16_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(textBox2.Text))
+                return;
+            try
+            {
+                ShowLog(MoneyConverter.ToCHN(double.Parse(textBox2.Text)));
+            }
+            catch (Exception ex)
+            {
+                ShowLog(ex.Message);
+                textBox2.Text = "";
+            }
+        }
+        private string ToCHN(double money)
+        {
+            string s = money.ToString("#L#E#D#C#K#E#D#C#J#E#D#C#I#E#D#C#H#E#D#C#G#E#D#C#F#E#D#C#.0B0A");
+            string d = Regex.Replace(s, @"((?<=-|^)[^1-9]*)|((?'z'0)[0A-E]*((?=[1-9])|(?'-z'(?=[F-L\.]|$))))|((?'b'[F-L])(?'z'0)[0A-L]*((?=[1-9])|(?'-z'(?=[\.]|$))))", "${b}${z}");
+            return Regex.Replace(d, ".", delegate (Match m) { return "负元空零壹贰叁肆伍陆柒捌玖空空空空空空空分角拾佰仟万億兆京垓秭穰"[m.Value[0] - '-'].ToString(); });
+        }
+
+        private void button17_Click(object sender, EventArgs e)
+        {
+            var money = double.Parse(textBox2.Text);
+            //money = 123.0051;
+            decimal decimalMoney = (decimal)money;
+            ShowLog("decimalMoney " + decimalMoney);
+
+            long integerPart = (long)decimalMoney;
+            var xiaoshu = (decimalMoney - integerPart);
+            ShowLog("xiaoshu " + xiaoshu);
+            int decimalPart = (int)Math.Round(xiaoshu * 100, MidpointRounding.AwayFromZero);
+            ShowLog("xiaoshu * 100 " + xiaoshu*100);
+            ShowLog("整数部分" + integerPart.ToString() + "小数部分" + decimalPart.ToString());
+            var intnum = 0.49999999999954525;
+            var intnum2 = 0.509999999999877;
+            ShowLog("double");
+            ShowLog("0.49999999999954525 四舍五入 " + (int)Math.Round((double)intnum));
+            ShowLog("0.509999999999877 四舍五入 " + (int)Math.Round((double)intnum2));
+            ShowLog("decimal");
+            ShowLog("0.49999999999954525 四舍五入 " + (int)Math.Round((decimal)intnum));
+            ShowLog("0.509999999999877 四舍五入 " + (int)Math.Round((decimal)intnum2));
+        }
     }
 }

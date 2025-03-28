@@ -33,6 +33,9 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.txtLog = new System.Windows.Forms.TextBox();
+            this.txtLogisticsOrderNo = new System.Windows.Forms.TextBox();
+            this.txtSendDate = new System.Windows.Forms.TextBox();
+            this.txtWaybillNo = new System.Windows.Forms.TextBox();
             this.button12 = new System.Windows.Forms.Button();
             this.button11 = new System.Windows.Forms.Button();
             this.txtJdwlNumber = new System.Windows.Forms.TextBox();
@@ -43,16 +46,17 @@
             this.txtJson = new System.Windows.Forms.TextBox();
             this.button7 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
+            this.button14 = new System.Windows.Forms.Button();
+            this.button13 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.button13 = new System.Windows.Forms.Button();
-            this.txtWaybillNo = new System.Windows.Forms.TextBox();
-            this.txtSendDate = new System.Windows.Forms.TextBox();
-            this.txtLogisticsOrderNo = new System.Windows.Forms.TextBox();
-            this.button14 = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.button15 = new System.Windows.Forms.Button();
+            this.button16 = new System.Windows.Forms.Button();
+            this.button17 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -67,7 +71,7 @@
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -86,7 +90,7 @@
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(18, 4);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(1897, 86);
@@ -105,6 +109,10 @@
             // 
             // splitContainer2.Panel2
             // 
+            this.splitContainer2.Panel2.Controls.Add(this.button17);
+            this.splitContainer2.Panel2.Controls.Add(this.button16);
+            this.splitContainer2.Panel2.Controls.Add(this.button15);
+            this.splitContainer2.Panel2.Controls.Add(this.textBox2);
             this.splitContainer2.Panel2.Controls.Add(this.txtLogisticsOrderNo);
             this.splitContainer2.Panel2.Controls.Add(this.txtSendDate);
             this.splitContainer2.Panel2.Controls.Add(this.txtWaybillNo);
@@ -140,10 +148,31 @@
             this.txtLog.Size = new System.Drawing.Size(931, 953);
             this.txtLog.TabIndex = 18;
             // 
+            // txtLogisticsOrderNo
+            // 
+            this.txtLogisticsOrderNo.Location = new System.Drawing.Point(519, 18);
+            this.txtLogisticsOrderNo.Name = "txtLogisticsOrderNo";
+            this.txtLogisticsOrderNo.Size = new System.Drawing.Size(230, 28);
+            this.txtLogisticsOrderNo.TabIndex = 28;
+            // 
+            // txtSendDate
+            // 
+            this.txtSendDate.Location = new System.Drawing.Point(283, 52);
+            this.txtSendDate.Name = "txtSendDate";
+            this.txtSendDate.Size = new System.Drawing.Size(230, 28);
+            this.txtSendDate.TabIndex = 27;
+            // 
+            // txtWaybillNo
+            // 
+            this.txtWaybillNo.Location = new System.Drawing.Point(283, 18);
+            this.txtWaybillNo.Name = "txtWaybillNo";
+            this.txtWaybillNo.Size = new System.Drawing.Size(230, 28);
+            this.txtWaybillNo.TabIndex = 27;
+            // 
             // button12
             // 
             this.button12.Location = new System.Drawing.Point(27, 568);
-            this.button12.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button12.Margin = new System.Windows.Forms.Padding(4);
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(249, 64);
             this.button12.TabIndex = 26;
@@ -154,7 +183,7 @@
             // button11
             // 
             this.button11.Location = new System.Drawing.Point(27, 495);
-            this.button11.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button11.Margin = new System.Windows.Forms.Padding(4);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(249, 63);
             this.button11.TabIndex = 25;
@@ -165,7 +194,7 @@
             // txtJdwlNumber
             // 
             this.txtJdwlNumber.Location = new System.Drawing.Point(27, 378);
-            this.txtJdwlNumber.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtJdwlNumber.Margin = new System.Windows.Forms.Padding(4);
             this.txtJdwlNumber.Name = "txtJdwlNumber";
             this.txtJdwlNumber.Size = new System.Drawing.Size(247, 28);
             this.txtJdwlNumber.TabIndex = 24;
@@ -174,7 +203,7 @@
             // button10
             // 
             this.button10.Location = new System.Drawing.Point(27, 418);
-            this.button10.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button10.Margin = new System.Windows.Forms.Padding(4);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(249, 66);
             this.button10.TabIndex = 23;
@@ -185,7 +214,7 @@
             // button9
             // 
             this.button9.Location = new System.Drawing.Point(27, 18);
-            this.button9.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button9.Margin = new System.Windows.Forms.Padding(4);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(249, 58);
             this.button9.TabIndex = 22;
@@ -196,7 +225,7 @@
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(796, 18);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(165, 58);
             this.button1.TabIndex = 10;
@@ -207,7 +236,7 @@
             // button8
             // 
             this.button8.Location = new System.Drawing.Point(27, 286);
-            this.button8.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button8.Margin = new System.Windows.Forms.Padding(4);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(249, 64);
             this.button8.TabIndex = 20;
@@ -244,6 +273,26 @@
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
+            // button14
+            // 
+            this.button14.Location = new System.Drawing.Point(283, 216);
+            this.button14.Name = "button14";
+            this.button14.Size = new System.Drawing.Size(249, 58);
+            this.button14.TabIndex = 15;
+            this.button14.Text = "EMS Test SM4";
+            this.button14.UseVisualStyleBackColor = true;
+            this.button14.Click += new System.EventHandler(this.button14_Click);
+            // 
+            // button13
+            // 
+            this.button13.Location = new System.Drawing.Point(282, 150);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(249, 58);
+            this.button13.TabIndex = 15;
+            this.button13.Text = "EMS Test Cancel";
+            this.button13.UseVisualStyleBackColor = true;
+            this.button13.Click += new System.EventHandler(this.button13_Click);
+            // 
             // button5
             // 
             this.button5.Location = new System.Drawing.Point(27, 150);
@@ -257,7 +306,7 @@
             // button4
             // 
             this.button4.Location = new System.Drawing.Point(796, 216);
-            this.button4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button4.Margin = new System.Windows.Forms.Padding(4);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(165, 58);
             this.button4.TabIndex = 13;
@@ -268,7 +317,7 @@
             // button3
             // 
             this.button3.Location = new System.Drawing.Point(796, 150);
-            this.button3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(165, 58);
             this.button3.TabIndex = 14;
@@ -279,7 +328,7 @@
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(796, 84);
-            this.button2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button2.Margin = new System.Windows.Forms.Padding(4);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(165, 58);
             this.button2.TabIndex = 12;
@@ -292,46 +341,43 @@
             this.timer1.Enabled = true;
             this.timer1.Interval = 1000;
             // 
-            // button13
+            // textBox2
             // 
-            this.button13.Location = new System.Drawing.Point(282, 150);
-            this.button13.Name = "button13";
-            this.button13.Size = new System.Drawing.Size(249, 58);
-            this.button13.TabIndex = 15;
-            this.button13.Text = "EMS Test Cancel";
-            this.button13.UseVisualStyleBackColor = true;
-            this.button13.Click += new System.EventHandler(this.button13_Click);
+            this.textBox2.Location = new System.Drawing.Point(284, 306);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(248, 28);
+            this.textBox2.TabIndex = 29;
+            this.textBox2.Text = "123.005";
             // 
-            // txtWaybillNo
+            // button15
             // 
-            this.txtWaybillNo.Location = new System.Drawing.Point(283, 18);
-            this.txtWaybillNo.Name = "txtWaybillNo";
-            this.txtWaybillNo.Size = new System.Drawing.Size(230, 28);
-            this.txtWaybillNo.TabIndex = 27;
+            this.button15.Location = new System.Drawing.Point(284, 345);
+            this.button15.Name = "button15";
+            this.button15.Size = new System.Drawing.Size(247, 61);
+            this.button15.TabIndex = 30;
+            this.button15.Text = "转换中文金额-Old";
+            this.button15.UseVisualStyleBackColor = true;
+            this.button15.Click += new System.EventHandler(this.button15_Click);
             // 
-            // txtSendDate
+            // button16
             // 
-            this.txtSendDate.Location = new System.Drawing.Point(283, 52);
-            this.txtSendDate.Name = "txtSendDate";
-            this.txtSendDate.Size = new System.Drawing.Size(230, 28);
-            this.txtSendDate.TabIndex = 27;
+            this.button16.Location = new System.Drawing.Point(284, 421);
+            this.button16.Name = "button16";
+            this.button16.Size = new System.Drawing.Size(247, 61);
+            this.button16.TabIndex = 30;
+            this.button16.Text = "转换中文金额-New";
+            this.button16.UseVisualStyleBackColor = true;
+            this.button16.Click += new System.EventHandler(this.button16_Click);
             // 
-            // txtLogisticsOrderNo
+            // button17
             // 
-            this.txtLogisticsOrderNo.Location = new System.Drawing.Point(519, 18);
-            this.txtLogisticsOrderNo.Name = "txtLogisticsOrderNo";
-            this.txtLogisticsOrderNo.Size = new System.Drawing.Size(230, 28);
-            this.txtLogisticsOrderNo.TabIndex = 28;
-            // 
-            // button14
-            // 
-            this.button14.Location = new System.Drawing.Point(283, 216);
-            this.button14.Name = "button14";
-            this.button14.Size = new System.Drawing.Size(249, 58);
-            this.button14.TabIndex = 15;
-            this.button14.Text = "EMS Test SM4";
-            this.button14.UseVisualStyleBackColor = true;
-            this.button14.Click += new System.EventHandler(this.button14_Click);
+            this.button17.Location = new System.Drawing.Point(284, 495);
+            this.button17.Name = "button17";
+            this.button17.Size = new System.Drawing.Size(247, 63);
+            this.button17.TabIndex = 31;
+            this.button17.Text = "测试四舍五入";
+            this.button17.UseVisualStyleBackColor = true;
+            this.button17.Click += new System.EventHandler(this.button17_Click);
             // 
             // Form1
             // 
@@ -339,7 +385,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1924, 1060);
             this.Controls.Add(this.splitContainer1);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -384,6 +430,10 @@
         private System.Windows.Forms.TextBox txtSendDate;
         private System.Windows.Forms.TextBox txtLogisticsOrderNo;
         private System.Windows.Forms.Button button14;
+        private System.Windows.Forms.Button button15;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Button button16;
+        private System.Windows.Forms.Button button17;
     }
 }
 
