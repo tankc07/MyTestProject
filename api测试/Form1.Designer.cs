@@ -33,6 +33,10 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.txtLog = new System.Windows.Forms.TextBox();
+            this.button17 = new System.Windows.Forms.Button();
+            this.button16 = new System.Windows.Forms.Button();
+            this.button15 = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
             this.txtLogisticsOrderNo = new System.Windows.Forms.TextBox();
             this.txtSendDate = new System.Windows.Forms.TextBox();
             this.txtWaybillNo = new System.Windows.Forms.TextBox();
@@ -53,10 +57,8 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button15 = new System.Windows.Forms.Button();
-            this.button16 = new System.Windows.Forms.Button();
-            this.button17 = new System.Windows.Forms.Button();
+            this.button18 = new System.Windows.Forms.Button();
+            this.button19 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -109,6 +111,8 @@
             // 
             // splitContainer2.Panel2
             // 
+            this.splitContainer2.Panel2.Controls.Add(this.button19);
+            this.splitContainer2.Panel2.Controls.Add(this.button18);
             this.splitContainer2.Panel2.Controls.Add(this.button17);
             this.splitContainer2.Panel2.Controls.Add(this.button16);
             this.splitContainer2.Panel2.Controls.Add(this.button15);
@@ -147,6 +151,44 @@
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtLog.Size = new System.Drawing.Size(931, 953);
             this.txtLog.TabIndex = 18;
+            // 
+            // button17
+            // 
+            this.button17.Location = new System.Drawing.Point(284, 495);
+            this.button17.Name = "button17";
+            this.button17.Size = new System.Drawing.Size(247, 63);
+            this.button17.TabIndex = 31;
+            this.button17.Text = "测试四舍五入";
+            this.button17.UseVisualStyleBackColor = true;
+            this.button17.Click += new System.EventHandler(this.button17_Click);
+            // 
+            // button16
+            // 
+            this.button16.Location = new System.Drawing.Point(284, 421);
+            this.button16.Name = "button16";
+            this.button16.Size = new System.Drawing.Size(247, 61);
+            this.button16.TabIndex = 30;
+            this.button16.Text = "转换中文金额-New";
+            this.button16.UseVisualStyleBackColor = true;
+            this.button16.Click += new System.EventHandler(this.button16_Click);
+            // 
+            // button15
+            // 
+            this.button15.Location = new System.Drawing.Point(284, 345);
+            this.button15.Name = "button15";
+            this.button15.Size = new System.Drawing.Size(247, 61);
+            this.button15.TabIndex = 30;
+            this.button15.Text = "转换中文金额-Old";
+            this.button15.UseVisualStyleBackColor = true;
+            this.button15.Click += new System.EventHandler(this.button15_Click);
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(284, 306);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(248, 28);
+            this.textBox2.TabIndex = 29;
+            this.textBox2.Text = "123.005";
             // 
             // txtLogisticsOrderNo
             // 
@@ -341,43 +383,25 @@
             this.timer1.Enabled = true;
             this.timer1.Interval = 1000;
             // 
-            // textBox2
+            // button18
             // 
-            this.textBox2.Location = new System.Drawing.Point(284, 306);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(248, 28);
-            this.textBox2.TabIndex = 29;
-            this.textBox2.Text = "123.005";
+            this.button18.Location = new System.Drawing.Point(28, 639);
+            this.button18.Name = "button18";
+            this.button18.Size = new System.Drawing.Size(248, 64);
+            this.button18.TabIndex = 32;
+            this.button18.Text = "测试顺丰下单";
+            this.button18.UseVisualStyleBackColor = true;
+            this.button18.Click += new System.EventHandler(this.button18_Click);
             // 
-            // button15
+            // button19
             // 
-            this.button15.Location = new System.Drawing.Point(284, 345);
-            this.button15.Name = "button15";
-            this.button15.Size = new System.Drawing.Size(247, 61);
-            this.button15.TabIndex = 30;
-            this.button15.Text = "转换中文金额-Old";
-            this.button15.UseVisualStyleBackColor = true;
-            this.button15.Click += new System.EventHandler(this.button15_Click);
-            // 
-            // button16
-            // 
-            this.button16.Location = new System.Drawing.Point(284, 421);
-            this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(247, 61);
-            this.button16.TabIndex = 30;
-            this.button16.Text = "转换中文金额-New";
-            this.button16.UseVisualStyleBackColor = true;
-            this.button16.Click += new System.EventHandler(this.button16_Click);
-            // 
-            // button17
-            // 
-            this.button17.Location = new System.Drawing.Point(284, 495);
-            this.button17.Name = "button17";
-            this.button17.Size = new System.Drawing.Size(247, 63);
-            this.button17.TabIndex = 31;
-            this.button17.Text = "测试四舍五入";
-            this.button17.UseVisualStyleBackColor = true;
-            this.button17.Click += new System.EventHandler(this.button17_Click);
+            this.button19.Location = new System.Drawing.Point(28, 709);
+            this.button19.Name = "button19";
+            this.button19.Size = new System.Drawing.Size(248, 65);
+            this.button19.TabIndex = 33;
+            this.button19.Text = "测试顺丰取消下单";
+            this.button19.UseVisualStyleBackColor = true;
+            this.button19.Click += new System.EventHandler(this.button19_Click);
             // 
             // Form1
             // 
@@ -434,6 +458,8 @@
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Button button16;
         private System.Windows.Forms.Button button17;
+        private System.Windows.Forms.Button button19;
+        private System.Windows.Forms.Button button18;
     }
 }
 

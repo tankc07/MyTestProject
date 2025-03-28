@@ -28,6 +28,7 @@ using System.Text.RegularExpressions;
 using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
 using YJT;
+using static MOD.BllMod;
 
 namespace api测试
 {
@@ -1100,7 +1101,7 @@ order by
             var xiaoshu = (decimalMoney - integerPart);
             ShowLog("xiaoshu " + xiaoshu);
             int decimalPart = (int)Math.Round(xiaoshu * 100, MidpointRounding.AwayFromZero);
-            ShowLog("xiaoshu * 100 " + xiaoshu*100);
+            ShowLog("xiaoshu * 100 " + xiaoshu * 100);
             ShowLog("整数部分" + integerPart.ToString() + "小数部分" + decimalPart.ToString());
             var intnum = 0.49999999999954525;
             var intnum2 = 0.509999999999877;
@@ -1110,6 +1111,254 @@ order by
             ShowLog("decimal");
             ShowLog("0.49999999999954525 四舍五入 " + (int)Math.Round((decimal)intnum));
             ShowLog("0.509999999999877 四舍五入 " + (int)Math.Round((decimal)intnum2));
+        }
+
+        private void button18_Click(object sender, EventArgs e)
+        {
+            //指定测试环境
+            YJT.Logistics.ShunFengLogistic _sf = YJT.Logistics.ShunFengLogistic.Init("704", "ee6030e3f4f3f6eab5bca5f36a8ccf73");
+            _sf.IsTest = true;
+            var json = @"{
+	  ""Bid"": 458415,
+	  ""OrderId"": 275919,
+	  ""AddDate"": ""2024-07-19 15:31:52"",
+	  ""ErpId"": ""9103766"",
+	  ""Logic"": 0,
+	  ""Weight"": 1.23,
+	  ""Length"": 1.0,
+	  ""Width"": 1.0,
+	  ""Height"": 1.0,
+	  ""Status"": 20,
+	  ""Ip"": ""172.16.2.150"",
+	  ""Mac"": ""94C691F3D450"",
+	  ""ComputerName"": ""DESKTOP-AU62CUP"",
+	  ""ErrMsg"": ""获取WMS单据编号完成"",
+	  ""ClientId"": 4,
+	  ""PrintStatus"": 4,
+	  ""WmsDanjbh"": ""4054150"",
+	  ""NetDanjbh"": ""426129998"",
+	  ""ClientHandleDate"": ""2024-07-18 15:34:28"",
+	  ""ServerHandleDate"": ""2024-07-19 15:34:28"",
+	  ""WmsYewy"": ""刘聪聪Y"",
+	  ""WmsDdwname"": ""三河市新宝德堂药店"",
+	  ""NETORDER_FROMID"": ""1"",
+	  ""NETORDER_FROM"": ""药师帮"",
+	  ""ERPORDER_ID"": ""9103766"",
+	  ""CUSTOMID"": ""401205"",
+	  ""CUSTOMNAME"": ""三河市新宝德堂药店"",
+	  ""AGENTNAME"": ""刘聪聪Y"",
+	  ""ADDRESS"": ""廊坊三河市燕郊开发区北欧小镇南商住楼C12号"",
+	  ""WL_COMPANYID"": """",
+	  ""WL_NUMBER"": """",
+	  ""WL_COMPANYNAME"": """",
+	  ""RECVNAME"": ""燕郊开发区学院街宝德堂药店王晓丽"",
+	  ""RECVPHONE"": ""13785475853"",
+	  ""PROVINCENAME"": ""河北省"",
+	  ""CITYNAME"": ""廊坊市"",
+	  ""DISTRICTNAME"": ""三河市"",
+	  ""STREETNAME"": ""燕郊镇"",
+	  ""ORIGINALREMARK"": ""配送到店加急资质带全。企业首营资料、23年度报告、1盒包邮 蒙奇 清血八味片0.5g*120片首营资质和药检报告"",
+	  ""IsFp"": ""电子发票 "",
+	  ""IsPj"": """",
+	  ""IsHeTong"": """",
+	  ""IsQysy"": ""企业首营 "",
+	  ""IsSyzz"": ""首营资质 "",
+	  ""IsYjbb"": ""药检 "",
+	  ""PlatformType"": 1,
+	  ""logi_dstRoute"": """",
+	  ""logi_PayType"": """",
+	  ""logi_monAccNum"": """",
+	  ""logi_baojiaJine"": """",
+	  ""logi_dsJine"": """",
+	  ""logi_logcNum"": """",
+	  ""logi_ysJine"": """",
+	  ""logi_ysJineTotal"": """",
+	  ""logi_shouhuory"": """",
+	  ""logi_jinjianRiqi"": """",
+	  ""logi_shoufqianshu"": """",
+	  ""logi_shoufRiqi"": """",
+	  ""logi_sendSheng"": """",
+	  ""logi_sendShi"": """",
+	  ""logi_sendXian"": """",
+	  ""logi_sendAddress"": """",
+	  ""logi_sendMan"": """",
+	  ""logi_sendPhone"": """",
+	  ""logi_feiyongTotal"": """",
+	  ""logi_goodQty"": """",
+	  ""logi_goodName"": """",
+	  ""logi_OrderId"": """",
+	  ""logi_CreateDate"": """",
+	  ""needBaojia"": 0.0,
+	  ""logi_ChanpinTypeStr"": """",
+	  ""PrintDatetime"": """",
+	  ""sysFirst"": """",
+	  ""total_amt"": ""339.50"",
+	  ""RelBId"": -1,
+	  ""fplx"": ""普通发票"",
+	  ""ServerTaskType"": 1,
+	  ""PAIDCOSTS"": 0.0,
+	  ""logi_ReceivePwd"": """",
+	  ""logi_SubOrderSn"": 0,
+	  ""logi_PhonNum"": """",
+	  ""logi_TelNum"": """",
+	  ""RelOrderId"": -1,
+	  ""JingdongWl"": """"
+	}";
+            
+            var order = JsonConvert.DeserializeObject<BllMod.Order>(json);
+
+            var flag = false;
+            var isOk = false;
+            var errCode = -99;
+            var errMsg = "";
+
+            YJT.Logistics.ShunFengLogistic.ClassCreateOrder.CargoDetailsClass 货品 = new YJT.Logistics.ShunFengLogistic.ClassCreateOrder.CargoDetailsClass()
+            {
+                count = 1,
+                name = "药品",
+                specifications = "药品",
+                weight = order.Weight
+            };
+            YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ContactinfoClass 发件方 = new YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ContactinfoClass()
+            {
+                address = order.logi_sendAddress,
+                city = order.logi_sendShi,
+                company = "河北燕都医药物流有限公司",
+                contact = order.logi_sendMan,
+                contactType = 1,
+                county = order.logi_sendXian,
+                mobile = order.logi_sendPhone,
+                province = order.logi_sendSheng,
+                tel = order.logi_sendPhone
+
+            };
+
+
+            YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ContactinfoClass 收件方 = new YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ContactinfoClass()
+            {
+                address = order.ADDRESS,
+                city = order.CITYNAME,
+                company = order.CUSTOMNAME,
+                contact = order.RECVNAME,
+                contactType = 2,
+                county = order.DISTRICTNAME,
+                mobile = order.logi_PhonNum,
+                province = order.PROVINCENAME,
+                tel = order.logi_TelNum
+
+            };
+            string 备注 = "";
+            if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsFp))
+            {
+                备注 = 备注 + "发票";
+            }
+            if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsPj))
+            {
+                备注 = 备注 + " 货品批件";
+            }
+            if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsQysy))
+            {
+                备注 = 备注 + " 企业首营";
+            }
+            if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsSyzz))
+            {
+                备注 = 备注 + " 货品首营";
+            }
+            if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsYjbb))
+            {
+                备注 = 备注 + " 药检报告";
+            }
+            if (YJT.Text.Verification.IsNotNullOrEmpty(order.IsHeTong))
+            {
+                备注 = 备注 + " 购销合同";
+            }
+            YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ServiceListClass 增值服务 = YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ServiceListClass.CtorService(YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ServiceListClass.enum增值服务类别.配送服务, null);
+            //增值服务 = null;
+            YJT.Logistics.ShunFengLogistic.ClassCreateOrder a = _sf.Ctor_CreateOrderObj(order.ERPORDER_ID, 发件方, 收件方, 增值服务, 货品, 备注, "13", YJT.Logistics.ShunFengLogistic.ClassCreateOrder.enum产品类型.顺丰标快, YJT.Logistics.ShunFengLogistic.ClassCreateOrder.enum付款方式.寄付月结);
+            double tTotal_amt = 0d;
+            if (!double.TryParse(order.total_amt, out tTotal_amt))
+            {
+                tTotal_amt = 0d;
+            }
+            if (tTotal_amt != 0d)
+            {
+                if (tTotal_amt > 0)
+                {
+                    //int b = (int)(tTotal_amt / 500);
+                    //double c = tTotal_amt % 500;
+                    //if (c > 0)
+                    //{
+                    //	b = b + 1;
+                    //}
+                    //order.needBaojia = b * 500;
+                    //order.total_amt = tTotal_amt.ToString("#0.00");
+                    if (tTotal_amt < 500)
+                    {
+                        order.needBaojia = 500;
+                    }
+                    else
+                    {
+                        order.needBaojia = 1000;
+                    }
+                    order.total_amt = tTotal_amt.ToString("#0.00");
+                }
+            }
+            if (order.needBaojia > 0)
+            {
+                YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ServiceListClass 保价服务 = YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ServiceListClass.CtorService(YJT.Logistics.ShunFengLogistic.ClassCreateOrder.ServiceListClass.enum增值服务类别.保价, order.needBaojia.ToString());
+                a.AddserviceList(保价服务);
+            }
+            else
+            {
+                order.needBaojia = 0;
+            }
+            string stxt = "";
+            string otxt = "";
+            YJT.Logistics.ShunFengLogistic.ClassCreateOrderRes res = _sf.CreateOrder(a, out isOk, out errCode, out errMsg, out stxt, out otxt);
+            try
+            {
+                if (!System.IO.Directory.Exists(@"D:\WLLOG"))
+                {
+                    System.IO.Directory.CreateDirectory(@"D:\WLLOG");
+                }
+                System.IO.File.AppendAllText(@"D:\WLLOG\Shunfeng_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "---------------------------------------------\r\n");
+                System.IO.File.AppendAllText(@"D:\WLLOG\Shunfeng_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + stxt + "\r\n");
+                System.IO.File.AppendAllText(@"D:\WLLOG\Shunfeng_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "返回-----------------------------------------------------------------\r\n");
+                System.IO.File.AppendAllText(@"D:\WLLOG\Shunfeng_" + DateTime.Now.ToString("yyyyMMdd") + ".txt", "\t" + otxt + "\r\n");
+
+            }
+            catch (Exception ee)
+            {
+                ShowLog("异常" + @"写入物流日志错误: " + ee.ToString());
+            }
+
+            if (isOk == true && YJT.Text.Verification.IsNotNullOrEmpty(res.data))
+            {
+                order.WL_COMPANYID = ((int)order.Logic).ToString();
+                order.WL_COMPANYNAME = order.Logic.ToString();
+                order.WL_NUMBER = res.data;
+                order.Status = Settings.Setings.EnumOrderStatus.已获取物流单号;
+                order.logi_CreateDate = DateTime.Now.ToString("yyyyMMdd");
+                order.ErrMsg = "创建物流订单完成";
+                order.logi_jinjianRiqi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                //YJT.Logistics.ShunFengLogistic.ClassGetOrderInfoRes res2 = sf.GetOrderInfo(order.ERPORDER_ID, out isOk, out errCode, out errMsg);
+                //if (isOk == true && res2.data2 != null)
+                //{
+                //	//res2.data2.destRouteLabel //371DN-072
+                //	//monthAccount
+                //}
+            }
+            else
+            {
+                order.ErrMsg = "顺丰物流下单不成功:" + res.data;
+                order.Status = Settings.Setings.EnumOrderStatus.异常_物流下单不成功;
+                flag = true;
+            }
+        }
+
+        private void button19_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

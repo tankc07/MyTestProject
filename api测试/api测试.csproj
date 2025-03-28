@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>api测试</RootNamespace>
     <AssemblyName>api测试</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -60,7 +60,8 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="YJT">
+    <Reference Include="YJT, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\YanduECommerceAutomaticPrinting\Dlls\YJT.dll</HintPath>
     </Reference>
     <Reference Include="YJTFrmControl">
