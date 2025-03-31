@@ -197,7 +197,7 @@ namespace Settings
             }
         }
 
-        //顺丰月结账号???顺丰月结号3122038182
+        //不是月结账号(旧的月结账号:3113690367 新签合同顺丰月结号:3122038182)
         public static string ShunfengCustomerId
         {
             get
