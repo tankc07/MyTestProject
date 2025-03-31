@@ -1218,14 +1218,15 @@ where
                                             //}
                                             //order.needBaojia = b * 500;
                                             //order.total_amt = tTotal_amt.ToString("#0.00");
-                                            if (tTotal_amt < 500)
-                                            {
-                                                order.needBaojia = 500;
-                                            }
-                                            else
-                                            {
-                                                order.needBaojia = 1000;
-                                            }
+                                            //if (tTotal_amt < 500)
+                                            //{
+                                            //    order.needBaojia = 500;
+                                            //}
+                                            //else
+                                            //{
+                                            //    order.needBaojia = 1000;
+                                            //}
+                                            order.needBaojia = tTotal_amt;
                                             order.total_amt = tTotal_amt.ToString("#0.00");
                                         }
                                     }
@@ -1589,6 +1590,23 @@ where
                                     {
                                         diffWeightMsg = "double转int, 导致原订单重量和下单重量不一致,原订单重量:" + order.Weight + ",下单重量:" + (int)order.Weight;
                                     }
+                                    //大于18公斤 需要加保价 (按照实际金额投保即可, 最终费用为折扣后0.1元 1000元保价是0.1 5000元也是0.1)
+                                    if (order.Weight > 18.0)
+                                    {
+                                        double tTotal_amt = 0d;
+                                        if (!double.TryParse(order.total_amt, out tTotal_amt))
+                                        {
+                                            tTotal_amt = 0d;
+                                        }
+                                        if (tTotal_amt != 0d)
+                                        {
+                                            if (tTotal_amt > 0)
+                                            {
+                                                order.needBaojia = tTotal_amt;
+                                                order.total_amt = tTotal_amt.ToString("#0.00");
+                                            }
+                                        }
+                                    }
 
                                     NewEmsRequestBase 取号 = _newEms.GetCreateOrderModel(
                                         ecommerceUserId: order.PlatformType.ToString(),
@@ -1599,7 +1617,9 @@ where
                                         cargoes: new CargoModel[] { 药品info },
                                         batchNo: "",
                                         electronicPreferentialAmount: 0,
-                                        insuranceAmount: 0,//order.needBaojia,
+                                        //保价金额
+                                        insuranceAmount: order.needBaojia > 0 ? order.needBaojia : 0d,
+                                        //1 基础 2 保价 3保险
                                         insuranceFlag: 2,
                                         insurancePremiumAmount: 0,
                                         pickupNotes: 备注,
@@ -4367,6 +4387,23 @@ where
             {
                 diffWeightMsg = "double转int, 导致原订单重量和下单重量不一致,原订单重量:" + order.Weight + ",下单重量:" + (int)order.Weight;
             }
+            //大于18公斤 需要加保价 (按照实际金额投保即可, 最终费用为折扣后0.1元 1000元保价是0.1 5000元也是0.1)
+            if (order.Weight > 18.0)
+            {
+                double tTotal_amt = 0d;
+                if (!double.TryParse(order.total_amt, out tTotal_amt))
+                {
+                    tTotal_amt = 0d;
+                }
+                if (tTotal_amt != 0d)
+                {
+                    if (tTotal_amt > 0)
+                    {
+                        order.needBaojia = tTotal_amt;
+                        order.total_amt = tTotal_amt.ToString("#0.00");
+                    }
+                }
+            }
 
             NewEmsRequestBase 取号 = _newEms.GetCreateOrderModel(
                 ecommerceUserId: order.PlatformType.ToString(),
@@ -4377,7 +4414,9 @@ where
                 cargoes: new CargoModel[] { 药品info },
                 batchNo: "",
                 electronicPreferentialAmount: 0,
-                insuranceAmount: 0,//order.needBaojia,
+                //保价金额
+                insuranceAmount: order.needBaojia > 0 ? order.needBaojia : 0d,
+                //1 基础 2 保价 3保险
                 insuranceFlag: 2,
                 insurancePremiumAmount: 0,
                 pickupNotes: 备注,
@@ -4579,14 +4618,15 @@ where
                             //}
                             //order.needBaojia = b * 500;
                             //order.total_amt = tTotal_amt.ToString("#0.00");
-                            if (tTotal_amt < 500)
-                            {
-                                order.needBaojia = 500;
-                            }
-                            else
-                            {
-                                order.needBaojia = 1000;
-                            }
+                            //if (tTotal_amt < 500)
+                            //{
+                            //    order.needBaojia = 500;
+                            //}
+                            //else
+                            //{
+                            //    order.needBaojia = 1000;
+                            //}
+                            order.needBaojia = tTotal_amt;
                             order.total_amt = tTotal_amt.ToString("#0.00");
                         }
                     }
@@ -8687,14 +8727,15 @@ WHERE Bid={order.Bid}
                                                 //}
                                                 //order.needBaojia = b * 500;
                                                 //order.total_amt = tTotal_amt.ToString("#0.00");
-                                                if (tTotal_amt < 500)
-                                                {
-                                                    order.needBaojia = 500;
-                                                }
-                                                else
-                                                {
-                                                    order.needBaojia = 1000;
-                                                }
+                                                //if (tTotal_amt < 500)
+                                                //{
+                                                //    order.needBaojia = 500;
+                                                //}
+                                                //else
+                                                //{
+                                                //    order.needBaojia = 1000;
+                                                //}
+                                                order.needBaojia = tTotal_amt;
                                                 order.total_amt = tTotal_amt.ToString("#0.00");
                                             }
                                         }
@@ -9014,7 +9055,23 @@ WHERE Bid={order.Bid}
                                         {
                                             diffWeightMsg = "double转int, 导致原订单重量和下单重量不一致,原订单重量:" + order.Weight + ",下单重量:" + (int)order.Weight;
                                         }
-
+                                        //大于18公斤 需要加保价 (按照实际金额投保即可, 最终费用为折扣后0.1元 1000元保价是0.1 5000元也是0.1)
+                                        if (order.Weight > 18.0)
+                                        {
+                                            double tTotal_amt = 0d;
+                                            if (!double.TryParse(order.total_amt, out tTotal_amt))
+                                            {
+                                                tTotal_amt = 0d;
+                                            }
+                                            if (tTotal_amt != 0d)
+                                            {
+                                                if (tTotal_amt > 0)
+                                                {
+                                                    order.needBaojia = tTotal_amt;
+                                                    order.total_amt = tTotal_amt.ToString("#0.00");
+                                                }
+                                            }
+                                        }
                                         NewEmsRequestBase 取号 = _newEms.GetCreateOrderModel(
                                             ecommerceUserId: order.PlatformType.ToString(),
                                             erpId: order.ERPORDER_ID,
@@ -9024,7 +9081,9 @@ WHERE Bid={order.Bid}
                                             cargoes: new CargoModel[] { 药品info },
                                             batchNo: "",
                                             electronicPreferentialAmount: 0,
-                                            insuranceAmount: 0,//order.needBaojia,
+                                            //保价金额
+                                            insuranceAmount: order.needBaojia > 0 ? order.needBaojia : 0d,
+                                            //1 基础 2 保价 3保险
                                             insuranceFlag: 2,
                                             insurancePremiumAmount: 0,
                                             pickupNotes: 备注,
