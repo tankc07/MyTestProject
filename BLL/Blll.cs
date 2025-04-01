@@ -1218,15 +1218,14 @@ where
                                             //}
                                             //order.needBaojia = b * 500;
                                             //order.total_amt = tTotal_amt.ToString("#0.00");
-                                            //if (tTotal_amt < 500)
-                                            //{
-                                            //    order.needBaojia = 500;
-                                            //}
-                                            //else
-                                            //{
-                                            //    order.needBaojia = 1000;
-                                            //}
-                                            order.needBaojia = tTotal_amt;
+                                            if (tTotal_amt < 500)
+                                            {
+                                                order.needBaojia = 500;
+                                            }
+                                            else
+                                            {
+                                                order.needBaojia = 1000;
+                                            }
                                             order.total_amt = tTotal_amt.ToString("#0.00");
                                         }
                                     }
@@ -1590,8 +1589,8 @@ where
                                     {
                                         diffWeightMsg = "double转int, 导致原订单重量和下单重量不一致,原订单重量:" + order.Weight + ",下单重量:" + (int)order.Weight;
                                     }
-                                    //大于18公斤 需要加保价 (按照实际金额投保即可, 最终费用为折扣后0.1元 1000元保价是0.1 5000元也是0.1)
-                                    if (order.Weight > 18.0)
+                                    //大于3公斤 需要加保价 (按照实际金额投保即可, 最终费用为折扣后0.1元 1000元保价是0.1 5000元也是0.1)
+                                    if (order.Weight > 3.0)
                                     {
                                         double tTotal_amt = 0d;
                                         if (!double.TryParse(order.total_amt, out tTotal_amt))
@@ -2544,35 +2543,49 @@ where
             // 邮政3公斤及以内目的省列表
             var emsList = new List<string> { "河北", "河南", "山东", "山西", "北京", "天津", "安徽", "湖北", "广东", "江苏", "湖南", "黑龙江", "四川" };
 
-            AddMsgOut("1 开始比配", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight, true);
-
-            if (order.Weight <= 3.0)
+            AddMsgOut("开始比配", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight, true);
+            double ttotal_mat = 0d;
+            if(!double.TryParse(order.total_amt, out ttotal_mat))
             {
-                AddMsgOut("2 重量小于等于 3.0 >> 需要进一步判断目的省", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+                AddMsgOut("转换订单总金额", Settings.Setings.EnumMessageType.异常, 0, "订单总金额转换失败, 指定为0.", order.total_amt, order.ErpId, order.OrderId, order.ADDRESS, order.PROVINCENAME, order.Weight, true);
+                ttotal_mat = 0d;
+            }
 
-                if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, emsList, true))
+            if (ttotal_mat > 1000d)
+            {
+                AddMsgOut("1 订单总金额大于1000 >> 新邮政Ems", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+                return Setings.EnumLogicType.新邮政Ems;
+            }
+            else
+            {
+                if (order.Weight <= 3.0)
                 {
-                    AddMsgOut("2.1 属于[河北/河南/山东/山西/北京/天津/安徽/湖北/广东/江苏/湖南/黑龙江/四川] >> 新邮政Ems", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+                    AddMsgOut("2 重量小于等于 3.0 >> 需要进一步判断目的省", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+
+                    if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, emsList, true))
+                    {
+                        AddMsgOut("2.1 属于[河北/河南/山东/山西/北京/天津/安徽/湖北/广东/江苏/湖南/黑龙江/四川] >> 新邮政Ems", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+                        return Settings.Setings.EnumLogicType.新邮政Ems;
+                    }
+                    else if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, shentongList, true))
+                    {
+                        AddMsgOut("2.2 属于[辽宁/江西/浙江/贵州/重庆/云南/内蒙古/甘肃/陕西/宁夏/海南/青海/上海/吉林/福建/广西] >> 申通", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+                        return Settings.Setings.EnumLogicType.申通快递;
+                    }
+                }
+                else if (order.Weight > 3.0 && order.Weight <= 18.0)
+                {
+                    AddMsgOut("3 重量大于3.0 且小于等于18.0 >> 顺丰", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+                    return Setings.EnumLogicType.顺丰;
+                }
+                else if (order.Weight > 18.0)
+                {
+                    AddMsgOut("4 重量大于18.0 >> 新邮政Ems", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
                     return Settings.Setings.EnumLogicType.新邮政Ems;
                 }
-                else if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, shentongList, true))
-                {
-                    AddMsgOut("2.2 属于[辽宁/江西/浙江/贵州/重庆/云南/内蒙古/甘肃/陕西/宁夏/海南/青海/上海/吉林/福建/广西] >> 申通", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
-                    return Settings.Setings.EnumLogicType.申通快递;
-                }
+                AddMsgOut("5 所有条件都不符合 >> 新邮政Ems", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+                return Setings.EnumLogicType.新邮政Ems;
             }
-            else if (order.Weight > 3.0 && order.Weight <= 18.0)
-            {
-                AddMsgOut("3 重量大于3.0 且小于等于18.0 >> 顺丰", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
-                return Setings.EnumLogicType.顺丰;
-            }
-            else if (order.Weight > 18.0)
-            {
-                AddMsgOut("4 重量大于18.0 >> 新邮政Ems", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
-                return Settings.Setings.EnumLogicType.新邮政Ems;
-            }
-            AddMsgOut("5 所有条件都不符合 >> 顺丰", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
-            return Setings.EnumLogicType.新邮政Ems;
         }
 
         public bool GetComplatePrintInfo(string erpId, ref PrintObj po, out bool isOk, out int errCode, out string errMsg)
@@ -4387,8 +4400,8 @@ where
             {
                 diffWeightMsg = "double转int, 导致原订单重量和下单重量不一致,原订单重量:" + order.Weight + ",下单重量:" + (int)order.Weight;
             }
-            //大于18公斤 需要加保价 (按照实际金额投保即可, 最终费用为折扣后0.1元 1000元保价是0.1 5000元也是0.1)
-            if (order.Weight > 18.0)
+            //大于3公斤 需要加保价 (按照实际金额投保即可, 最终费用为折扣后0.1元 1000元保价是0.1 5000元也是0.1)
+            if (order.Weight > 3.0)
             {
                 double tTotal_amt = 0d;
                 if (!double.TryParse(order.total_amt, out tTotal_amt))
@@ -4537,6 +4550,17 @@ where
             {
                 if (order.Logic == Setings.EnumLogicType.顺丰)
                 {
+                    //金额大于1000的顺丰子件, 因为保价费率问题, 不能发.
+                    //if(Convert.ToDouble(order.total_amt) > 1000d)
+                    //{
+                    //    errMsg = "当前顺丰子单的订单金额大于1000, 无法保价.请手动发其他快递.";
+                    //    isOk = false;
+                    //    errCode = -1;
+                    //    order.Status = Setings.EnumOrderStatus.异常_物流下单不成功;
+                    //    order.ErrMsg = errMsg;
+                    //    return order;
+                    //}
+
                     YJT.Logistics.ShunFengLogistic.ClassCreateOrder.CargoDetailsClass 货品 = new YJT.Logistics.ShunFengLogistic.ClassCreateOrder.CargoDetailsClass()
                     {
                         count = 1,
@@ -4618,15 +4642,14 @@ where
                             //}
                             //order.needBaojia = b * 500;
                             //order.total_amt = tTotal_amt.ToString("#0.00");
-                            //if (tTotal_amt < 500)
-                            //{
-                            //    order.needBaojia = 500;
-                            //}
-                            //else
-                            //{
-                            //    order.needBaojia = 1000;
-                            //}
-                            order.needBaojia = tTotal_amt;
+                            if (tTotal_amt < 500)
+                            {
+                                order.needBaojia = 500;
+                            }
+                            else
+                            {
+                                order.needBaojia = 1000;
+                            }
                             order.total_amt = tTotal_amt.ToString("#0.00");
                         }
                     }
@@ -8727,15 +8750,14 @@ WHERE Bid={order.Bid}
                                                 //}
                                                 //order.needBaojia = b * 500;
                                                 //order.total_amt = tTotal_amt.ToString("#0.00");
-                                                //if (tTotal_amt < 500)
-                                                //{
-                                                //    order.needBaojia = 500;
-                                                //}
-                                                //else
-                                                //{
-                                                //    order.needBaojia = 1000;
-                                                //}
-                                                order.needBaojia = tTotal_amt;
+                                                if (tTotal_amt < 500)
+                                                {
+                                                    order.needBaojia = 500;
+                                                }
+                                                else
+                                                {
+                                                    order.needBaojia = 1000;
+                                                }
                                                 order.total_amt = tTotal_amt.ToString("#0.00");
                                             }
                                         }
@@ -9055,8 +9077,8 @@ WHERE Bid={order.Bid}
                                         {
                                             diffWeightMsg = "double转int, 导致原订单重量和下单重量不一致,原订单重量:" + order.Weight + ",下单重量:" + (int)order.Weight;
                                         }
-                                        //大于18公斤 需要加保价 (按照实际金额投保即可, 最终费用为折扣后0.1元 1000元保价是0.1 5000元也是0.1)
-                                        if (order.Weight > 18.0)
+                                        //大于3公斤 需要加保价 (按照实际金额投保即可, 最终费用为折扣后0.1元 1000元保价是0.1 5000元也是0.1)
+                                        if (order.Weight > 3.0)
                                         {
                                             double tTotal_amt = 0d;
                                             if (!double.TryParse(order.total_amt, out tTotal_amt))
