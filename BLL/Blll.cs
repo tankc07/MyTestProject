@@ -2577,6 +2577,8 @@ where
                 {
                     AddMsgOut("3 重量大于3.0 且小于等于18.0 >> 顺丰", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
                     return Setings.EnumLogicType.顺丰;
+                    //return Settings.Setings.EnumLogicType.新邮政Ems;
+
                 }
                 else if (order.Weight > 18.0)
                 {
