@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using LogisticsCore.JingDong;
+﻿using LogisticsCore.JingDong;
 using LogisticsCore.JingDong.Model;
 using LogisticsCore.JingDong.Request;
 using LogisticsCore.NewEMS;
@@ -13,6 +9,10 @@ using MOD;
 using MOD.HdErp;
 using Newtonsoft.Json;
 using Settings;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 
 namespace BLL
 {
@@ -1103,65 +1103,14 @@ where
 
                         }
                     }
+
                     if (logicStatus == true)
                     {
-                        AddMsgOut("1 准备开始", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS,order.Logic);
+                        AddMsgOut("1 准备开始", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.Logic);
                         if (order.Logic == Settings.Setings.EnumLogicType.Default)
                         {
                             #region 计算物流分配
-                            AddMsgOut("2 开始计算", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "海南", "青海" }, true));
-                            if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "海南", "青海" }, true))
-                            {
-                                AddMsgOut("3 属于海南或青海", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "海南", "青海" }, true));
-                                order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
-                            }
-                            else
-                            {
-                                AddMsgOut("3 不属于海南或青海, 开始比配其他条件", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "海南", "青海" }, true));
-                                //1 订单金额大于2000元以上 >> 京东生鲜医药快递
-                                if (Convert.ToDouble(order.total_amt) > 2000d)
-                                {
-                                    AddMsgOut("3.1 金额大于2000", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.total_amt);
-                                    order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
-                                }
-                                //2 京津冀且重量大于3公斤 >> 京东生鲜医药快递
-                                else if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北" }, true) && order.Weight > 3.0)
-                                {
-                                    AddMsgOut("3.2 属于京津冀且重量小于3.0", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
-                                    order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
-                                }
-                                //3 重量大于3公斤小于20公斤 >> 京东生鲜医药快递
-                                else if (order.Weight > 3.0 && order.Weight < 20.0)
-                                {
-                                    AddMsgOut("3.3 重量大于3.0小于20.0", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
-                                    order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
-                                }
-                                //4 重量小于3公斤->地区属于("北京", "天津", "河北", "河南", "山东", "山西") >> 新邮政Ems
-                                //             ->其他地区 >> 申通快递  
-                                else if (order.Weight <= 3.0)
-                                {
-                                    AddMsgOut("3.4 重量小于等于3.0", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配",order.PROVINCENAME, order.Weight);
-
-                                    if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true))
-                                    {
-                                        AddMsgOut("3.4.1 属于[北京/天津/河北/河南/山东/山西]", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
-                                        //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
-                                        order.Logic = Settings.Setings.EnumLogicType.新邮政Ems;
-                                    }
-                                    else
-                                    {
-                                        AddMsgOut("3.4.2 不属于[北京/天津/河北/河南/山东/山西]", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
-                                        order.Logic = Settings.Setings.EnumLogicType.申通快递;
-                                    }
-                                }
-                                //5 以上都不符合的 默认 >> 京东生鲜医药快递
-                                else
-                                {
-                                    AddMsgOut("4 所有条件都不符合", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
-                                    order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
-                                }
-                            }
-
+                            order.Logic = SelectLogisticsProvider(order);
                             #endregion
                         }
                         ///设置发货人
@@ -1640,6 +1589,23 @@ where
                                     {
                                         diffWeightMsg = "double转int, 导致原订单重量和下单重量不一致,原订单重量:" + order.Weight + ",下单重量:" + (int)order.Weight;
                                     }
+                                    //大于3公斤 需要加保价 (按照实际金额投保即可, 最终费用为折扣后0.1元 1000元保价是0.1 5000元也是0.1)
+                                    if (order.Weight > 3.0)
+                                    {
+                                        double tTotal_amt = 0d;
+                                        if (!double.TryParse(order.total_amt, out tTotal_amt))
+                                        {
+                                            tTotal_amt = 0d;
+                                        }
+                                        if (tTotal_amt != 0d)
+                                        {
+                                            if (tTotal_amt > 0)
+                                            {
+                                                order.needBaojia = tTotal_amt;
+                                                order.total_amt = tTotal_amt.ToString("#0.00");
+                                            }
+                                        }
+                                    }
 
                                     NewEmsRequestBase 取号 = _newEms.GetCreateOrderModel(
                                         ecommerceUserId: order.PlatformType.ToString(),
@@ -1650,7 +1616,9 @@ where
                                         cargoes: new CargoModel[] { 药品info },
                                         batchNo: "",
                                         electronicPreferentialAmount: 0,
-                                        insuranceAmount: 0,//order.needBaojia,
+                                        //保价金额
+                                        insuranceAmount: order.needBaojia > 0 ? order.needBaojia : 0d,
+                                        //1 基础 2 保价 3保险
                                         insuranceFlag: 2,
                                         insurancePremiumAmount: 0,
                                         pickupNotes: 备注,
@@ -2513,8 +2481,114 @@ where
                 AddMsgOut(errMsg, Settings.Setings.EnumMessageType.异常, errCode, "");
             }
         }
+        /// <summary>
+        /// 匹配物流
+        /// </summary>
+        /// <param name="order">订单对象</param>
+        /// <returns></returns>
+        private static Setings.EnumLogicType SelectLogisticsProvider(BllMod.Order order)
+        {
+            #region 临时方案
+            //// 申通3公斤及以内目的省列表
+            //var shentongList = new List<string> { "辽宁", "江西", "浙江", "贵州", "重庆", "云南", "内蒙古", "甘肃", "陕西", "宁夏", "海南", "青海", "上海", "吉林", "福建", "广西" };
 
+            //// 邮政3公斤及以内目的省列表
+            //var emsList = new List<string> { "河北", "河南", "山东", "山西", "北京", "天津", "安徽", "湖北", "广东", "江苏", "湖南", "黑龙江", "四川" };
 
+            //AddMsgOut("2 开始比配", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight, order.total_amt, true);
+            ////1 订单金额大于2000元以上 >> 京东生鲜医药快递
+            //if (Convert.ToDouble(order.total_amt) > 2000d)
+            //{
+            //    AddMsgOut("2.1 金额大于2000 >> 京东生鲜医药快递", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.total_amt);
+            //    return Settings.Setings.EnumLogicType.京东生鲜医药快递;
+            //}
+            ////2 京津冀且重量大于3公斤 >> 京东生鲜医药快递
+            //if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北" }, true) && order.Weight > 3.0)
+            //{
+            //    AddMsgOut("2.2 属于京津冀且重量大于3.0 >> 京东生鲜医药快递", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+            //    return Settings.Setings.EnumLogicType.京东生鲜医药快递;
+            //}
+            ////3 重量大于3公斤小于18公斤 >> 京东生鲜医药快递
+            //if (order.Weight > 3.0 && order.Weight < 18.0)
+            //{
+            //    AddMsgOut("2.3 重量大于3.0小于20.0 >> 京东生鲜医药快递", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+            //    return Setings.EnumLogicType.京东生鲜医药快递;
+            //}
+            ////4 重量小于等于3公斤 ->地区属于("河北", "河南", "山东", "山西", "北京", "天津", "安徽", "湖北", "广东", "江苏", "湖南", "黑龙江", "四川") >> 新邮政Ems
+            ////                  ->地区属于("辽宁", "江西", "浙江", "贵州", "重庆", "云南", "内蒙古", "甘肃", "陕西", "宁夏", "海南", "青海", "上海", "吉林", "福建", "广西") >> 申通快递  
+            //if (order.Weight <= 3.0)
+            //{
+            //    AddMsgOut("2.4 重量小于等于3.0 >> 需要进一步判断目的省", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+
+            //    if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, emsList, true))
+            //    {
+            //        AddMsgOut("2.4.1 属于[河北/河南/山东/山西/山东/北京/天津/安徽/湖北/广东/江苏/湖南/黑龙江/四川] >> 新邮政Ems", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+            //        //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
+            //        return Settings.Setings.EnumLogicType.新邮政Ems;
+            //    }
+            //    else if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, shentongList, true))
+            //    {
+            //        AddMsgOut("2.4.2 属于[辽宁/江西/浙江/贵州/重庆/云南/内蒙古/甘肃/陕西/宁夏/海南/青海/上海/吉林/福建/广西] >> 申通", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+            //        return Settings.Setings.EnumLogicType.申通快递;
+            //    }
+            //}
+            ////5 以上都不符合的 默认 >> 京东生鲜医药快递
+            //AddMsgOut("3 所有条件都不符合 >> 京东生鲜医药快递", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+            //return Setings.EnumLogicType.京东生鲜医药快递;
+            #endregion
+
+            //申通3公斤及以内目的省列表
+            var shentongList = new List<string> { "辽宁", "江西", "浙江", "贵州", "重庆", "云南", "内蒙古", "甘肃", "陕西", "宁夏", "海南", "青海", "上海", "吉林", "福建", "广西" };
+
+            // 邮政3公斤及以内目的省列表
+            var emsList = new List<string> { "河北", "河南", "山东", "山西", "北京", "天津", "安徽", "湖北", "广东", "江苏", "湖南", "黑龙江", "四川" };
+
+            AddMsgOut("开始比配", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight, true);
+            double ttotal_mat = 0d;
+            if(!double.TryParse(order.total_amt, out ttotal_mat))
+            {
+                AddMsgOut("转换订单总金额", Settings.Setings.EnumMessageType.异常, 0, "订单总金额转换失败, 指定为0.", order.total_amt, order.ErpId, order.OrderId, order.ADDRESS, order.PROVINCENAME, order.Weight, true);
+                ttotal_mat = 0d;
+            }
+
+            if (ttotal_mat > 1000d)
+            {
+                AddMsgOut("1 订单总金额大于1000 >> 新邮政Ems", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+                return Setings.EnumLogicType.新邮政Ems;
+            }
+            else
+            {
+                if (order.Weight <= 3.0)
+                {
+                    AddMsgOut("2 重量小于等于 3.0 >> 需要进一步判断目的省", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+
+                    if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, emsList, true))
+                    {
+                        AddMsgOut("2.1 属于[河北/河南/山东/山西/北京/天津/安徽/湖北/广东/江苏/湖南/黑龙江/四川] >> 新邮政Ems", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+                        return Settings.Setings.EnumLogicType.新邮政Ems;
+                    }
+                    else if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, shentongList, true))
+                    {
+                        AddMsgOut("2.2 属于[辽宁/江西/浙江/贵州/重庆/云南/内蒙古/甘肃/陕西/宁夏/海南/青海/上海/吉林/福建/广西] >> 申通", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+                        return Settings.Setings.EnumLogicType.申通快递;
+                    }
+                }
+                else if (order.Weight > 3.0 && order.Weight <= 18.0)
+                {
+                    AddMsgOut("3 重量大于3.0 且小于等于18.0 >> 顺丰", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+                    return Setings.EnumLogicType.顺丰;
+                    //return Settings.Setings.EnumLogicType.新邮政Ems;
+
+                }
+                else if (order.Weight > 18.0)
+                {
+                    AddMsgOut("4 重量大于18.0 >> 新邮政Ems", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+                    return Settings.Setings.EnumLogicType.新邮政Ems;
+                }
+                AddMsgOut("5 所有条件都不符合 >> 新邮政Ems", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.ADDRESS, order.PROVINCENAME, order.Weight);
+                return Setings.EnumLogicType.新邮政Ems;
+            }
+        }
 
         public bool GetComplatePrintInfo(string erpId, ref PrintObj po, out bool isOk, out int errCode, out string errMsg)
         {
@@ -4328,6 +4402,23 @@ where
             {
                 diffWeightMsg = "double转int, 导致原订单重量和下单重量不一致,原订单重量:" + order.Weight + ",下单重量:" + (int)order.Weight;
             }
+            //大于3公斤 需要加保价 (按照实际金额投保即可, 最终费用为折扣后0.1元 1000元保价是0.1 5000元也是0.1)
+            if (order.Weight > 3.0)
+            {
+                double tTotal_amt = 0d;
+                if (!double.TryParse(order.total_amt, out tTotal_amt))
+                {
+                    tTotal_amt = 0d;
+                }
+                if (tTotal_amt != 0d)
+                {
+                    if (tTotal_amt > 0)
+                    {
+                        order.needBaojia = tTotal_amt;
+                        order.total_amt = tTotal_amt.ToString("#0.00");
+                    }
+                }
+            }
 
             NewEmsRequestBase 取号 = _newEms.GetCreateOrderModel(
                 ecommerceUserId: order.PlatformType.ToString(),
@@ -4338,7 +4429,9 @@ where
                 cargoes: new CargoModel[] { 药品info },
                 batchNo: "",
                 electronicPreferentialAmount: 0,
-                insuranceAmount: 0,//order.needBaojia,
+                //保价金额
+                insuranceAmount: order.needBaojia > 0 ? order.needBaojia : 0d,
+                //1 基础 2 保价 3保险
                 insuranceFlag: 2,
                 insurancePremiumAmount: 0,
                 pickupNotes: 备注,
@@ -4459,6 +4552,17 @@ where
             {
                 if (order.Logic == Setings.EnumLogicType.顺丰)
                 {
+                    //金额大于1000的顺丰子件, 因为保价费率问题, 不能发.
+                    //if(Convert.ToDouble(order.total_amt) > 1000d)
+                    //{
+                    //    errMsg = "当前顺丰子单的订单金额大于1000, 无法保价.请手动发其他快递.";
+                    //    isOk = false;
+                    //    errCode = -1;
+                    //    order.Status = Setings.EnumOrderStatus.异常_物流下单不成功;
+                    //    order.ErrMsg = errMsg;
+                    //    return order;
+                    //}
+
                     YJT.Logistics.ShunFengLogistic.ClassCreateOrder.CargoDetailsClass 货品 = new YJT.Logistics.ShunFengLogistic.ClassCreateOrder.CargoDetailsClass()
                     {
                         count = 1,
@@ -8044,98 +8148,65 @@ WHERE Bid={order.Bid}
                         {
                             if (order.Logic == Settings.Setings.EnumLogicType.Default)
                             {
-                                //#region 计算物流分配
-
-                                ////1 订单金额大于2000元以上 >> 京东生鲜医药快递
-                                //if (Convert.ToDouble(order.total_amt) > 2000d)
-                                //{
-                                //    order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
-                                //}
-                                ////2 京津冀且重量大于3公斤 >> 京东生鲜医药快递
-                                //else if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北" }, true) && order.Weight > 3.0)
-                                //{
-                                //    order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
-                                //}
-                                ////3 重量大于3公斤小于20公斤 >> 京东生鲜医药快递
-                                //else if (order.Weight > 3.0 && order.Weight < 20.0)
-                                //{
-                                //    order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
-                                //}
-                                ////4 重量小于3公斤->地区属于("北京", "天津", "河北", "河南", "山东", "山西") >> 新邮政Ems
-                                ////             ->其他地区 >> 申通快递  
-                                //else if (order.Weight <= 3.0)
-                                //{
-                                //    if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true))
-                                //    {
-                                //        //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
-                                //        order.Logic = Settings.Setings.EnumLogicType.新邮政Ems;
-                                //    }
-                                //    else
-                                //    {
-                                //        order.Logic = Settings.Setings.EnumLogicType.申通快递;
-                                //    }
-                                //}
-                                ////5 以上都不符合的 默认 >> 京东生鲜医药快递
-                                //else
-                                //{
-                                //    order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
-                                //}
-
-                                //#endregion
 
                                 #region 计算物流分配
-                                AddMsgOut("2 开始计算", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "海南", "青海" }, true));
-                                if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "海南", "青海" }, true))
-                                {
-                                    AddMsgOut("3 属于海南或青海", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "海南", "青海" }, true));
-                                    order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
-                                }
-                                else
-                                {
-                                    AddMsgOut("3 不属于海南或青海, 开始比配其他条件", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "海南", "青海" }, true));
-                                    //1 订单金额大于2000元以上 >> 京东生鲜医药快递
-                                    if (Convert.ToDouble(order.total_amt) > 2000d)
-                                    {
-                                        AddMsgOut("3.1 金额大于2000", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.total_amt);
-                                        order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
-                                    }
-                                    //2 京津冀且重量大于3公斤 >> 京东生鲜医药快递
-                                    else if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北" }, true) && order.Weight > 3.0)
-                                    {
-                                        AddMsgOut("3.2 属于京津冀且重量小于3.0", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
-                                        order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
-                                    }
-                                    //3 重量大于3公斤小于20公斤 >> 京东生鲜医药快递
-                                    else if (order.Weight > 3.0 && order.Weight < 20.0)
-                                    {
-                                        AddMsgOut("3.3 重量大于3.0小于20.0", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
-                                        order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
-                                    }
-                                    //4 重量小于3公斤->地区属于("北京", "天津", "河北", "河南", "山东", "山西") >> 新邮政Ems
-                                    //             ->其他地区 >> 申通快递  
-                                    else if (order.Weight <= 3.0)
-                                    {
-                                        AddMsgOut("3.4 重量小于等于3.0", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
 
-                                        if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true))
-                                        {
-                                            AddMsgOut("3.4.1 属于[北京/天津/河北/河南/山东/山西]", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
-                                            //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
-                                            order.Logic = Settings.Setings.EnumLogicType.新邮政Ems;
-                                        }
-                                        else
-                                        {
-                                            AddMsgOut("3.4.2 不属于[北京/天津/河北/河南/山东/山西]", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
-                                            order.Logic = Settings.Setings.EnumLogicType.申通快递;
-                                        }
-                                    }
-                                    //5 以上都不符合的 默认 >> 京东生鲜医药快递
-                                    else
-                                    {
-                                        AddMsgOut("4 所有条件都不符合", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
-                                        order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
-                                    }
-                                }
+                                order.Logic = SelectLogisticsProvider(order);
+
+                                #region 原 计算物流分配逻辑
+                                //AddMsgOut("2 开始计算", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "海南", "青海" }, true));
+                                //if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "海南", "青海" }, true))
+                                //{
+                                //    AddMsgOut("3 属于海南或青海", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "海南", "青海" }, true));
+                                //    order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
+                                //}
+                                //else
+                                //{
+                                //    AddMsgOut("3 不属于海南或青海, 开始比配其他条件", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "海南", "青海" }, true));
+                                //    //1 订单金额大于2000元以上 >> 京东生鲜医药快递
+                                //    if (Convert.ToDouble(order.total_amt) > 2000d)
+                                //    {
+                                //        AddMsgOut("3.1 金额大于2000", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.total_amt);
+                                //        order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
+                                //    }
+                                //    //2 京津冀且重量大于3公斤 >> 京东生鲜医药快递
+                                //    else if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北" }, true) && order.Weight > 3.0)
+                                //    {
+                                //        AddMsgOut("3.2 属于京津冀且重量小于3.0", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
+                                //        order.Logic = Settings.Setings.EnumLogicType.京东生鲜医药快递;
+                                //    }
+                                //    //3 重量大于3公斤小于20公斤 >> 京东生鲜医药快递
+                                //    else if (order.Weight > 3.0 && order.Weight < 20.0)
+                                //    {
+                                //        AddMsgOut("3.3 重量大于3.0小于20.0", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
+                                //        order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
+                                //    }
+                                //    //4 重量小于3公斤->地区属于("北京", "天津", "河北", "河南", "山东", "山西") >> 新邮政Ems
+                                //    //             ->其他地区 >> 申通快递  
+                                //    else if (order.Weight <= 3.0)
+                                //    {
+                                //        AddMsgOut("3.4 重量小于等于3.0", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
+
+                                //        if (YJT.Text.Verification.IsLikeIn(order.PROVINCENAME, new List<string>() { "北京", "天津", "河北", "河南", "山东", "山西" }, true))
+                                //        {
+                                //            AddMsgOut("3.4.1 属于[北京/天津/河北/河南/山东/山西]", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
+                                //            //Modify: 修改时间: 2024-02-29 By:Ly 修改内容: 重量小于3公斤的订单,从默认使用申通快递 => 新邮政Ems
+                                //            order.Logic = Settings.Setings.EnumLogicType.新邮政Ems;
+                                //        }
+                                //        else
+                                //        {
+                                //            AddMsgOut("3.4.2 不属于[北京/天津/河北/河南/山东/山西]", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
+                                //            order.Logic = Settings.Setings.EnumLogicType.申通快递;
+                                //        }
+                                //    }
+                                //    //5 以上都不符合的 默认 >> 京东生鲜医药快递
+                                //    else
+                                //    {
+                                //        AddMsgOut("4 所有条件都不符合", Settings.Setings.EnumMessageType.提示, 0, "计算物流分配", order.PROVINCENAME, order.Weight);
+                                //        order.Logic = Setings.EnumLogicType.京东生鲜医药快递;
+                                //    }
+                                //}
+                                #endregion
 
                                 #endregion
                             }
@@ -9008,7 +9079,23 @@ WHERE Bid={order.Bid}
                                         {
                                             diffWeightMsg = "double转int, 导致原订单重量和下单重量不一致,原订单重量:" + order.Weight + ",下单重量:" + (int)order.Weight;
                                         }
-
+                                        //大于3公斤 需要加保价 (按照实际金额投保即可, 最终费用为折扣后0.1元 1000元保价是0.1 5000元也是0.1)
+                                        if (order.Weight > 3.0)
+                                        {
+                                            double tTotal_amt = 0d;
+                                            if (!double.TryParse(order.total_amt, out tTotal_amt))
+                                            {
+                                                tTotal_amt = 0d;
+                                            }
+                                            if (tTotal_amt != 0d)
+                                            {
+                                                if (tTotal_amt > 0)
+                                                {
+                                                    order.needBaojia = tTotal_amt;
+                                                    order.total_amt = tTotal_amt.ToString("#0.00");
+                                                }
+                                            }
+                                        }
                                         NewEmsRequestBase 取号 = _newEms.GetCreateOrderModel(
                                             ecommerceUserId: order.PlatformType.ToString(),
                                             erpId: order.ERPORDER_ID,
@@ -9018,7 +9105,9 @@ WHERE Bid={order.Bid}
                                             cargoes: new CargoModel[] { 药品info },
                                             batchNo: "",
                                             electronicPreferentialAmount: 0,
-                                            insuranceAmount: 0,//order.needBaojia,
+                                            //保价金额
+                                            insuranceAmount: order.needBaojia > 0 ? order.needBaojia : 0d,
+                                            //1 基础 2 保价 3保险
                                             insuranceFlag: 2,
                                             insurancePremiumAmount: 0,
                                             pickupNotes: 备注,

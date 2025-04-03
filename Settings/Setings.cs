@@ -196,6 +196,8 @@ namespace Settings
 
             }
         }
+
+        //不是月结账号(旧的月结账号:3113690367 新签合同顺丰月结号:3122038182)
         public static string ShunfengCustomerId
         {
             get
@@ -395,21 +397,23 @@ namespace Settings
         /// </summary>
         public static string NewEmsBaseUrl = "https://api.ems.com.cn";
         /// <summary>
-        /// 正式协议客户号
+        /// 正式协议客户号 
+        /// 1100051370536 => 1100199988657 by:20250318.
+        /// 其他对应的授权/key都需要变更
         /// </summary>
-        public static string NewEmsSenderNo => "1100051370536";
+        public static string NewEmsSenderNo => "1100199988657";
         /// <summary>
         /// 正式环境请求地址
         /// </summary>
         public static string NewEmsUrl => "/amp-prod-api/f/amp/api/open";
         /// <summary>
-        /// 正式授权码
+        /// 正式授权码 SetemYDjgS80gdSa => Se0iQQH38RDx1gFW
         /// </summary>
-        public static string NewEmsAuthorization => "SetemYDjgS80gdSa";
+        public static string NewEmsAuthorization => "Se0iQQH38RDx1gFW";
         /// <summary>
-        /// 正式签名钥匙
+        /// 正式签名钥匙 T1ZPenBHTmIxNlh3dnhRQw== => N0Nka1ZHY1NxbVVURW40Qg==
         /// </summary>
-        public static string NewEmsSignKey => "T1ZPenBHTmIxNlh3dnhRQw==";
+        public static string NewEmsSignKey => "N0Nka1ZHY1NxbVVURW40Qg==";
         /// <summary>
         /// 测试沙箱环境请求地址
         /// </summary>

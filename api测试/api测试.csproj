@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>api测试</RootNamespace>
     <AssemblyName>api测试</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -60,8 +60,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="YJT">
-      <HintPath>..\YanduECommerceAutomaticPrinting\Dlls\YJT.dll</HintPath>
+    <Reference Include="YJT, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Extends\YJT\bin\Debug\YJT.dll</HintPath>
     </Reference>
     <Reference Include="YJTFrmControl">
       <HintPath>..\..\..\本地同步盘\项目工程\九天时创\YJTFrmControl\bin\Debug\YJTFrmControl.dll</HintPath>
@@ -76,6 +77,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="LowercaseContractResolver.cs" />
+    <Compile Include="MoneyConverter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
