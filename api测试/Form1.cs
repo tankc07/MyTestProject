@@ -29,6 +29,11 @@ using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
 using YJT;
 using static MOD.BllMod;
+using RestSharp;
+using static YJT.Logistics.ShenTongLogistic.ClassCreateOrder;
+using System.Net.Http;
+using System.Net.Sockets;
+using static YJT.Logistics.ShunFengLogistic;
 
 namespace api测试
 {
@@ -1359,6 +1364,97 @@ order by
         private void button19_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button20_Click(object sender, EventArgs e)
+        {
+
+            bool isOk;
+            int errCode;
+            string errMsg;
+            YJT.Logistics.ShunFengLogistic _sf = YJT.Logistics.ShunFengLogistic.Init("704", "ee6030e3f4f3f6eab5bca5f36a8ccf73");
+
+            YJT.Logistics.ShunFengLogistic.ClassGetOrderInfoRes res2 = null;
+            
+            res2 = _sf.GetOrderInfo(textBox3.Text, out isOk, out errCode, out errMsg);
+            if (res2 != null && isOk == true && res2.data2 != null)
+            {
+                Console.WriteLine(JsonConvert.SerializeObject(res2));
+            }
+            else
+            {
+                Console.WriteLine(errMsg);
+            }
+
+        }
+
+        private void button21_Click(object sender, EventArgs e)
+        {
+            var customerId = "704";
+            var secret = "ee6030e3f4f3f6eab5bca5f36a8ccf73";
+            //var customerId = "719";
+            //var secret = "4a6919c248276e6ae6bea9925ac94525";
+            var baseUrl = @"https://yqt-ms.sf-express.com";
+            var testBaseUrl = @"https://yqt-ms.sit.sf-express.com";
+
+            var getOrderInfoUrl = @"/hb-pcc-core/deliveryOrder/getSurfaceOrder";
+
+            var _client = new RestClient(new RestClientOptions(testBaseUrl)
+            {
+                ConfigureMessageHandler = handler => new HttpClientHandler() { ServerCertificateCustomValidationCallback = delegate { return true; } },
+                FailOnDeserializationError = true,
+                ThrowOnAnyError = true,
+
+            });
+            ClassGetOrderInfo cgoi = new ClassGetOrderInfo();
+            cgoi.customerId = customerId;
+            cgoi.deliveryOrder = textBox3.Text;
+
+            cgoi.timestamp = YJT.DateTimeHandle.DateConvert.GetUtcTimeStampNow("msec").ToString();
+            cgoi.sign = CreateSign(customerId, secret, cgoi.timestamp);
+
+            var json = JsonConvert.SerializeObject(cgoi, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                Formatting = Formatting.Indented,
+                DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
+                DateFormatString = "yyyy-MM-dd HH:mm:ss",
+            });
+            var restRequest = new RestRequest(getOrderInfoUrl, Method.Post);
+            restRequest.AddHeader("Content-Type", "application/json");
+            //restRequest.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+            //restRequest.AddParameter("customerId", cgoi.customerId);
+            //restRequest.AddParameter("timestamp", cgoi.timestamp);
+            //restRequest.AddParameter("sign", cgoi.sign);
+            restRequest.AddJsonBody(json);
+
+
+            try
+            {
+                var response = _client.Execute(restRequest);
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+
+                    ShowLog($"{JsonConvert.SerializeObject(response.Content, Formatting.Indented)}");
+                }
+                else
+                {
+                    ShowLog($"{response.StatusCode}");
+                }
+            }
+            catch (HttpRequestException hre)
+            {
+                ShowLog($"{hre.ToString()}");
+            }
+        }
+        private string CreateSign(string customerId, string secret, string timestamp)
+        {
+            string res = "";
+            string key = customerId + "&sk=" + secret + "&timestamp=" + timestamp;
+            byte[] sha512 = YJT.Encrypt.SHAEncrypt.EncryptSHA512Str.Init().FunByteGetSHA512StringAdv(key, "UTF-8");
+            res = YJT.Encrypt.Base64.EncryptBase64UrlSafe.Init().EncryStrGetEnBase64UrlSafeByByte(sha512);
+            return res;
         }
     }
 }

@@ -33,6 +33,10 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.txtLog = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.button20 = new System.Windows.Forms.Button();
+            this.button19 = new System.Windows.Forms.Button();
+            this.button18 = new System.Windows.Forms.Button();
             this.button17 = new System.Windows.Forms.Button();
             this.button16 = new System.Windows.Forms.Button();
             this.button15 = new System.Windows.Forms.Button();
@@ -57,8 +61,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.button18 = new System.Windows.Forms.Button();
-            this.button19 = new System.Windows.Forms.Button();
+            this.button21 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -111,6 +114,9 @@
             // 
             // splitContainer2.Panel2
             // 
+            this.splitContainer2.Panel2.Controls.Add(this.button21);
+            this.splitContainer2.Panel2.Controls.Add(this.textBox3);
+            this.splitContainer2.Panel2.Controls.Add(this.button20);
             this.splitContainer2.Panel2.Controls.Add(this.button19);
             this.splitContainer2.Panel2.Controls.Add(this.button18);
             this.splitContainer2.Panel2.Controls.Add(this.button17);
@@ -151,6 +157,44 @@
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtLog.Size = new System.Drawing.Size(931, 953);
             this.txtLog.TabIndex = 18;
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(284, 588);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(248, 28);
+            this.textBox3.TabIndex = 35;
+            this.textBox3.Text = "9103766";
+            // 
+            // button20
+            // 
+            this.button20.Location = new System.Drawing.Point(284, 639);
+            this.button20.Name = "button20";
+            this.button20.Size = new System.Drawing.Size(248, 64);
+            this.button20.TabIndex = 34;
+            this.button20.Text = "测试顺丰获取物流订单信息";
+            this.button20.UseVisualStyleBackColor = true;
+            this.button20.Click += new System.EventHandler(this.button20_Click);
+            // 
+            // button19
+            // 
+            this.button19.Location = new System.Drawing.Point(28, 709);
+            this.button19.Name = "button19";
+            this.button19.Size = new System.Drawing.Size(248, 65);
+            this.button19.TabIndex = 33;
+            this.button19.Text = "测试顺丰取消下单";
+            this.button19.UseVisualStyleBackColor = true;
+            this.button19.Click += new System.EventHandler(this.button19_Click);
+            // 
+            // button18
+            // 
+            this.button18.Location = new System.Drawing.Point(30, 639);
+            this.button18.Name = "button18";
+            this.button18.Size = new System.Drawing.Size(248, 64);
+            this.button18.TabIndex = 32;
+            this.button18.Text = "测试顺丰下单";
+            this.button18.UseVisualStyleBackColor = true;
+            this.button18.Click += new System.EventHandler(this.button18_Click);
             // 
             // button17
             // 
@@ -383,25 +427,15 @@
             this.timer1.Enabled = true;
             this.timer1.Interval = 1000;
             // 
-            // button18
+            // button21
             // 
-            this.button18.Location = new System.Drawing.Point(28, 639);
-            this.button18.Name = "button18";
-            this.button18.Size = new System.Drawing.Size(248, 64);
-            this.button18.TabIndex = 32;
-            this.button18.Text = "测试顺丰下单";
-            this.button18.UseVisualStyleBackColor = true;
-            this.button18.Click += new System.EventHandler(this.button18_Click);
-            // 
-            // button19
-            // 
-            this.button19.Location = new System.Drawing.Point(28, 709);
-            this.button19.Name = "button19";
-            this.button19.Size = new System.Drawing.Size(248, 65);
-            this.button19.TabIndex = 33;
-            this.button19.Text = "测试顺丰取消下单";
-            this.button19.UseVisualStyleBackColor = true;
-            this.button19.Click += new System.EventHandler(this.button19_Click);
+            this.button21.Location = new System.Drawing.Point(284, 709);
+            this.button21.Name = "button21";
+            this.button21.Size = new System.Drawing.Size(248, 65);
+            this.button21.TabIndex = 36;
+            this.button21.Text = "测试顺丰获取面单RESTSHARP";
+            this.button21.UseVisualStyleBackColor = true;
+            this.button21.Click += new System.EventHandler(this.button21_Click);
             // 
             // Form1
             // 
@@ -460,6 +494,9 @@
         private System.Windows.Forms.Button button17;
         private System.Windows.Forms.Button button19;
         private System.Windows.Forms.Button button18;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Button button20;
+        private System.Windows.Forms.Button button21;
     }
 }
 

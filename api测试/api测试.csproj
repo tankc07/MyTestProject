@@ -62,7 +62,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="YJT, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\YanduECommerceAutomaticPrinting\Dlls\YJT.dll</HintPath>
+      <HintPath>..\..\Extends\YJT\bin\Debug\YJT.dll</HintPath>
     </Reference>
     <Reference Include="YJTFrmControl">
       <HintPath>..\..\..\本地同步盘\项目工程\九天时创\YJTFrmControl\bin\Debug\YJTFrmControl.dll</HintPath>
