@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogisticsCore", "LogisticsC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CenterServerManager", "CenterServerManager\CenterServerManager.csproj", "{F39F0CE9-7A05-4453-B1FF-79DD247DDBB5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogisticsRePrint", "LogisticsRePrint\LogisticsRePrint.csproj", "{A7961C86-A20F-4EB0-B7B4-FBCD29518C1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{F39F0CE9-7A05-4453-B1FF-79DD247DDBB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F39F0CE9-7A05-4453-B1FF-79DD247DDBB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F39F0CE9-7A05-4453-B1FF-79DD247DDBB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7961C86-A20F-4EB0-B7B4-FBCD29518C1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7961C86-A20F-4EB0-B7B4-FBCD29518C1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7961C86-A20F-4EB0-B7B4-FBCD29518C1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7961C86-A20F-4EB0-B7B4-FBCD29518C1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
