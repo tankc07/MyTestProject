@@ -1,7 +1,0 @@
-1 API测试项目中的YJT.dll引用的是YanduECommerceAutomaticPrinting\YanduECommerceAutomaticPrinting\Dlls目录中的YJT.dll, 
-		在调用YJT.Logistics.ShunFengLogistic _sf = YJT.Logistics.ShunFengLogistic.Init("704", "ee6030e3f4f3f6eab5bca5f36a8ccf73");时, 返回的ShunFengLogistic对象_sf, _sf.Secret/_sf.CustomerId都为null, _sf.IsTest为true, 像是没有正常初始化.
-	1.1 在更改了其他版本的YJT.dll后, 这个问题就恢复了.
-	1.2 YanduECommerceAutomaticPrinting项目引用的也是YanduECommerceAutomaticPrinting\YanduECommerceAutomaticPrinting\Dlls目录中的YJT.dll,  
-			在程序运行时也会调用初始化YJT.Logistics.ShunFengLogistic _sf = YJT.Logistics.ShunFengLogistic.Init("704", "ee6030e3f4f3f6eab5bca5f36a8ccf73");(传参不同而已, 示例中时测试参数, 程序运行时初始化传入的是正式环境参数), 程序运行无异常, 证明可以正常初始化.
-	1.3 在新创建的测试程序中, 引用了YanduECommerceAutomaticPrinting\YanduECommerceAutomaticPrinting\Dlls下的YJT.dll, 调用初始化时, 也是一样的问题.
-结论: 还没有确认问题原因, 只是猜测YanduECommerceAutomaticPrinting\YanduECommerceAutomaticPrinting\Dlls下的YJT.dll版本与YJT.pdb对应不上, 其他版本不一致未明确找到原因.
