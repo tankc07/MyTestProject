@@ -192,12 +192,11 @@ namespace Settings
         {
             get
             {
-                return "E7f81f972faf012680af0f5b7de722c8";
+                return "BaiDuMapKey";
 
             }
         }
 
-        //不是月结账号(旧的月结账号:3113690367 新签合同顺丰月结号:3122038182)
         public static string ShunfengCustomerId
         {
             get
@@ -210,8 +209,7 @@ namespace Settings
         {
             get
             {
-                //return "ee6030e3f4f3f6eab5bca5f36a8ccf73";//测试
-                return "4a6919c248276e6ae6bea9925ac94525";//正式
+                return "ShunfengSecret";//正式
             }
         }
         public static bool ShunfengIsTest
@@ -225,21 +223,21 @@ namespace Settings
         {
             get
             {
-                return "1100094086346";
+                return "EmsYouzhengSenderNo";
             }
         }
         public static string EmsYouzhengSecrect
         {
             get
             {
-                return "b565b8f0348c592d7eb766cd40717032";
+                return "EmsYouzhengSecrect";
             }
         }
         public static string EmsYouzhengSecrectTest
         {
             get
             {
-                return "485a7335256edfe015deb0eb269f1b51";
+                return "EmsYouzhengSecrectTest";
             }
         }
         public static bool EmsYouzhengIsTest
@@ -253,14 +251,14 @@ namespace Settings
         {
             get
             {
-                return "A69D7A8036F837904F399534B2837F17";
+                return "JingdongWlAppKey";
             }
         }
         public static string JingdongWlAppSecret
         {
             get
             {
-                return "b5bc8d4c3cdd4c99bfc7ec36a3d1645f";
+                return "JingdongWlAppSecret";
             }
         }
         public static string JingdongWlAccessUrl
@@ -274,49 +272,49 @@ namespace Settings
         {
             get
             {
-                return "e2075d659ec04fd7bcbafed7c1c329c2tiwn";
+                return "JingdongWlToken";
             }
         }
         public static string JingdongWlDeptNo
         {
             get
             {
-                return @"010K680062"; //EBU4418046594811
+                return @"JingdongWlDeptNo"; 
             }
         }
         public static string ZhongTongWlAppKey
         {
             get
             {
-                return @"f8af3a0a7f2bf72c0c0c0";
+                return @"ZhongTongWlAppKey";
             }
         }
         public static string ZhongTongWlAppKeyTest
         {
             get
             {
-                return @"3daabc717c853dc948c9f";
+                return @"ZhongTongWlAppKeyTest";
             }
         }
         public static string ZhongTongappSecret
         {
             get
             {
-                return @"83cba11de165e102b1d357fa7de9ca66";
+                return @"ZhongTongappSecret";
             }
         }
         public static string ZhongTongappSecretTest
         {
             get
             {
-                return @"93aa63fb124f5df1252f663492f66722";
+                return @"ZhongTongappSecretTest";
             }
         }
         public static string ZhongTongCustomid
         {
             get
             {
-                return @"ZTO1421661240847000";
+                return @"ZhongTongCustomid";
 
             }
         }
@@ -324,7 +322,7 @@ namespace Settings
         {
             get
             {
-                return @"9IKBLIK7";
+                return @"ZhongTongCustomPwd";
             }
         }
         public static bool ZhongTongIsTest
@@ -338,49 +336,49 @@ namespace Settings
         {
             get
             {
-                return @"CAKYnBVqIIaiFYf";
+                return @"ShenTongAppKey";
             }
         }
         public static string ShenTongSecretKey
         {
             get
             {
-                return @"A11TgLxfVkJKIu1XYyuIrdEbC6v8DC6I";
+                return @"ShenTongSecretKey";
             }
         }
         public static string ShenTongResourceCode
         {
             get
             {
-                return @"CAKYnBVqIIaiFYf";
+                return @"ShenTongResourceCode";
             }
         }
         public static string ShenTongFormOrderCode
         {
             get
             {
-                return @"HDDS";
+                return @"ShenTongFormOrderCode";
             }
         }
         public static string ShenTongSiteCode
         {
             get
             {
-                return @"450288";
+                return @"ShenTongSiteCode";
             }
         }
         public static string ShenTongCustomerName
         {
             get
             {
-                return @"450288000018";
+                return @"ShenTongCustomerName";
             }
         }
         public static string ShenTongSitePwd
         {
             get
             {
-                return @"Sto2022@";
+                return @"ShenTongSitePwd@";
             }
         }
         public static bool ShenTongIsTest
@@ -398,22 +396,22 @@ namespace Settings
         public static string NewEmsBaseUrl = "https://api.ems.com.cn";
         /// <summary>
         /// 正式协议客户号 
-        /// 1100051370536 => 1100199988657 by:20250318.
+        /// 
         /// 其他对应的授权/key都需要变更
         /// </summary>
-        public static string NewEmsSenderNo => "1100199988657";
+        public static string NewEmsSenderNo => "NewEmsSenderNo";
         /// <summary>
         /// 正式环境请求地址
         /// </summary>
         public static string NewEmsUrl => "/amp-prod-api/f/amp/api/open";
         /// <summary>
-        /// 正式授权码 SetemYDjgS80gdSa => Se0iQQH38RDx1gFW
+        /// 正式授权码 
         /// </summary>
-        public static string NewEmsAuthorization => "Se0iQQH38RDx1gFW";
+        public static string NewEmsAuthorization => "NewEmsAuthorization";
         /// <summary>
-        /// 正式签名钥匙 T1ZPenBHTmIxNlh3dnhRQw== => N0Nka1ZHY1NxbVVURW40Qg==
+        /// 正式签名钥匙
         /// </summary>
-        public static string NewEmsSignKey => "N0Nka1ZHY1NxbVVURW40Qg==";
+        public static string NewEmsSignKey => "NewEmsSignKey";
         /// <summary>
         /// 测试沙箱环境请求地址
         /// </summary>
@@ -421,11 +419,11 @@ namespace Settings
         /// <summary>
         /// 测试授权码
         /// </summary>
-        public static string NewEmsTestAuthorization => "UBP0lGUev6irKPi7";
+        public static string NewEmsTestAuthorization => "NewEmsTestAuthorization";
         /// <summary>
         /// 测试签名钥匙
         /// </summary>
-        public static string NewEmsTestSignKey => "NkhUbzFkOTdOQjFNRzNpQw==";
+        public static string NewEmsTestSignKey => "NewEmsTestSignKey";
         /// <summary>
         /// 是否启用测试环境及参数
         /// </summary>
@@ -433,13 +431,13 @@ namespace Settings
 
         #region 生鲜医药【快递】: FreshMedicineDelivery, 相关参数
 
-        public static string JdFreshMedicineDeliveryAppKey => "0cdc29884bde4f978c48a3be1f473946";
-        public static string JdFreshMedicineDeliveryAppSecret => "f462cc68dd9d45e6a920bf3a818d9c1b";
+        public static string JdFreshMedicineDeliveryAppKey => "JdFreshMedicineDeliveryAppKey";
+        public static string JdFreshMedicineDeliveryAppSecret => "JdFreshMedicineDeliveryAppSecret";
         //TODO:获取token的逻辑待完善, 目前是手动获取, 后续改为自动获取或弹出窗口手动获取后写入数据库+有效期
         
-        public static string JdFreshMedicineDeliveryTestAccessToken => "d9b8c0c8beef451289cdda371e55b1ab";
-        public static string JdFreshMedicineDeliveryAccessToken => "5333b7686fd243578a54fc923a4ca385";
-        public static string JdFreshMdicineDeliveryCustomerCode => "010K2731958";
+        public static string JdFreshMedicineDeliveryTestAccessToken => "JdFreshMedicineDeliveryTestAccessToken";
+        public static string JdFreshMedicineDeliveryAccessToken => "JdFreshMedicineDeliveryAccessToken";
+        public static string JdFreshMdicineDeliveryCustomerCode => "JdFreshMdicineDeliveryCustomerCode";
         /// <summary>
         /// 京东生鲜医药[快递]请求地址: 生产环境
         /// </summary>
